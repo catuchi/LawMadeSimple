@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+html { background: #ffffff; }
+body {
+  width: 720pt; height: 405pt; margin: 0; padding: 0;
+  font-family: Arial, sans-serif;
+  display: flex;
+  background: #FAFAFA;
+}
+.header-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 720pt;
+  height: 60pt;
+  background: #1A5F7A;
+  display: flex;
+  align-items: center;
+  padding-left: 40pt;
+}
+.header-bar h1 {
+  font-family: Georgia, serif;
+  font-size: 24pt;
+  color: #ffffff;
+  margin: 0;
+}
+.content {
+  margin: 68pt 40pt 25pt 40pt;
+  display: flex;
+  gap: 24pt;
+}
+.left-col {
+  flex: 1;
+}
+.right-col {
+  flex: 1;
+}
+.section-title {
+  font-size: 14pt;
+  font-weight: bold;
+  color: #1A5F7A;
+  margin: 0 0 16pt 0;
+}
+.flow-diagram {
+  background: #ffffff;
+  border-radius: 8pt;
+  padding: 20pt;
+  box-shadow: 0 2pt 4pt rgba(0,0,0,0.1);
+}
+.flow-step {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8pt;
+}
+.flow-icon {
+  width: 32pt;
+  height: 32pt;
+  border-radius: 16pt;
+  background: #E6F3F5;
+  margin-right: 12pt;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.flow-icon p {
+  font-size: 14pt;
+  margin: 0;
+}
+.flow-text {
+  flex: 1;
+}
+.flow-text p {
+  font-size: 11pt;
+  color: #404040;
+  margin: 0;
+}
+.flow-arrow {
+  text-align: center;
+  margin-bottom: 6pt;
+}
+.flow-arrow p {
+  font-size: 14pt;
+  color: #B3DDE4;
+  margin: 0;
+}
+.tech-list {
+  background: #ffffff;
+  border-radius: 8pt;
+  padding: 16pt;
+  box-shadow: 0 2pt 4pt rgba(0,0,0,0.1);
+  margin-bottom: 16pt;
+}
+.tech-item {
+  display: flex;
+  align-items: center;
+  padding: 8pt 0;
+  border-bottom: 1pt solid #E5E5E5;
+}
+.tech-item:last-child {
+  border-bottom: none;
+}
+.tech-label {
+  font-size: 10pt;
+  color: #737373;
+  width: 80pt;
+  margin: 0;
+}
+.tech-value {
+  font-size: 10pt;
+  color: #1A5F7A;
+  font-weight: bold;
+  margin: 0;
+}
+</style>
+</head>
+<body>
+<div class="header-bar">
+  <h1>How It Works</h1>
+</div>
+<div class="content">
+  <div class="left-col">
+    <p class="section-title">User Flow (Simplified)</p>
+    <div class="flow-diagram">
+      <div class="flow-step">
+        <div class="flow-icon"><p>1</p></div>
+        <div class="flow-text"><p>User selects a scenario or searches</p></div>
+      </div>
+      <div class="flow-arrow"><p>v</p></div>
+      <div class="flow-step">
+        <div class="flow-icon"><p>2</p></div>
+        <div class="flow-text"><p>System finds relevant law sections</p></div>
+      </div>
+      <div class="flow-arrow"><p>v</p></div>
+      <div class="flow-step">
+        <div class="flow-icon"><p>3</p></div>
+        <div class="flow-text"><p>AI generates plain-language explanation</p></div>
+      </div>
+      <div class="flow-arrow"><p>v</p></div>
+      <div class="flow-step">
+        <div class="flow-icon"><p>4</p></div>
+        <div class="flow-text"><p>User reads, saves, or shares</p></div>
+      </div>
+    </div>
+  </div>
+  <div class="right-col">
+    <p class="section-title">Technology Choices</p>
+    <div class="tech-list">
+      <div class="tech-item">
+        <p class="tech-label">Platform</p>
+        <p class="tech-value">Web App (PWA)</p>
+      </div>
+      <div class="tech-item">
+        <p class="tech-label">Framework</p>
+        <p class="tech-value">Next.js (React)</p>
+      </div>
+      <div class="tech-item">
+        <p class="tech-label">Database</p>
+        <p class="tech-value">PostgreSQL</p>
+      </div>
+      <div class="tech-item">
+        <p class="tech-label">AI Engine</p>
+        <p class="tech-value">OpenAI GPT-4</p>
+      </div>
+      <div class="tech-item">
+        <p class="tech-label">Hosting</p>
+        <p class="tech-value">Vercel (Cloud)</p>
+      </div>
+    </div>
+    <div class="tech-list">
+      <div class="tech-item">
+        <p class="tech-label">Security</p>
+        <p class="tech-value">NDPR Compliant</p>
+      </div>
+      <div class="tech-item">
+        <p class="tech-label">Uptime</p>
+        <p class="tech-value">99.9% Target</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

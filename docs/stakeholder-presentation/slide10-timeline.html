@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+html { background: #ffffff; }
+body {
+  width: 720pt; height: 405pt; margin: 0; padding: 0;
+  font-family: Arial, sans-serif;
+  display: flex;
+  background: #FAFAFA;
+}
+.header-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 720pt;
+  height: 60pt;
+  background: #1A5F7A;
+  display: flex;
+  align-items: center;
+  padding-left: 40pt;
+}
+.header-bar h1 {
+  font-family: Georgia, serif;
+  font-size: 24pt;
+  color: #ffffff;
+  margin: 0;
+}
+.content {
+  margin: 80pt 40pt 40pt 40pt;
+}
+.timeline {
+  display: flex;
+  align-items: flex-start;
+  gap: 8pt;
+}
+.phase {
+  flex: 1;
+  position: relative;
+}
+.phase-header {
+  background: #1A5F7A;
+  border-radius: 6pt 6pt 0 0;
+  padding: 10pt;
+  text-align: center;
+}
+.phase-header p {
+  font-size: 10pt;
+  font-weight: bold;
+  color: #ffffff;
+  margin: 0;
+}
+.phase-body {
+  background: #ffffff;
+  border-radius: 0 0 6pt 6pt;
+  padding: 12pt;
+  min-height: 150pt;
+  box-shadow: 0 2pt 4pt rgba(0,0,0,0.1);
+}
+.phase-title {
+  font-size: 11pt;
+  font-weight: bold;
+  color: #1A5F7A;
+  margin: 0 0 8pt 0;
+}
+.phase-list {
+  margin: 0;
+  padding-left: 14pt;
+}
+.phase-list li {
+  font-size: 8pt;
+  color: #525252;
+  margin-bottom: 4pt;
+  line-height: 1.3;
+}
+.phase-milestone {
+  margin-top: 10pt;
+  padding-top: 10pt;
+  border-top: 1pt solid #E5E5E5;
+}
+.milestone-text {
+  font-size: 9pt;
+  color: #F4B942;
+  font-weight: bold;
+  margin: 0;
+}
+.current-marker {
+  position: absolute;
+  top: -15pt;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #F4B942;
+  border-radius: 4pt;
+  padding: 3pt 8pt;
+}
+.current-marker p {
+  font-size: 7pt;
+  font-weight: bold;
+  color: #1A5F7A;
+  margin: 0;
+}
+</style>
+</head>
+<body>
+<div class="header-bar">
+  <h1>Development Timeline</h1>
+</div>
+<div class="content">
+  <div class="timeline">
+    <div class="phase">
+      <div class="current-marker"><p>WE ARE HERE</p></div>
+      <div class="phase-header"><p>Weeks 1-2</p></div>
+      <div class="phase-body">
+        <p class="phase-title">Foundation</p>
+        <ul class="phase-list">
+          <li>Project setup</li>
+          <li>Database design</li>
+          <li>CI/CD pipeline</li>
+          <li>First deployment</li>
+        </ul>
+        <div class="phase-milestone">
+          <p class="milestone-text">App live (minimal)</p>
+        </div>
+      </div>
+    </div>
+    <div class="phase">
+      <div class="phase-header"><p>Weeks 3-4</p></div>
+      <div class="phase-body">
+        <p class="phase-title">Core Backend</p>
+        <ul class="phase-list">
+          <li>Law database structure</li>
+          <li>API endpoints</li>
+          <li>Authentication</li>
+          <li>Search functionality</li>
+        </ul>
+        <div class="phase-milestone">
+          <p class="milestone-text">APIs working</p>
+        </div>
+      </div>
+    </div>
+    <div class="phase">
+      <div class="phase-header"><p>Weeks 5-6</p></div>
+      <div class="phase-body">
+        <p class="phase-title">AI Integration</p>
+        <ul class="phase-list">
+          <li>OpenAI integration</li>
+          <li>Streaming responses</li>
+          <li>Explanation caching</li>
+          <li>Feedback system</li>
+        </ul>
+        <div class="phase-milestone">
+          <p class="milestone-text">AI explanations live</p>
+        </div>
+      </div>
+    </div>
+    <div class="phase">
+      <div class="phase-header"><p>Weeks 7-9</p></div>
+      <div class="phase-body">
+        <p class="phase-title">Frontend</p>
+        <ul class="phase-list">
+          <li>Design system</li>
+          <li>All pages built</li>
+          <li>Mobile optimization</li>
+          <li>User features</li>
+        </ul>
+        <div class="phase-milestone">
+          <p class="milestone-text">Full app functional</p>
+        </div>
+      </div>
+    </div>
+    <div class="phase">
+      <div class="phase-header"><p>Weeks 10-12</p></div>
+      <div class="phase-body">
+        <p class="phase-title">Polish + Launch</p>
+        <ul class="phase-list">
+          <li>Content seeding (6 laws)</li>
+          <li>50 scenarios mapped</li>
+          <li>Testing + security</li>
+          <li>Public launch</li>
+        </ul>
+        <div class="phase-milestone">
+          <p class="milestone-text">MVP LAUNCH</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

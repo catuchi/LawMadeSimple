@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+html { background: #ffffff; }
+body {
+  width: 720pt; height: 405pt; margin: 0; padding: 0;
+  font-family: Arial, sans-serif;
+  display: flex;
+  background: #FAFAFA;
+}
+.header-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 720pt;
+  height: 60pt;
+  background: #1A5F7A;
+  display: flex;
+  align-items: center;
+  padding-left: 40pt;
+}
+.header-bar h1 {
+  font-family: Georgia, serif;
+  font-size: 24pt;
+  color: #ffffff;
+  margin: 0;
+}
+.content {
+  margin: 70pt 40pt 30pt 40pt;
+  display: flex;
+  gap: 24pt;
+}
+.left-col {
+  flex: 1.2;
+}
+.right-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12pt;
+}
+.main-card {
+  background: #ffffff;
+  border-radius: 12pt;
+  padding: 20pt;
+  box-shadow: 0 4pt 8pt rgba(0,0,0,0.1);
+  border-left: 6pt solid #1A5F7A;
+}
+.main-card h2 {
+  font-family: Georgia, serif;
+  font-size: 18pt;
+  color: #1A5F7A;
+  margin: 0 0 12pt 0;
+}
+.main-card p {
+  font-size: 11pt;
+  color: #404040;
+  margin: 0 0 10pt 0;
+  line-height: 1.5;
+}
+.main-card .highlight {
+  font-size: 12pt;
+  color: #1A5F7A;
+  font-weight: bold;
+  margin: 0;
+}
+.diff-box {
+  background: #ffffff;
+  border-radius: 8pt;
+  padding: 12pt;
+  box-shadow: 0 2pt 4pt rgba(0,0,0,0.1);
+}
+.diff-box h4 {
+  font-size: 10pt;
+  color: #F4B942;
+  font-weight: bold;
+  margin: 0 0 6pt 0;
+  text-transform: uppercase;
+}
+.diff-box p {
+  font-size: 10pt;
+  color: #525252;
+  margin: 0;
+  line-height: 1.3;
+}
+</style>
+</head>
+<body>
+<div class="header-bar">
+  <h1>Our Solution</h1>
+</div>
+<div class="content">
+  <div class="left-col">
+    <div class="main-card">
+      <h2>LawMadeSimple</h2>
+      <p>A web platform that translates Nigerian law from complex legal jargon into plain, easy-to-understand language with practical examples relevant to everyday situations.</p>
+      <p>Users discover relevant laws through real-life scenarios ("My landlord wants to evict me") rather than searching legal terminology they don't know.</p>
+      <p class="highlight">Not just law access - law comprehension.</p>
+    </div>
+  </div>
+  <div class="right-col">
+    <div class="diff-box">
+      <h4>AI-Powered Explanations</h4>
+      <p>Advanced AI translates legal text into simple language anyone can understand, with relevant examples.</p>
+    </div>
+    <div class="diff-box">
+      <h4>Scenario-Based Discovery</h4>
+      <p>Find relevant laws through life situations, not legal jargon you need to already know.</p>
+    </div>
+    <div class="diff-box">
+      <h4>Mobile-First PWA</h4>
+      <p>Works on any smartphone, even with limited connectivity - reaching Nigerians where they are.</p>
+    </div>
+  </div>
+</div>
+</body>
+</html>

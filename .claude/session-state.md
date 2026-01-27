@@ -6,7 +6,7 @@
 
 ## Current Phase
 
-**Phase 4: Architecture** — PRD Complete, Ready for Plan
+**Phase 5: Foundation** — Ready to Begin Development
 
 ---
 
@@ -15,49 +15,41 @@
 | Phase | Status | Output |
 |-------|--------|--------|
 | Phase 0: Ideation | ✅ Complete | Vision established |
-| Phase 1: Requirements | ✅ **Approved** | 11 docs in `docs/pre-dev/` |
+| Phase 1: Requirements | ✅ **Approved** | Cleaned up (consolidated to PRD) |
 | Phase 2: Research | ✅ Complete | `competitor-analysis.md`, `tech-stack.md` |
 | Phase 3: Design | ✅ **Approved** | `docs/design/21-frontend-design-spec.md` |
-| Phase 4: Architecture | ✅ **Pre-dev Complete** | Docs 12-20 in `docs/pre-dev/` |
-| Phase 5: Foundation | ⏳ Blocked | Waiting for Plan |
-
----
-
-## Pre-dev Documentation Complete (20/20)
-
-### Phase 1-3: Business & Requirements (01-11)
-- ✅ 01-business-problem-statement.md
-- ✅ 02-business-objectives.md
-- ✅ 03-stakeholder-list.md
-- ✅ 04-initial-scope.md
-- ✅ 05-user-requirements-document.md
-- ✅ 06-functional-requirements.md
-- ✅ 07-non-functional-requirements.md
-- ✅ 08-user-stories.md
-- ✅ 09-requirements-traceability-matrix.md
-- ✅ 10-approved-requirements-baseline.md
-- ✅ 11-change-request-process.md
-
-### Phase 4: Architecture Planning (12-15)
-- ✅ 12-system-architecture-document.md — Serverless monolith, components, security
-- ✅ 13-architecture-diagram.md — C4 diagrams, data flows, deployment
-- ✅ 14-technology-stack-decision.md — 7 ADRs, tech comparisons
-- ✅ 15-deployment-architecture.md — CI/CD, monitoring, DR
-
-### Phase 5: Detailed Design (16-20)
-- ✅ 16-system-design-document.md — Module design, services, patterns
-- ✅ 17-entity-relationship-diagram.md — Prisma schema, 10 entities
-- ✅ 18-api-specifications.md — REST API, auth, rate limiting
-- ✅ 19-uml-diagrams.md — Use cases, sequences, states
-- ✅ 20-data-dictionary.md — All entities, validation, NDPR
+| Phase 4: Architecture | ✅ **Complete** | Architecture docs retained in `docs/pre-dev/` |
+| Phase 5: Foundation | 🔄 **Ready** | `plan.md` generated |
 
 ---
 
 ## Workflow Progress
 
 ```
-/pre-dev ✅ → /ui-spec ✅ → /prd ✅ → /plan 🔄 → Development
+/pre-dev ✅ → /ui-spec ✅ → /prd ✅ → /plan ✅ → Development 🔄
 ```
+
+---
+
+## Key Deliverables
+
+| Document | Location | Purpose |
+|----------|----------|---------|
+| PRD | `prd.md` | Consolidated requirements |
+| Development Plan | `plan.md` | 142 tasks across 12 phases |
+| Stakeholder Presentation | `docs/stakeholder-presentation/` | Non-technical overview (12 slides) |
+| Frontend Design Spec | `docs/design/21-frontend-design-spec.md` | UI/UX specification |
+
+---
+
+## Architecture Docs Retained
+
+Only essential architecture documents kept in `docs/pre-dev/`:
+- `12-system-architecture-document.md`
+- `13-architecture-diagram.md`
+- `14-technology-stack-decision.md`
+- `17-entity-relationship-diagram.md`
+- `18-api-specifications.md`
 
 ---
 
@@ -70,7 +62,7 @@
 | Auth | Supabase Auth (Google OAuth + Magic Links) | Integrated, no password management |
 | AI | OpenAI GPT-4o + Vercel AI SDK | Best quality, streaming support |
 | Caching | PostgreSQL table for explanations | Sufficient for MVP, no extra service |
-| Design | Warm Trust (Teal + Gold), Light mode | Professional yet approachable |
+| Design | Warm Trust (Teal #1A5F7A + Gold #F4B942), Light mode | Professional yet approachable |
 
 ---
 
@@ -95,8 +87,11 @@
 
 1. Read `CLAUDE.md` for project context
 2. Read this file for current state
-3. **Run `/plan`** to generate task breakdown
-4. Begin Phase 5: Foundation (project setup, CI/CD, first deploy)
+3. Read `plan.md` for task breakdown
+4. **Begin Phase 1: Project Foundation**
+   - Initialize Next.js project
+   - Set up CI/CD
+   - First deployment to Vercel
 
 ---
 
@@ -107,4 +102,4 @@ None currently.
 ---
 
 *Last commit: 11a0532 — Generate PRD consolidating all pre-dev documentation*
-*Next: Run /plan to generate task breakdown*
+*Next: Begin development with Phase 1 (Project Foundation)*

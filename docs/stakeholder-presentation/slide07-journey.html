@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+html { background: #ffffff; }
+body {
+  width: 720pt; height: 405pt; margin: 0; padding: 0;
+  font-family: Arial, sans-serif;
+  display: flex;
+  background: #FAFAFA;
+}
+.header-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 720pt;
+  height: 60pt;
+  background: #1A5F7A;
+  display: flex;
+  align-items: center;
+  padding-left: 40pt;
+}
+.header-bar h1 {
+  font-family: Georgia, serif;
+  font-size: 24pt;
+  color: #ffffff;
+  margin: 0;
+}
+.content {
+  margin: 80pt 40pt 40pt 40pt;
+  display: flex;
+  flex-direction: column;
+}
+.journey-title {
+  font-size: 14pt;
+  color: #1A5F7A;
+  font-weight: bold;
+  margin: 0 0 20pt 0;
+}
+.journey-row {
+  display: flex;
+  align-items: center;
+  gap: 12pt;
+}
+.journey-step {
+  flex: 1;
+  background: #ffffff;
+  border-radius: 8pt;
+  padding: 16pt;
+  box-shadow: 0 2pt 4pt rgba(0,0,0,0.1);
+  text-align: center;
+}
+.step-number {
+  width: 28pt;
+  height: 28pt;
+  border-radius: 14pt;
+  background: #1A5F7A;
+  margin: 0 auto 10pt auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.step-number p {
+  font-size: 14pt;
+  font-weight: bold;
+  color: #ffffff;
+  margin: 0;
+}
+.step-title {
+  font-size: 11pt;
+  font-weight: bold;
+  color: #1A5F7A;
+  margin: 0 0 6pt 0;
+}
+.step-desc {
+  font-size: 9pt;
+  color: #525252;
+  margin: 0;
+  line-height: 1.3;
+}
+.arrow {
+  font-size: 20pt;
+  color: #F4B942;
+}
+.example-box {
+  background: #E6F3F5;
+  border-radius: 8pt;
+  padding: 16pt;
+  margin-top: 20pt;
+}
+.example-title {
+  font-size: 11pt;
+  font-weight: bold;
+  color: #1A5F7A;
+  margin: 0 0 8pt 0;
+}
+.example-text {
+  font-size: 10pt;
+  color: #404040;
+  margin: 0;
+  font-style: italic;
+}
+</style>
+</head>
+<body>
+<div class="header-bar">
+  <h1>User Journey</h1>
+</div>
+<div class="content">
+  <p class="journey-title">How Adaeze finds her tenancy rights:</p>
+  <div class="journey-row">
+    <div class="journey-step">
+      <div class="step-number"><p>1</p></div>
+      <p class="step-title">Visit Site</p>
+      <p class="step-desc">Opens LawMadeSimple on her phone</p>
+    </div>
+    <p class="arrow">-></p>
+    <div class="journey-step">
+      <div class="step-number"><p>2</p></div>
+      <p class="step-title">Select Scenario</p>
+      <p class="step-desc">Taps "My landlord wants to evict me"</p>
+    </div>
+    <p class="arrow">-></p>
+    <div class="journey-step">
+      <div class="step-number"><p>3</p></div>
+      <p class="step-title">View Sections</p>
+      <p class="step-desc">Sees relevant tenancy law sections</p>
+    </div>
+    <p class="arrow">-></p>
+    <div class="journey-step">
+      <div class="step-number"><p>4</p></div>
+      <p class="step-title">Read Explanation</p>
+      <p class="step-desc">AI explains in plain language</p>
+    </div>
+    <p class="arrow">-></p>
+    <div class="journey-step">
+      <div class="step-number"><p>5</p></div>
+      <p class="step-title">Take Action</p>
+      <p class="step-desc">Saves and shares with landlord</p>
+    </div>
+  </div>
+  <div class="example-box">
+    <p class="example-title">Result:</p>
+    <p class="example-text">"Within 2 minutes, Adaeze learns her landlord must give 6 months notice for a yearly tenancy. She screenshots the explanation and feels empowered to stand her ground."</p>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+html { background: #ffffff; }
+body {
+  width: 720pt; height: 405pt; margin: 0; padding: 0;
+  font-family: Arial, sans-serif;
+  display: flex;
+  background: #FAFAFA;
+}
+.header-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 720pt;
+  height: 60pt;
+  background: #1A5F7A;
+  display: flex;
+  align-items: center;
+  padding-left: 40pt;
+}
+.header-bar h1 {
+  font-family: Georgia, serif;
+  font-size: 24pt;
+  color: #ffffff;
+  margin: 0;
+}
+.content {
+  margin: 66pt 30pt 16pt 30pt;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10pt;
+}
+.feature-card {
+  width: calc(33.333% - 10pt);
+  background: #ffffff;
+  border-radius: 8pt;
+  padding: 12pt;
+  box-shadow: 0 2pt 4pt rgba(0,0,0,0.1);
+}
+.feature-icon {
+  width: 28pt;
+  height: 28pt;
+  border-radius: 6pt;
+  background: #E6F3F5;
+  margin-bottom: 8pt;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.feature-icon p {
+  font-size: 14pt;
+  margin: 0;
+}
+.feature-title {
+  font-family: Georgia, serif;
+  font-size: 11pt;
+  font-weight: bold;
+  color: #1A5F7A;
+  margin: 0 0 6pt 0;
+}
+.feature-desc {
+  font-size: 9pt;
+  color: #525252;
+  margin: 0;
+  line-height: 1.3;
+}
+</style>
+</head>
+<body>
+<div class="header-bar">
+  <h1>Key Features</h1>
+</div>
+<div class="content">
+  <div class="feature-card">
+    <div class="feature-icon"><p>1</p></div>
+    <p class="feature-title">Browse Laws</p>
+    <p class="feature-desc">Access 6 core Nigerian laws covering Constitution, Criminal Code, CAMA, Labour Act, Tenancy, and Tax basics.</p>
+  </div>
+  <div class="feature-card">
+    <div class="feature-icon"><p>2</p></div>
+    <p class="feature-title">AI Explanations</p>
+    <p class="feature-desc">Get plain-language explanations of any legal section with practical examples and clear guidance.</p>
+  </div>
+  <div class="feature-card">
+    <div class="feature-icon"><p>3</p></div>
+    <p class="feature-title">Scenario Discovery</p>
+    <p class="feature-desc">Find relevant laws through real-life situations like "My employer fired me without notice."</p>
+  </div>
+  <div class="feature-card">
+    <div class="feature-icon"><p>4</p></div>
+    <p class="feature-title">Smart Search</p>
+    <p class="feature-desc">Search across all laws, sections, and scenarios with intelligent suggestions and filtering.</p>
+  </div>
+  <div class="feature-card">
+    <div class="feature-icon"><p>5</p></div>
+    <p class="feature-title">Save Bookmarks</p>
+    <p class="feature-desc">Sign in to save important sections and explanations for quick future reference.</p>
+  </div>
+  <div class="feature-card">
+    <div class="feature-icon"><p>6</p></div>
+    <p class="feature-title">Mobile Optimized</p>
+    <p class="feature-desc">Full functionality on smartphones with PWA support for offline access to saved content.</p>
+  </div>
+</div>
+</body>
+</html>
