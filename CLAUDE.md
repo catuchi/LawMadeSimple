@@ -40,9 +40,12 @@ Not just law access, but law *comprehension*:
 
 ```
 docs/
+  pre-dev/                    # 11 planning documents (Phase 1 requirements)
+  design/                     # UI/UX design specs (Phase 3)
   gaps-and-considerations.md  # Identified gaps and risks
   competitor-analysis.md      # Market research
   tech-stack.md              # Tech decisions with rationale
+design inspirations/          # Reference designs and mood board
 ```
 
 ## Development Guidelines
@@ -74,4 +77,20 @@ npm run lint
 
 ## Current Phase
 
-Phase 1: Requirements Gathering (post-ideation)
+**Phase 4: Architecture** — Ready to Start
+
+### Progress
+- ✅ Phase 0: Ideation — Complete
+- ✅ Phase 1: Requirements — **Approved** (11 docs in `docs/pre-dev/`)
+- ✅ Phase 2: Research — Complete (`competitor-analysis.md`, `tech-stack.md`)
+- ✅ Phase 3: Design — **Approved** (`docs/design/21-frontend-design-spec.md`)
+- 🔄 Phase 4: Architecture — **Ready**
+- ⏳ Phase 5: Foundation — Blocked by Phase 4
+
+### Design Decisions (Locked)
+- **Color Palette:** Warm Trust (Teal #1A5F7A + Gold #F4B942)
+- **Typography:** Lora (headlines) + Inter (body)
+- **Theme:** Light mode only for MVP
+
+### Next Action
+Begin Phase 4: Architecture — Define database schema, API routes, folder structure, and system design.
