@@ -6,7 +6,7 @@
 
 ## Current Phase
 
-**Phase 5: Foundation** — Ready to Begin Development
+**Phase 5: Foundation** — In Progress (Awaiting First Deployment)
 
 ---
 
@@ -15,83 +15,70 @@
 | Phase | Status | Output |
 |-------|--------|--------|
 | Phase 0: Ideation | ✅ Complete | Vision established |
-| Phase 1: Requirements | ✅ **Approved** | Cleaned up (consolidated to PRD) |
+| Phase 1: Requirements | ✅ Complete | Consolidated to PRD |
 | Phase 2: Research | ✅ Complete | `competitor-analysis.md`, `tech-stack.md` |
-| Phase 3: Design | ✅ **Approved** | `docs/design/21-frontend-design-spec.md` |
-| Phase 4: Architecture | ✅ **Complete** | Architecture docs retained in `docs/pre-dev/` |
-| Phase 5: Foundation | 🔄 **Ready** | `plan.md` generated |
+| Phase 3: Design | ✅ Complete | `docs/design/21-frontend-design-spec.md` |
+| Phase 4: Architecture | ✅ Complete | Architecture docs in `docs/pre-dev/` |
+| Phase 5: Foundation | 🔄 **In Progress** | Project initialized, CI ready |
 
 ---
 
-## Workflow Progress
+## Phase 5 Progress
 
-```
-/pre-dev ✅ → /ui-spec ✅ → /prd ✅ → /plan ✅ → Development 🔄
-```
+### Completed
+- [x] Initialize Next.js 14+ with TypeScript (App Router)
+- [x] Configure TypeScript strict mode
+- [x] Create project directory structure
+- [x] Configure path aliases (@/ imports)
+- [x] Set up environment variables template (.env.example)
+- [x] Install and configure ESLint (strict, errors not warnings)
+- [x] Install and configure Prettier
+- [x] Set up pre-commit hooks (Husky + lint-staged)
+- [x] Configure VS Code settings
+- [x] Create GitHub Actions CI workflow
+- [x] Create Coming Soon homepage
+- [x] Add health check API route (/api/health)
+- [x] Verify build passes
 
----
-
-## Key Deliverables
-
-| Document | Location | Purpose |
-|----------|----------|---------|
-| PRD | `prd.md` | Consolidated requirements |
-| Development Plan | `plan.md` | 142 tasks across 12 phases |
-| Stakeholder Presentation | `docs/stakeholder-presentation/` | Non-technical overview (12 slides) |
-| Frontend Design Spec | `docs/design/21-frontend-design-spec.md` | UI/UX specification |
-
----
-
-## Architecture Docs Retained
-
-Only essential architecture documents kept in `docs/pre-dev/`:
-- `12-system-architecture-document.md`
-- `13-architecture-diagram.md`
-- `14-technology-stack-decision.md`
-- `17-entity-relationship-diagram.md`
-- `18-api-specifications.md`
+### Pending
+- [ ] **Deploy to Vercel (first deployment)**
+- [ ] Verify deployment works end-to-end
 
 ---
 
-## Key Decisions Made
+## Key Files Created
 
-| Decision | Choice | Rationale |
-|----------|--------|-----------|
-| Architecture | Serverless monolith on Vercel | Solo dev, variable traffic, minimal ops |
-| Database | PostgreSQL via Supabase + Prisma | Relational data, RLS, type safety |
-| Auth | Supabase Auth (Google OAuth + Magic Links) | Integrated, no password management |
-| AI | OpenAI GPT-4o + Vercel AI SDK | Best quality, streaming support |
-| Caching | PostgreSQL table for explanations | Sufficient for MVP, no extra service |
-| Design | Warm Trust (Teal #1A5F7A + Gold #F4B942), Light mode | Professional yet approachable |
-
----
-
-## Architecture Highlights
-
-**Entities Defined:**
-- Law, Section, Article (legal content)
-- Scenario, ScenarioSection (discovery)
-- User, Bookmark, Feedback (user features)
-- Explanation, SearchLog (AI + analytics)
-
-**API Endpoints:**
-- `/api/v1/laws/*` — Law content
-- `/api/v1/explanations/*` — AI explanations (streaming)
-- `/api/v1/search/*` — Full-text search
-- `/api/v1/bookmarks/*` — User bookmarks
-- `/api/v1/feedback/*` — User feedback
+| File | Purpose |
+|------|---------|
+| `src/app/page.tsx` | Coming Soon homepage |
+| `src/app/api/health/route.ts` | Health check endpoint |
+| `src/app/globals.css` | Design system CSS variables |
+| `.github/workflows/ci.yml` | CI pipeline (lint, typecheck, build) |
+| `.env.example` | Environment variables template |
+| `.prettierrc` | Prettier configuration |
+| `.husky/pre-commit` | Pre-commit hooks |
+| `.vscode/settings.json` | VS Code settings |
 
 ---
 
-## To Resume Next Session
+## Tech Stack Versions
 
-1. Read `CLAUDE.md` for project context
-2. Read this file for current state
-3. Read `plan.md` for task breakdown
-4. **Begin Phase 1: Project Foundation**
-   - Initialize Next.js project
-   - Set up CI/CD
-   - First deployment to Vercel
+| Package | Version |
+|---------|---------|
+| Next.js | 16.1.6 |
+| React | 19.2.3 |
+| TypeScript | ^5 |
+| Tailwind CSS | ^4 |
+| ESLint | ^9 |
+
+---
+
+## Next Steps
+
+1. **Deploy to Vercel** — First deployment milestone
+2. Push changes to GitHub
+3. Verify CI pipeline passes
+4. Begin Phase 2: Database & Backend Foundation
 
 ---
 
@@ -101,5 +88,4 @@ None currently.
 
 ---
 
-*Last commit: 11a0532 — Generate PRD consolidating all pre-dev documentation*
-*Next: Begin development with Phase 1 (Project Foundation)*
+*Next: Deploy to Vercel for first deployment milestone*

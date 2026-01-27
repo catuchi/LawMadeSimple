@@ -12,40 +12,44 @@ Democratizing Nigerian law by translating legal jargon into plain, easy-to-under
 
 ## Tech Stack
 
-- **Frontend:** Next.js 14+, React, Tailwind CSS, shadcn/ui
+- **Frontend:** Next.js 14+, React 18, Tailwind CSS 4, shadcn/ui
 - **Backend:** Next.js API Routes
 - **Database:** Supabase (PostgreSQL) + Prisma ORM
 - **Auth:** Supabase Auth (OAuth + magic links)
 - **AI:** OpenAI API (GPT-4o/mini) + Vercel AI SDK
 - **Hosting:** Vercel
 
-## MVP Scope
-
-Federal laws only (6 core):
-1. Constitution of Nigeria (key rights)
-2. Criminal Code Act (police interactions)
-3. CAMA (business registration)
-4. Labour Act (employment)
-5. Tenancy provisions
-6. FIRS Act (tax basics)
-
-## Key Differentiator
-
-Not just law access, but law *comprehension*:
-- Plain language explanations
-- Practical examples
-- Scenario-based discovery ("I'm dealing with...")
-
 ## Project Structure
 
 ```
+src/
+├── app/                # App Router pages & API routes
+├── components/         # React components
+│   ├── ui/            # Base components (shadcn)
+│   └── features/      # Feature-specific
+├── lib/               # Utilities, API client
+├── services/          # Business logic
+├── hooks/             # Custom React hooks
+├── types/             # TypeScript types
+└── constants/         # Theme, config
+
 docs/
-  pre-dev/                    # 11 planning documents (Phase 1 requirements)
-  design/                     # UI/UX design specs (Phase 3)
-  gaps-and-considerations.md  # Identified gaps and risks
-  competitor-analysis.md      # Market research
-  tech-stack.md              # Tech decisions with rationale
-design inspirations/          # Reference designs and mood board
+├── pre-dev/           # Architecture docs (12-20)
+├── design/            # UI/UX design specs
+└── *.md               # Research docs
+```
+
+## Commands
+
+```bash
+npm run dev          # Start dev server (port 3000)
+npm run build        # Build for production
+npm run start        # Start production server
+npm run lint         # Lint code (errors, no warnings)
+npm run lint:fix     # Auto-fix lint issues
+npm run typecheck    # TypeScript check
+npm run format       # Format with Prettier
+npm run format:check # Check formatting
 ```
 
 ## Development Guidelines
@@ -55,51 +59,24 @@ design inspirations/          # Reference designs and mood board
 - Mobile-responsive design mandatory
 - Accessibility (WCAG compliance)
 - NDPR compliance for data handling
-
-## Commands
-
-```bash
-# Install dependencies
-npm install
-
-# Development
-npm run dev
-
-# Build
-npm run build
-
-# Type check
-npm run typecheck
-
-# Lint
-npm run lint
-```
+- TypeScript strict mode enforced
+- ESLint as errors (not warnings)
 
 ## Current Phase
 
-**Phase 4: Architecture** — Pre-dev Complete, Ready for PRD
+**Phase 5: Foundation** — In Progress
 
 ### Progress
-- ✅ Phase 0: Ideation — Complete
-- ✅ Phase 1: Requirements — **Approved** (11 docs in `docs/pre-dev/`)
-- ✅ Phase 2: Research — Complete (`competitor-analysis.md`, `tech-stack.md`)
-- ✅ Phase 3: Design — **Approved** (`docs/design/21-frontend-design-spec.md`)
-- ✅ Phase 4: Architecture — **Pre-dev Complete** (docs 12-20 in `docs/pre-dev/`)
-- ⏳ Phase 5: Foundation — Waiting for PRD + Plan
+- ✅ Phase 0-4: Complete (Ideation → Architecture)
+- 🔄 Phase 5: Foundation — **In Progress**
+- ⏳ Phase 6-12: Pending
 
-### Key Architecture Decisions
-- **Architecture:** Serverless monolith on Vercel
-- **Database:** PostgreSQL via Supabase + Prisma ORM
-- **Auth:** Supabase Auth (Google OAuth + Magic Links)
-- **AI:** OpenAI GPT-4o + Vercel AI SDK (streaming)
-- **Design:** Warm Trust (Teal #1A5F7A + Gold #F4B942), Light mode only
+### Key Files
+- `prd.md` — Product Requirements Document
+- `plan.md` — Development plan (142 tasks)
+- `.claude/session-state.md` — Session state tracking
 
-### Pre-dev Documents (20/20 Complete)
-- 01-11: Business, requirements, validation
-- 12-15: System architecture, diagrams, tech stack, deployment
-- 16-20: System design, ERD, API specs, UML, data dictionary
-
-### Next Action
-1. Run `/prd` to generate Product Requirements Document
-2. Run `/plan` to generate task breakdown
-3. Begin Phase 5: Foundation (project setup, CI/CD, first deploy)
+### Design System
+- **Colors:** Warm Trust (Teal #1A5F7A + Gold #F4B942)
+- **Fonts:** Lora (headings) + Inter (body)
+- **Mode:** Light only for MVP
