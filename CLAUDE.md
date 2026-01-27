@@ -77,20 +77,29 @@ npm run lint
 
 ## Current Phase
 
-**Phase 4: Architecture** — Ready to Start
+**Phase 4: Architecture** — Pre-dev Complete, Ready for PRD
 
 ### Progress
 - ✅ Phase 0: Ideation — Complete
 - ✅ Phase 1: Requirements — **Approved** (11 docs in `docs/pre-dev/`)
 - ✅ Phase 2: Research — Complete (`competitor-analysis.md`, `tech-stack.md`)
 - ✅ Phase 3: Design — **Approved** (`docs/design/21-frontend-design-spec.md`)
-- 🔄 Phase 4: Architecture — **Ready**
-- ⏳ Phase 5: Foundation — Blocked by Phase 4
+- ✅ Phase 4: Architecture — **Pre-dev Complete** (docs 12-20 in `docs/pre-dev/`)
+- ⏳ Phase 5: Foundation — Waiting for PRD + Plan
 
-### Design Decisions (Locked)
-- **Color Palette:** Warm Trust (Teal #1A5F7A + Gold #F4B942)
-- **Typography:** Lora (headlines) + Inter (body)
-- **Theme:** Light mode only for MVP
+### Key Architecture Decisions
+- **Architecture:** Serverless monolith on Vercel
+- **Database:** PostgreSQL via Supabase + Prisma ORM
+- **Auth:** Supabase Auth (Google OAuth + Magic Links)
+- **AI:** OpenAI GPT-4o + Vercel AI SDK (streaming)
+- **Design:** Warm Trust (Teal #1A5F7A + Gold #F4B942), Light mode only
+
+### Pre-dev Documents (20/20 Complete)
+- 01-11: Business, requirements, validation
+- 12-15: System architecture, diagrams, tech stack, deployment
+- 16-20: System design, ERD, API specs, UML, data dictionary
 
 ### Next Action
-Begin Phase 4: Architecture — Define database schema, API routes, folder structure, and system design.
+1. Run `/prd` to generate Product Requirements Document
+2. Run `/plan` to generate task breakdown
+3. Begin Phase 5: Foundation (project setup, CI/CD, first deploy)
