@@ -6,7 +6,7 @@
 
 ## Current Phase
 
-**Phase 4: Architecture** — Pre-dev Complete, Ready for PRD
+**Phase 4: Architecture** — PRD Complete, Ready for Plan
 
 ---
 
@@ -19,7 +19,7 @@
 | Phase 2: Research | ✅ Complete | `competitor-analysis.md`, `tech-stack.md` |
 | Phase 3: Design | ✅ **Approved** | `docs/design/21-frontend-design-spec.md` |
 | Phase 4: Architecture | ✅ **Pre-dev Complete** | Docs 12-20 in `docs/pre-dev/` |
-| Phase 5: Foundation | ⏳ Blocked | Waiting for PRD + Plan |
+| Phase 5: Foundation | ⏳ Blocked | Waiting for Plan |
 
 ---
 
@@ -56,7 +56,7 @@
 ## Workflow Progress
 
 ```
-/pre-dev ✅ → /ui-spec ✅ → /prd 🔄 → /plan → Development
+/pre-dev ✅ → /ui-spec ✅ → /prd ✅ → /plan 🔄 → Development
 ```
 
 ---
@@ -95,9 +95,8 @@
 
 1. Read `CLAUDE.md` for project context
 2. Read this file for current state
-3. **Run `/prd`** to generate Product Requirements Document
-4. Then **run `/plan`** to generate task breakdown
-5. Begin Phase 5: Foundation (project setup, CI/CD, first deploy)
+3. **Run `/plan`** to generate task breakdown
+4. Begin Phase 5: Foundation (project setup, CI/CD, first deploy)
 
 ---
 
@@ -108,4 +107,5 @@ None currently.
 ---
 
 *Last commit: 29f7f82 — Complete pre-dev docs 12-20*
-*Next: Run /prd to consolidate into PRD*
+*PRD generated: prd.md (January 27, 2026)*
+*Next: Run /plan to generate task breakdown*
