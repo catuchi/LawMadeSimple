@@ -1,0 +1,230 @@
+// Prisma schema for LawMadeSimple
+// Documentation: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ============================================================================
+// Enums
+// ============================================================================
+
+enum LawCategory {
+  constitution
+  criminal
+  business
+  labour
+  property
+  tax
+}
+
+enum ContentType {
+  law
+  section
+  article
+  scenario
+  explanation
+}
+
+enum FeedbackType {
+  helpful
+  incorrect
+  unclear
+  other
+}
+
+// ============================================================================
+// Core Legal Content Models
+// ============================================================================
+
+model Law {
+  id            String      @id @default(uuid())
+  slug          String      @unique
+  title         String
+  shortTitle    String      @map("short_title")
+  description   String?
+  category      LawCategory
+  effectiveDate DateTime?   @map("effective_date")
+  sourceUrl     String?     @map("source_url")
+  isActive      Boolean     @default(true) @map("is_active")
+  createdAt     DateTime    @default(now()) @map("created_at")
+  updatedAt     DateTime    @updatedAt @map("updated_at")
+
+  sections Section[]
+
+  @@index([category])
+  @@map("laws")
+}
+
+model Section {
+  id              String    @id @default(uuid())
+  lawId           String    @map("law_id")
+  slug            String
+  number          String
+  title           String
+  content         String
+  summary         String?
+  orderIndex      Int       @map("order_index")
+  parentSectionId String?   @map("parent_section_id")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  law           Law               @relation(fields: [lawId], references: [id], onDelete: Cascade)
+  parentSection Section?          @relation("SubSections", fields: [parentSectionId], references: [id])
+  subSections   Section[]         @relation("SubSections")
+  articles      Article[]
+  scenarios     ScenarioSection[]
+
+  @@unique([lawId, slug])
+  @@index([lawId])
+  @@map("sections")
+}
+
+model Article {
+  id         String   @id @default(uuid())
+  sectionId  String   @map("section_id")
+  slug       String
+  number     String
+  content    String
+  orderIndex Int      @map("order_index")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  section Section @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+
+  @@unique([sectionId, slug])
+  @@index([sectionId])
+  @@map("articles")
+}
+
+// ============================================================================
+// Scenario Models (Real-world situations mapped to legal content)
+// ============================================================================
+
+model Scenario {
+  id          String      @id @default(uuid())
+  slug        String      @unique
+  title       String
+  description String?
+  keywords    String[]
+  category    LawCategory
+  isFeatured  Boolean     @default(false) @map("is_featured")
+  viewCount   Int         @default(0) @map("view_count")
+  createdAt   DateTime    @default(now()) @map("created_at")
+  updatedAt   DateTime    @updatedAt @map("updated_at")
+
+  sections ScenarioSection[]
+
+  @@index([isFeatured])
+  @@map("scenarios")
+}
+
+model ScenarioSection {
+  scenarioId     String  @map("scenario_id")
+  sectionId      String  @map("section_id")
+  relevanceOrder Int     @map("relevance_order")
+  relevanceNote  String? @map("relevance_note")
+
+  scenario Scenario @relation(fields: [scenarioId], references: [id], onDelete: Cascade)
+  section  Section  @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+
+  @@id([scenarioId, sectionId])
+  @@map("scenario_sections")
+}
+
+// ============================================================================
+// User Models
+// ============================================================================
+
+model User {
+  id          String   @id // Matches Supabase auth.users.id
+  email       String   @unique
+  name        String?
+  avatarUrl   String?  @map("avatar_url")
+  preferences Json     @default("{}")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  bookmarks  Bookmark[]
+  feedback   Feedback[]
+  searchLogs SearchLog[]
+
+  @@map("users")
+}
+
+model Bookmark {
+  id          String      @id @default(uuid())
+  userId      String      @map("user_id")
+  contentType ContentType @map("content_type")
+  contentId   String      @map("content_id")
+  note        String?
+  createdAt   DateTime    @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, contentType, contentId])
+  @@index([userId])
+  @@map("bookmarks")
+}
+
+// ============================================================================
+// AI Explanation Models
+// ============================================================================
+
+model Explanation {
+  id              String      @id @default(uuid())
+  contentType     ContentType @map("content_type")
+  contentId       String      @map("content_id")
+  explanationText String      @map("explanation_text")
+  examples        Json?
+  modelUsed       String      @map("model_used")
+  promptHash      String      @map("prompt_hash")
+  tokenCount      Int?        @map("token_count")
+  createdAt       DateTime    @default(now()) @map("created_at")
+  expiresAt       DateTime?   @map("expires_at")
+
+  feedback Feedback[]
+
+  @@unique([contentType, contentId, promptHash])
+  @@index([contentType, contentId])
+  @@map("explanations")
+}
+
+model Feedback {
+  id            String        @id @default(uuid())
+  userId        String?       @map("user_id")
+  explanationId String        @map("explanation_id")
+  rating        Int?
+  comment       String?
+  feedbackType  FeedbackType? @map("feedback_type")
+  createdAt     DateTime      @default(now()) @map("created_at")
+
+  user        User?       @relation(fields: [userId], references: [id], onDelete: SetNull)
+  explanation Explanation @relation(fields: [explanationId], references: [id], onDelete: Cascade)
+
+  @@index([explanationId])
+  @@map("feedback")
+}
+
+// ============================================================================
+// Analytics Models
+// ============================================================================
+
+model SearchLog {
+  id              String   @id @default(uuid())
+  userId          String?  @map("user_id")
+  query           String
+  resultCount     Int      @map("result_count")
+  filters         Json?
+  clickedResultId String?  @map("clicked_result_id")
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([createdAt])
+  @@map("search_logs")
+}

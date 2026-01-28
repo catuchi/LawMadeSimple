@@ -64,12 +64,13 @@ npm run format:check # Check formatting
 
 ## Current Phase
 
-**Phase 5: Foundation** — In Progress
+**Phase 6: Database & Backend Foundation** — Not Started
 
 ### Progress
 - ✅ Phase 0-4: Complete (Ideation → Architecture)
-- 🔄 Phase 5: Foundation — **In Progress**
-- ⏳ Phase 6-12: Pending
+- ✅ Phase 5: Foundation — Complete (deployed to Vercel)
+- 🔄 Phase 6: Database & Backend — **Up Next**
+- ⏳ Phase 7-12: Pending
 
 ### Key Files
 - `prd.md` — Product Requirements Document
