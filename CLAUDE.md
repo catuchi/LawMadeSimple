@@ -70,22 +70,18 @@ npm run db:studio    # Open Prisma Studio (GUI)
 
 ## Current Phase
 
-**Phase 3: Core API Endpoints** — Up Next
+**Phase 4: AI Integration** — Up Next
 
 ### Progress (aligned with plan.md)
 - ✅ Phase 1: Project Foundation — Complete (Next.js, CI/CD, Vercel deployment)
 - ✅ Phase 2: Database & Backend — Complete (Prisma schema, Supabase Auth)
-- 🔄 **Phase 3: Core API Endpoints — Up Next** (Laws, Scenarios, Search, Bookmarks, Feedback APIs)
-- ⏳ Phase 4: AI Integration — Pending (OpenAI, streaming explanations)
+- ✅ Phase 3: Core API Endpoints — Complete (11 API routes)
+- 🔄 **Phase 4: AI Integration — Up Next** (OpenAI, streaming explanations)
 - ⚠️ Phase 5: Frontend Foundation — Partial (auth components done, shadcn/ui setup needed)
 - ⚠️ Phase 6: Frontend Pages — Partial (auth pages done, feature pages needed)
 - ⚠️ Phase 7: Integration & Polish — Partial (auth state done)
 - ⏳ Phase 8: Content & Data — Pending (seed 6 laws, 50 scenarios)
 - ⏳ Phase 9-12: Testing, Security, Docs, Launch — Pending
-
-### Before Starting Phase 3
-- [x] Run `npm run db:push` to apply Subscription & UsageRecord models
-- [x] Update `DATABASE_URL` in Vercel and GitHub (now uses session pooler)
 
 ### Key Files
 - `prd.md` — Product Requirements Document
@@ -126,16 +122,23 @@ npm run db:studio    # Open Prisma Studio (GUI)
 4. Switched DATABASE_URL from direct connection to session pooler (Supabase IPv4 change)
 5. Verified local dev environment working
 
-### Action Items for Next Session
-1. ~~**BEFORE CODING:** Update `DATABASE_URL` in Vercel and GitHub Secrets with pooler URL~~ ✅ Done
-2. **Start Phase 3:** Core API Endpoints (see `plan.md` section 3.1-3.5)
-   - Laws API: `GET /api/v1/laws`, `GET /api/v1/laws/[slug]`, `GET /api/v1/laws/[lawSlug]/sections/[sectionSlug]`
-   - Scenarios API: `GET /api/v1/scenarios`, `GET /api/v1/scenarios/[slug]`
-   - Search API: `GET /api/v1/search`, `GET /api/v1/search/suggestions`
-   - Bookmarks API: `GET/POST/DELETE /api/v1/bookmarks`
-   - Feedback API: `POST /api/v1/feedback`
+### Phase 3 Completed (Core API Endpoints)
+All 11 API routes implemented:
+- Laws API: `GET /api/v1/laws`, `GET /api/v1/laws/[slug]`, `GET /api/v1/laws/[lawSlug]/sections/[sectionSlug]`
+- Scenarios API: `GET /api/v1/scenarios`, `GET /api/v1/scenarios/[slug]`
+- Search API: `GET /api/v1/search`, `GET /api/v1/search/suggestions`
+- Bookmarks API: `GET/POST/DELETE /api/v1/bookmarks`
+- Feedback API: `POST /api/v1/feedback`
 
-### Reference Docs for Phase 3
-- `docs/pre-dev/18-api-specifications.md` — Full API specs with request/response formats
-- `plan.md` — Task checklist (sections 3.1-3.5)
-- `prisma/schema.prisma` — Database models
+### Action Items for Next Session
+1. **Start Phase 4:** AI Integration (see `plan.md` section 4.1-4.4)
+   - Install OpenAI SDK and Vercel AI SDK
+   - Create prompt templates for plain-language explanations
+   - Implement `POST /api/v1/explanations/stream` with SSE
+   - Implement `GET /api/v1/explanations/[contentType]/[contentId]` for cached explanations
+   - Add rate limiting for AI endpoints
+
+### Reference Docs for Phase 4
+- `docs/pre-dev/18-api-specifications.md` — Explanation API specs
+- `plan.md` — Task checklist (sections 4.1-4.4)
+- `prisma/schema.prisma` — Explanation model
