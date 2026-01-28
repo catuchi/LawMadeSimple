@@ -83,12 +83,20 @@ npm run db:studio    # Open Prisma Studio (GUI)
 ### Key Files
 - `prd.md` — Product Requirements Document
 - `plan.md` — Development plan (142 tasks)
-- `prisma/schema.prisma` — Database schema (10 models)
+- `prisma/schema.prisma` — Database schema (12 models)
+- `TODO.md` — Pending tasks (check for db migrations)
 
 ### Authentication
 - **Providers:** Apple OAuth, Google OAuth (pending), Facebook OAuth (pending), Email/Password, Magic Link
 - **Auto-rotation:** Apple client secret rotates monthly via GitHub Actions
 - **Routes:** `/sign-in`, `/sign-up`, `/forgot-password`, `/reset-password`, `/dashboard`
+
+### Subscription & Usage (Freemium)
+- **Models:** `Subscription`, `UsageRecord` (pending db:push)
+- **Tiers:** free, premium
+- **Free limits:** 5 explanations/day, 50/month, 20 searches/day
+- **Service:** `src/services/subscription/subscription.service.ts`
+- **Config:** `src/constants/subscription.ts`
 
 ### Design System
 - **Colors:** Warm Trust (Teal #1A5F7A + Gold #F4B942)
