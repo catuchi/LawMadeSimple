@@ -99,7 +99,7 @@ npm run db:studio    # Open Prisma Studio (GUI)
 - **Routes:** `/sign-in`, `/sign-up`, `/forgot-password`, `/reset-password`, `/dashboard`
 
 ### Subscription & Usage (Freemium)
-- **Models:** `Subscription`, `UsageRecord` (pending db:push)
+- **Models:** `Subscription`, `UsageRecord` ✅ (applied to database)
 - **Tiers:** free, premium
 - **Free limits:** 5 explanations/day, 50/month, 20 searches/day
 - **Service:** `src/services/subscription/subscription.service.ts`
@@ -109,3 +109,33 @@ npm run db:studio    # Open Prisma Studio (GUI)
 - **Colors:** Warm Trust (Teal #1A5F7A + Gold #F4B942)
 - **Fonts:** Lora (headings) + Inter (body)
 - **Mode:** Light only for MVP
+
+### Database Connection
+- **Type:** Session Pooler (IPv4 compatible)
+- **Host:** `aws-1-us-east-1.pooler.supabase.com:5432`
+- **Note:** Direct connection deprecated on Supabase free tier (IPv6-only)
+
+---
+
+## Session Notes (Jan 28, 2026)
+
+### Completed This Session
+1. Comprehensive codebase review — compared all layers against PRD requirements
+2. Aligned CLAUDE.md phase numbering with plan.md (was incorrectly at "Phase 8", now correctly at "Phase 3")
+3. Ran `npm run db:push` — applied Subscription & UsageRecord models
+4. Switched DATABASE_URL from direct connection to session pooler (Supabase IPv4 change)
+5. Verified local dev environment working
+
+### Action Items for Next Session
+1. **BEFORE CODING:** Update `DATABASE_URL` in Vercel and GitHub Secrets with pooler URL
+2. **Start Phase 3:** Core API Endpoints (see `plan.md` section 3.1-3.5)
+   - Laws API: `GET /api/v1/laws`, `GET /api/v1/laws/[slug]`, `GET /api/v1/laws/[lawSlug]/sections/[sectionSlug]`
+   - Scenarios API: `GET /api/v1/scenarios`, `GET /api/v1/scenarios/[slug]`
+   - Search API: `GET /api/v1/search`, `GET /api/v1/search/suggestions`
+   - Bookmarks API: `GET/POST/DELETE /api/v1/bookmarks`
+   - Feedback API: `POST /api/v1/feedback`
+
+### Reference Docs for Phase 3
+- `docs/pre-dev/18-api-specifications.md` — Full API specs with request/response formats
+- `plan.md` — Task checklist (sections 3.1-3.5)
+- `prisma/schema.prisma` — Database models
