@@ -70,21 +70,28 @@ npm run db:studio    # Open Prisma Studio (GUI)
 
 ## Current Phase
 
-**Phase 8: Core Features** — Up Next
+**Phase 3: Core API Endpoints** — Up Next
 
-### Progress
-- ✅ Phase 0-4: Complete (Ideation → Architecture)
-- ✅ Phase 5: Foundation — Complete (deployed to Vercel)
-- ✅ Phase 6: Database & Backend — Complete (Prisma + Supabase)
-- ✅ Phase 7: Authentication — Complete (Supabase Auth + Apple OAuth)
-- 🔄 Phase 8: Core Features — **Up Next**
-- ⏳ Phase 9-12: Pending
+### Progress (aligned with plan.md)
+- ✅ Phase 1: Project Foundation — Complete (Next.js, CI/CD, Vercel deployment)
+- ✅ Phase 2: Database & Backend — Complete (Prisma schema, Supabase Auth)
+- 🔄 **Phase 3: Core API Endpoints — Up Next** (Laws, Scenarios, Search, Bookmarks, Feedback APIs)
+- ⏳ Phase 4: AI Integration — Pending (OpenAI, streaming explanations)
+- ⚠️ Phase 5: Frontend Foundation — Partial (auth components done, shadcn/ui setup needed)
+- ⚠️ Phase 6: Frontend Pages — Partial (auth pages done, feature pages needed)
+- ⚠️ Phase 7: Integration & Polish — Partial (auth state done)
+- ⏳ Phase 8: Content & Data — Pending (seed 6 laws, 50 scenarios)
+- ⏳ Phase 9-12: Testing, Security, Docs, Launch — Pending
+
+### Before Starting Phase 3
+- [x] Run `npm run db:push` to apply Subscription & UsageRecord models
+- [ ] Update `DATABASE_URL` in Vercel environment variables (now uses session pooler)
 
 ### Key Files
 - `prd.md` — Product Requirements Document
-- `plan.md` — Development plan (142 tasks)
+- `plan.md` — Development plan (142 tasks) ← **Source of truth for phases**
 - `prisma/schema.prisma` — Database schema (12 models)
-- `TODO.md` — Pending tasks (check for db migrations)
+- `docs/pre-dev/18-api-specifications.md` — API endpoint specs
 
 ### Authentication
 - **Providers:** Apple OAuth, Google OAuth (pending), Facebook OAuth (pending), Email/Password, Magic Link
