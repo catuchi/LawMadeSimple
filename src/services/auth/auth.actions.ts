@@ -23,18 +23,38 @@ function isValidEmail(email: string): boolean {
 
 /**
  * Validates password strength
+ * Requires: 8+ chars, uppercase, lowercase, and a number
  */
 function isValidPassword(password: string): boolean {
-  return (
-    password.length >= PASSWORD_REQUIREMENTS.MIN_LENGTH &&
-    password.length <= PASSWORD_REQUIREMENTS.MAX_LENGTH
-  );
+  if (
+    password.length < PASSWORD_REQUIREMENTS.MIN_LENGTH ||
+    password.length > PASSWORD_REQUIREMENTS.MAX_LENGTH
+  ) {
+    return false;
+  }
+
+  const hasUppercase = /[A-Z]/.test(password);
+  const hasLowercase = /[a-z]/.test(password);
+  const hasNumber = /[0-9]/.test(password);
+
+  return hasUppercase && hasLowercase && hasNumber;
 }
 
 /**
  * Gets the origin URL for redirects
+ * In production, always uses configured URL to prevent header manipulation
  */
 async function getOrigin(): Promise<string> {
+  // In production, always use the configured URL for security
+  if (process.env.NODE_ENV === 'production') {
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL;
+    if (!appUrl) {
+      throw new Error('NEXT_PUBLIC_APP_URL must be configured in production');
+    }
+    return appUrl;
+  }
+
+  // In development, allow origin header for flexibility
   const headersList = await headers();
   const origin = headersList.get('origin');
   return origin || process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';

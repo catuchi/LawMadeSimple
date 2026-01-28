@@ -34,7 +34,7 @@ export const AUTH_ERRORS = {
   INVALID_CREDENTIALS: 'Invalid email or password. Please try again.',
   EMAIL_NOT_CONFIRMED: 'Please confirm your email before signing in.',
   EMAIL_ALREADY_EXISTS: 'An account with this email already exists.',
-  WEAK_PASSWORD: 'Password must be at least 8 characters long.',
+  WEAK_PASSWORD: 'Password must be 8+ characters with uppercase, lowercase, and a number.',
   PASSWORDS_DONT_MATCH: 'Passwords do not match.',
   INVALID_EMAIL: 'Please enter a valid email address.',
   REQUIRED_FIELD: 'This field is required.',
@@ -68,6 +68,9 @@ export const AUTH_SUCCESS = {
 export const PASSWORD_REQUIREMENTS = {
   MIN_LENGTH: 8,
   MAX_LENGTH: 72, // bcrypt limitation
+  REQUIRE_UPPERCASE: true,
+  REQUIRE_LOWERCASE: true,
+  REQUIRE_NUMBER: true,
 } as const;
 
 // Session configuration

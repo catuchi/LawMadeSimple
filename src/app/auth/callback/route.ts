@@ -14,13 +14,12 @@ export async function GET(request: NextRequest) {
   const code = searchParams.get('code');
   const next = getSafeRedirectPath(searchParams.get('next'), DEFAULT_REDIRECT.AFTER_SIGN_IN);
   const error = searchParams.get('error');
-  const errorDescription = searchParams.get('error_description');
 
-  // Handle OAuth errors
+  // Handle OAuth errors - don't expose provider error details to users
   if (error) {
-    console.error('OAuth callback error:', error, errorDescription);
+    console.error('OAuth callback error:', error);
     const redirectUrl = new URL('/sign-in', origin);
-    redirectUrl.searchParams.set('error', errorDescription || AUTH_ERRORS.OAUTH_ERROR);
+    redirectUrl.searchParams.set('error', AUTH_ERRORS.OAUTH_ERROR);
     return NextResponse.redirect(redirectUrl);
   }
 

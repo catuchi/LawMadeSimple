@@ -23,13 +23,12 @@ export async function GET(request: NextRequest) {
   const type = searchParams.get('type');
   const next = getSafeRedirectPath(searchParams.get('next'), DEFAULT_REDIRECT.AFTER_SIGN_IN);
   const error = searchParams.get('error');
-  const errorDescription = searchParams.get('error_description');
 
-  // Handle errors from the email link
+  // Handle errors from the email link - don't expose provider error details
   if (error) {
-    console.error('Email confirm error:', error, errorDescription);
+    console.error('Email confirm error:', error);
     const redirectUrl = new URL('/sign-in', origin);
-    redirectUrl.searchParams.set('error', errorDescription || AUTH_ERRORS.UNKNOWN_ERROR);
+    redirectUrl.searchParams.set('error', AUTH_ERRORS.UNKNOWN_ERROR);
     return NextResponse.redirect(redirectUrl);
   }
 
