@@ -36,12 +36,13 @@
 
 ### Content & Data
 
-- [ ] **Content Acquisition Workflow**
-  - Source identification (NigeriaLII, PLAC, Official Gazettes)
-  - Data extraction methodology
-  - Structuring raw legal text for AI processing
-  - Version control for law content
-  - Update monitoring process
+- [x] **Content Acquisition Workflow** ✅ RESOLVED (Jan 28, 2026)
+  - Source identification: **PLAC (primary), ICNL (CAMA 2020), Lagos MOJ (Tenancy Law)**
+  - Data extraction methodology: PDF parsing → Prisma schema mapping
+  - Structuring raw legal text: Law → Section → Article hierarchy
+  - Version control for law content: `version` field + `Amendment` model planned
+  - Update monitoring process: Manual initially, automated gazette tracking post-MVP
+  - **See:** `docs/law-sources-research.md` for full details
 
 - [ ] **RAG (Retrieval-Augmented Generation) Architecture**
   - AI must explain actual law text, not general knowledge
@@ -111,6 +112,28 @@
 ---
 
 ## Lower Priority (Post-MVP)
+
+### NigerianLawsAPI (Companion B2B Product)
+
+- [ ] **API Infrastructure**
+  - Public API endpoints (separate from LawMadeSimple internal APIs)
+  - API key authentication system
+  - Rate limiting by subscription tier
+  - Usage tracking and billing
+
+- [ ] **Documentation & Developer Experience**
+  - OpenAPI/Swagger documentation
+  - JavaScript and Python SDKs
+  - Getting started guides
+  - Code examples
+
+- [ ] **Monetization**
+  - Paystack integration for subscriptions
+  - Free tier (100 requests/day)
+  - Paid tiers (Starter ₦5,000/mo, Pro ₦25,000/mo)
+  - Enterprise custom pricing
+
+**See:** `docs/nigerian-laws-api-plan.md` for full strategy
 
 ### Business & Growth
 
@@ -198,6 +221,11 @@
 | MVP Scope | Federal laws only | Manageable scope, clear coverage | Jan 2026 |
 | Auth Method | OAuth + magic links | No password friction | Jan 2026 |
 | Platform | Web-first PWA | Broadest reach, single codebase | Jan 2026 |
+| Law Source (Primary) | PLAC | Most current, free, 5/6 laws available | Jan 28, 2026 |
+| Law Source (CAMA 2020) | ICNL | PLAC only has old 2004 version | Jan 28, 2026 |
+| Law Source (Lagos Tenancy) | Lagos MOJ | State law, official source | Jan 28, 2026 |
+| Companion Product | NigerianLawsAPI | Monetize data work, fill market gap | Jan 28, 2026 |
+| API Scope | Raw laws only | Scenarios are LawMadeSimple IP/competitive advantage | Jan 28, 2026 |
 
 ---
 

@@ -42,7 +42,7 @@ To become the trusted platform where every Nigerian can understand their legal r
 |------|----------------|--------|
 | User Acquisition | Monthly Active Users | 10,000 in Year 1 |
 | User Engagement | Average Session Duration | > 3 minutes |
-| Content Coverage | Laws with AI explanations | 6 core laws (MVP) |
+| Content Coverage | Laws with AI explanations | 7 core laws + 2 supplementary (MVP) |
 | Platform Reliability | System Uptime | 99.9% |
 | User Satisfaction | Net Promoter Score | > 50 |
 
@@ -54,6 +54,7 @@ To become the trusted platform where every Nigerian can understand their legal r
 | SME Owner (Chukwuemeka) | Navigate business compliance | Completes registration checklist |
 | Employee (Tunde) | Know employment rights | Can identify wrongful dismissal |
 | Citizen (Ngozi) | Understand constitutional rights | Knows police interaction rights |
+| Creator (Kelechi) | Protect intellectual property | Understands copyright basics, can respond to theft |
 
 ### 2.3 Non-Goals (Out of Scope)
 
@@ -112,6 +113,16 @@ Explicitly out of scope for MVP:
 | Behaviors | Active on Twitter, consumes video content, shares information |
 | Needs | Know your rights guide, what police can/cannot do |
 
+### Persona 5: Kelechi Obi (The Content Creator)
+
+| Attribute | Description |
+|-----------|-------------|
+| Demographics | 24, YouTuber/Music Producer, Lagos, Self-taught |
+| Goals | Protect his music and video content from theft |
+| Pain Points | People repost his content without credit; doesn't understand copyright |
+| Behaviors | Heavy social media user, creates daily content, collaborates with other creators |
+| Needs | Copyright basics, how to handle content theft, licensing fundamentals |
+
 ---
 
 ## 4. Functional Requirements
@@ -120,7 +131,7 @@ Explicitly out of scope for MVP:
 
 | ID | Requirement | Priority | Acceptance Criteria |
 |----|-------------|----------|---------------------|
-| FR-001 | Browse Laws | P0 | User can view list of 6 core laws with sections |
+| FR-001 | Browse Laws | P0 | User can view list of 7 core laws + 2 supplementary with sections |
 | FR-002 | Read Sections | P0 | User can read full legal text of any section |
 | FR-003 | AI Explanations | P0 | User sees plain-language explanation with examples |
 | FR-004 | Scenario Discovery | P0 | User can find relevant laws via life situations |
@@ -421,8 +432,8 @@ Serverless monolith architecture deployed on Vercel, leveraging edge functions f
 **Focus**: Testing, content, launch prep
 
 **Deliverables:**
-- Seed data for all 6 laws
-- 50 core scenarios mapped
+- Seed data for all 7 core laws + 2 supplementary IP laws
+- 50+ core scenarios mapped (including IP scenarios for creatives)
 - Performance optimization
 - Error handling polish
 - Launch checklist complete

@@ -19,7 +19,15 @@ export const uuidSchema = z.string().uuid('Invalid ID format');
 
 export const lawListQuerySchema = z.object({
   category: z
-    .enum(['constitution', 'criminal', 'business', 'labour', 'property', 'tax'])
+    .enum([
+      'constitution',
+      'criminal',
+      'business',
+      'labour',
+      'property',
+      'tax',
+      'intellectual_property',
+    ])
     .optional(),
   active: z
     .string()
@@ -36,7 +44,15 @@ export type LawListQuery = z.infer<typeof lawListQuerySchema>;
 
 export const scenarioListQuerySchema = z.object({
   category: z
-    .enum(['constitution', 'criminal', 'business', 'labour', 'property', 'tax'])
+    .enum([
+      'constitution',
+      'criminal',
+      'business',
+      'labour',
+      'property',
+      'tax',
+      'intellectual_property',
+    ])
     .optional(),
   featured: z
     .string()

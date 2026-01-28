@@ -385,19 +385,32 @@
 ### 8.1 Law Content
 - [ ] **[P0]** Seed Constitution of Nigeria (key rights sections)
 - [ ] **[P0]** Seed Criminal Code Act (police interactions)
-- [ ] Seed CAMA (business registration basics)
+- [ ] Seed CAMA 2020 (business registration basics)
 - [ ] Seed Labour Act (employment rights)
-- [ ] Seed Tenancy provisions
+- [ ] Seed Lagos Tenancy Law 2011
 - [ ] Seed FIRS Act (tax basics)
+- [ ] **[P0]** Seed Copyright Act 2022 (IP for creatives)
+- [ ] Seed Trademarks Act (brand protection basics)
+- [ ] Seed Patents & Designs Act (invention protection basics)
 
 ### 8.2 Scenario Mapping
-- [ ] **[P0]** Create 50 core scenarios
+- [ ] **[P0]** Create 50+ core scenarios (including 8-10 IP scenarios for creatives)
 - [ ] Map scenarios to relevant sections
 - [ ] Write relevance notes for each mapping
-- [ ] Mark 6-8 scenarios as featured
-- [ ] Organize by category
+- [ ] Mark 8-10 scenarios as featured (include IP scenarios)
+- [ ] Organize by category (including intellectual_property)
 
-**Phase 8 Gate**: ✅ 6 laws, 50 scenarios ready
+### 8.3 IP Scenarios for Young Creatives
+- [ ] "Someone reposted my content without credit"
+- [ ] "How do I copyright my music/video?"
+- [ ] "Can I use trending sounds in my content?"
+- [ ] "Do I own content I post on social media?"
+- [ ] "How do I license my artwork to a brand?"
+- [ ] "Someone is using my logo/brand name"
+- [ ] "How do I protect my podcast/channel name?"
+- [ ] "Can I remix someone else's song legally?"
+
+**Phase 8 Gate**: ✅ 7 core laws (Constitution, Criminal, CAMA, Labour, Tenancy, Tax, Copyright) + 2 supplementary IP laws, 50+ scenarios ready
 
 ---
 
