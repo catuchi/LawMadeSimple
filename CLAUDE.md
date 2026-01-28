@@ -85,7 +85,7 @@ npm run db:studio    # Open Prisma Studio (GUI)
 
 ### Before Starting Phase 3
 - [x] Run `npm run db:push` to apply Subscription & UsageRecord models
-- [ ] Update `DATABASE_URL` in Vercel environment variables (now uses session pooler)
+- [x] Update `DATABASE_URL` in Vercel and GitHub (now uses session pooler)
 
 ### Key Files
 - `prd.md` — Product Requirements Document
@@ -127,7 +127,7 @@ npm run db:studio    # Open Prisma Studio (GUI)
 5. Verified local dev environment working
 
 ### Action Items for Next Session
-1. **BEFORE CODING:** Update `DATABASE_URL` in Vercel and GitHub Secrets with pooler URL
+1. ~~**BEFORE CODING:** Update `DATABASE_URL` in Vercel and GitHub Secrets with pooler URL~~ ✅ Done
 2. **Start Phase 3:** Core API Endpoints (see `plan.md` section 3.1-3.5)
    - Laws API: `GET /api/v1/laws`, `GET /api/v1/laws/[slug]`, `GET /api/v1/laws/[lawSlug]/sections/[sectionSlug]`
    - Scenarios API: `GET /api/v1/scenarios`, `GET /api/v1/scenarios/[slug]`
