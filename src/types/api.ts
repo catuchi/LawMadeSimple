@@ -238,3 +238,63 @@ export interface FeedbackResponse {
   id: string;
   message: string;
 }
+
+// ============================================================================
+// Explanation API Types
+// ============================================================================
+
+export type ExplanationContentType = 'section' | 'article' | 'scenario';
+
+export interface ExplanationExample {
+  title: string;
+  scenario: string;
+  application: string;
+}
+
+export interface ExplanationSource {
+  law: string;
+  section: string;
+  title: string;
+}
+
+export interface ExplanationData {
+  id: string;
+  contentType: ExplanationContentType;
+  contentId: string;
+  explanation: string;
+  examples: ExplanationExample[];
+  source: ExplanationSource;
+  disclaimer: string;
+  cached: boolean;
+  generatedAt: string;
+}
+
+export interface GenerateExplanationInput {
+  contentType: ExplanationContentType;
+  contentId: string;
+  forceRegenerate?: boolean;
+}
+
+// SSE Event types for streaming
+export interface StreamStartEvent {
+  type: 'start';
+  id: string;
+}
+
+export interface StreamChunkEvent {
+  type: 'chunk';
+  content: string;
+}
+
+export interface StreamDoneEvent {
+  type: 'done';
+  explanation: ExplanationData;
+}
+
+export interface StreamErrorEvent {
+  type: 'error';
+  code: string;
+  message: string;
+}
+
+export type StreamEvent = StreamStartEvent | StreamChunkEvent | StreamDoneEvent | StreamErrorEvent;

@@ -102,50 +102,38 @@ npm run db:studio    # Open Prisma Studio (GUI)
 
 ## Current Phase
 
-**Phase 4: AI Integration** — Up Next
+**Phase 5: Frontend Foundation** — Up Next
 
 ### Progress (aligned with plan.md)
 - ✅ Phase 1: Project Foundation — Complete
 - ✅ Phase 2: Database & Backend — Complete
 - ✅ Phase 3: Core API Endpoints — Complete (11 API routes)
-- 🔄 **Phase 4: AI Integration — UP NEXT**
+- ✅ **Phase 4: AI Integration — Complete** (2 new endpoints)
 - ⚠️ Phase 5: Frontend Foundation — Partial (auth components done)
 - ⚠️ Phase 6: Frontend Pages — Partial (auth pages done)
 - ⚠️ Phase 7: Integration & Polish — Partial (auth state done)
 - ⏳ Phase 8: Content & Data — Pending
 - ⏳ Phase 9-12: Testing, Security, Docs, Launch — Pending
 
-### Next Session: Start Phase 4
+### Phase 4 Summary (Completed Jan 28, 2026)
 
-```
-Phase 4 Tasks (from plan.md):
-─────────────────────────────
-4.1 OpenAI Setup
-- [ ] Install openai and ai (Vercel AI SDK)
-- [ ] Configure OpenAI client with API key
-- [ ] Create prompt templates for explanations
-- [ ] Design prompt for plain language + examples
+**AI Integration complete with:**
+- OpenAI + Vercel AI SDK (`ai`, `@ai-sdk/openai`)
+- Plain language prompt templates for Nigerian law context
+- Streaming explanations with SSE
+- 30-day cache with prompt hash versioning
+- Usage tracking and rate limiting (5/min guest, 20/min auth)
 
-4.2 Explanation Generation
-- [ ] POST /api/v1/explanations/stream — Generate with streaming
-- [ ] Implement Server-Sent Events (SSE) for streaming
-- [ ] Add disclaimer text injection
-- [ ] Generate practical examples in response
-- [ ] Track token usage
+**New files:**
+- `src/lib/openai.ts` — OpenAI client configuration
+- `src/constants/prompts.ts` — Prompt templates + disclaimers
+- `src/services/explanation/explanation.service.ts` — Generation + caching logic
+- `src/app/api/v1/explanations/stream/route.ts` — POST streaming endpoint
+- `src/app/api/v1/explanations/[contentType]/[contentId]/route.ts` — GET cached endpoint
 
-4.3 Explanation Caching
-- [ ] GET /api/v1/explanations/[contentType]/[contentId] — Get cached
-- [ ] Implement cache lookup by content + prompt hash
-- [ ] Set 30-day expiration on cached explanations
-- [ ] Support force regenerate option
+### Next Session: Continue Phase 5/6
 
-4.4 Rate Limiting for AI
-- [ ] Stricter rate limits for AI endpoints
-- [ ] Guest: 5 generations/minute
-- [ ] Authenticated: 20 generations/minute
-```
-
-**Reference:** `docs/pre-dev/18-api-specifications.md` for Explanation API specs
+Frontend work in progress. Reference `docs/design/21-frontend-design-spec.md` for UI specs.
 
 ---
 
@@ -205,7 +193,7 @@ enum LawCategory {
 - **Service:** `src/services/subscription/subscription.service.ts`
 - **Config:** `src/constants/subscription.ts`
 
-### API Endpoints (Phase 3 Complete)
+### API Endpoints (13 total)
 
 | Endpoint | Methods | Auth |
 |----------|---------|------|
@@ -219,6 +207,8 @@ enum LawCategory {
 | `/api/v1/bookmarks` | GET, POST | Required |
 | `/api/v1/bookmarks/[id]` | DELETE | Required |
 | `/api/v1/feedback` | POST | Optional |
+| `/api/v1/explanations/stream` | POST | Optional (rate limited) |
+| `/api/v1/explanations/[contentType]/[contentId]` | GET | Optional |
 
 ### Design System
 - **Colors:** Warm Trust (Teal #1A5F7A + Gold #F4B942)

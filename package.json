@@ -26,11 +26,14 @@
     "seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
+    "@ai-sdk/openai": "^3.0.21",
     "@prisma/adapter-pg": "^7.3.0",
     "@prisma/client": "^7.3.0",
     "@supabase/ssr": "^0.8.0",
     "@supabase/supabase-js": "^2.93.2",
+    "ai": "^6.0.58",
     "next": "16.1.6",
+    "openai": "^6.17.0",
     "pg": "^8.17.2",
     "prisma": "^7.3.0",
     "react": "19.2.3",

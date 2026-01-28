@@ -187,6 +187,18 @@ export function internalError(
   });
 }
 
+export function aiUnavailable(
+  message = 'AI service temporarily unavailable. Please try again later.',
+  requestId?: string
+): NextResponse<ApiErrorResponse> {
+  return errorResponse({
+    code: 'AI_UNAVAILABLE',
+    message,
+    status: 503,
+    requestId,
+  });
+}
+
 // ============================================================================
 // Pagination Helpers
 // ============================================================================
