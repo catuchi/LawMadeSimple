@@ -6,7 +6,7 @@
 
 ## Current Phase
 
-**Phase 5: Foundation** — Phase 1 Complete, Ready for Phase 2
+**Phase 5: Foundation** — Complete with Testing Infrastructure
 
 ---
 
@@ -75,10 +75,18 @@
 
 ---
 
+## Testing Infrastructure
+
+- **Framework:** Vitest + React Testing Library
+- **Tests:** 7 smoke tests (5 homepage, 2 health API)
+- **CI:** Tests run before build, block deployment on failure
+- **Vercel:** Configure "Wait for Checks" in dashboard (manual step)
+
 ## Next Steps
 
 1. ~~Deploy to Vercel~~ ✅ Complete
-2. **Begin Phase 2: Database & Backend Foundation**
+2. ~~Add testing infrastructure~~ ✅ Complete
+3. **Begin Phase 2: Database & Backend Foundation**
    - Create Supabase project
    - Set up Prisma ORM
    - Define database schema
