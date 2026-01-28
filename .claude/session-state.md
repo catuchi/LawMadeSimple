@@ -80,13 +80,20 @@
 - **Framework:** Vitest + React Testing Library
 - **Tests:** 7 smoke tests (5 homepage, 2 health API)
 - **CI:** Tests run before build, block deployment on failure
-- **Vercel:** Configure "Wait for Checks" in dashboard (manual step)
+
+## Branch Protection (Configured)
+
+- **Repository:** Public (enables free enforcement)
+- **Protected branch:** `main`
+- **Required checks:** Build (GitHub Actions)
+- **Rules:** PRs required, status checks must pass, branch must be up to date
 
 ## Next Steps
 
 1. ~~Deploy to Vercel~~ ✅ Complete
 2. ~~Add testing infrastructure~~ ✅ Complete
-3. **Begin Phase 2: Database & Backend Foundation**
+3. ~~Configure CI protection~~ ✅ Complete (GitHub branch protection)
+4. **Begin Phase 2: Database & Backend Foundation**
    - Create Supabase project
    - Set up Prisma ORM
    - Define database schema
@@ -100,4 +107,4 @@ None currently.
 
 ---
 
-*Next: Deploy to Vercel for first deployment milestone*
+*Next: Begin Phase 2 — Database & Backend Foundation*
