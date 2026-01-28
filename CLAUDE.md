@@ -70,19 +70,25 @@ npm run db:studio    # Open Prisma Studio (GUI)
 
 ## Current Phase
 
-**Phase 7: Authentication** — Up Next
+**Phase 8: Core Features** — Up Next
 
 ### Progress
 - ✅ Phase 0-4: Complete (Ideation → Architecture)
 - ✅ Phase 5: Foundation — Complete (deployed to Vercel)
 - ✅ Phase 6: Database & Backend — Complete (Prisma + Supabase)
-- 🔄 Phase 7: Authentication — **Up Next**
-- ⏳ Phase 8-12: Pending
+- ✅ Phase 7: Authentication — Complete (Supabase Auth + Apple OAuth)
+- 🔄 Phase 8: Core Features — **Up Next**
+- ⏳ Phase 9-12: Pending
 
 ### Key Files
 - `prd.md` — Product Requirements Document
 - `plan.md` — Development plan (142 tasks)
 - `prisma/schema.prisma` — Database schema (10 models)
+
+### Authentication
+- **Providers:** Apple OAuth, Google OAuth (pending), Facebook OAuth (pending), Email/Password, Magic Link
+- **Auto-rotation:** Apple client secret rotates monthly via GitHub Actions
+- **Routes:** `/sign-in`, `/sign-up`, `/forgot-password`, `/reset-password`, `/dashboard`
 
 ### Design System
 - **Colors:** Warm Trust (Teal #1A5F7A + Gold #F4B942)
