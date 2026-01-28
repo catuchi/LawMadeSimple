@@ -116,19 +116,38 @@ npm run db:studio    # Open Prisma Studio (GUI)
 ## Session Notes (Jan 28, 2026)
 
 ### Completed This Session
-1. Comprehensive codebase review — compared all layers against PRD requirements
-2. Aligned CLAUDE.md phase numbering with plan.md (was incorrectly at "Phase 8", now correctly at "Phase 3")
-3. Ran `npm run db:push` — applied Subscription & UsageRecord models
-4. Switched DATABASE_URL from direct connection to session pooler (Supabase IPv4 change)
-5. Verified local dev environment working
+1. **Phase 3: Core API Endpoints** — Complete
+   - Built 11 REST API endpoints (Laws, Scenarios, Search, Bookmarks, Feedback)
+   - Created API infrastructure (`src/lib/api/`)
 
-### Phase 3 Completed (Core API Endpoints)
-All 11 API routes implemented:
-- Laws API: `GET /api/v1/laws`, `GET /api/v1/laws/[slug]`, `GET /api/v1/laws/[lawSlug]/sections/[sectionSlug]`
-- Scenarios API: `GET /api/v1/scenarios`, `GET /api/v1/scenarios/[slug]`
-- Search API: `GET /api/v1/search`, `GET /api/v1/search/suggestions`
-- Bookmarks API: `GET/POST/DELETE /api/v1/bookmarks`
-- Feedback API: `POST /api/v1/feedback`
+2. **Security Hardening**
+   - Rate limiting on all endpoints (in-memory, Redis-ready)
+   - Usage limit enforcement for freemium (search API)
+   - Centralized error handling with Prisma error classification
+   - Safe error logging (no stack traces in production)
+   - Auth + ownership verification for protected endpoints
+
+3. **API Infrastructure Created**
+   - `src/types/api.ts` — Response types, error codes
+   - `src/lib/api/response.ts` — Standardized response helpers
+   - `src/lib/api/auth.ts` — API authentication utilities
+   - `src/lib/api/validation.ts` — Zod validation schemas
+   - `src/lib/api/rate-limit.ts` — Rate limiting middleware
+   - `src/lib/api/errors.ts` — Centralized error handler
+
+### API Endpoints Implemented
+| Endpoint | Methods | Auth |
+|----------|---------|------|
+| `/api/v1/laws` | GET | Optional |
+| `/api/v1/laws/[slug]` | GET | Optional |
+| `/api/v1/laws/[lawSlug]/sections/[sectionSlug]` | GET | Optional |
+| `/api/v1/scenarios` | GET | Optional |
+| `/api/v1/scenarios/[slug]` | GET | Optional |
+| `/api/v1/search` | GET | Optional |
+| `/api/v1/search/suggestions` | GET | Optional |
+| `/api/v1/bookmarks` | GET, POST | Required |
+| `/api/v1/bookmarks/[id]` | DELETE | Required |
+| `/api/v1/feedback` | POST | Optional |
 
 ### Action Items for Next Session
 1. **Start Phase 4:** AI Integration (see `plan.md` section 4.1-4.4)
@@ -136,7 +155,6 @@ All 11 API routes implemented:
    - Create prompt templates for plain-language explanations
    - Implement `POST /api/v1/explanations/stream` with SSE
    - Implement `GET /api/v1/explanations/[contentType]/[contentId]` for cached explanations
-   - Add rate limiting for AI endpoints
 
 ### Reference Docs for Phase 4
 - `docs/pre-dev/18-api-specifications.md` — Explanation API specs
