@@ -4,7 +4,7 @@ Democratizing Nigerian law by translating legal jargon into plain, easy-to-under
 
 ## Quick Context
 
-- **Target Users:** Common Nigerians + SMEs
+- **Target Users:** Common Nigerians + SMEs + Young Creatives
 - **Platform:** Next.js web app with PWA
 - **AI Approach:** AI-only with disclaimers (hybrid when budget allows)
 - **Business Model:** Freemium
@@ -98,26 +98,100 @@ npm run db:studio    # Open Prisma Studio (GUI)
 - TypeScript strict mode enforced
 - ESLint as errors (not warnings)
 
+---
+
 ## Current Phase
 
 **Phase 4: AI Integration** — Up Next
 
 ### Progress (aligned with plan.md)
-- ✅ Phase 1: Project Foundation — Complete (Next.js, CI/CD, Vercel deployment)
-- ✅ Phase 2: Database & Backend — Complete (Prisma schema, Supabase Auth)
+- ✅ Phase 1: Project Foundation — Complete
+- ✅ Phase 2: Database & Backend — Complete
 - ✅ Phase 3: Core API Endpoints — Complete (11 API routes)
-- 🔄 **Phase 4: AI Integration — Up Next** (OpenAI, streaming explanations)
-- ⚠️ Phase 5: Frontend Foundation — Partial (auth components done, shadcn/ui setup needed)
-- ⚠️ Phase 6: Frontend Pages — Partial (auth pages done, feature pages needed)
+- 🔄 **Phase 4: AI Integration — UP NEXT**
+- ⚠️ Phase 5: Frontend Foundation — Partial (auth components done)
+- ⚠️ Phase 6: Frontend Pages — Partial (auth pages done)
 - ⚠️ Phase 7: Integration & Polish — Partial (auth state done)
-- ⏳ Phase 8: Content & Data — Pending (seed 7 core laws + 2 IP laws, 50+ scenarios)
+- ⏳ Phase 8: Content & Data — Pending
 - ⏳ Phase 9-12: Testing, Security, Docs, Launch — Pending
 
-### Key Files
-- `prd.md` — Product Requirements Document
-- `plan.md` — Development plan (142 tasks) ← **Source of truth for phases**
-- `prisma/schema.prisma` — Database schema (12 models)
-- `docs/pre-dev/18-api-specifications.md` — API endpoint specs
+### Next Session: Start Phase 4
+
+```
+Phase 4 Tasks (from plan.md):
+─────────────────────────────
+4.1 OpenAI Setup
+- [ ] Install openai and ai (Vercel AI SDK)
+- [ ] Configure OpenAI client with API key
+- [ ] Create prompt templates for explanations
+- [ ] Design prompt for plain language + examples
+
+4.2 Explanation Generation
+- [ ] POST /api/v1/explanations/stream — Generate with streaming
+- [ ] Implement Server-Sent Events (SSE) for streaming
+- [ ] Add disclaimer text injection
+- [ ] Generate practical examples in response
+- [ ] Track token usage
+
+4.3 Explanation Caching
+- [ ] GET /api/v1/explanations/[contentType]/[contentId] — Get cached
+- [ ] Implement cache lookup by content + prompt hash
+- [ ] Set 30-day expiration on cached explanations
+- [ ] Support force regenerate option
+
+4.4 Rate Limiting for AI
+- [ ] Stricter rate limits for AI endpoints
+- [ ] Guest: 5 generations/minute
+- [ ] Authenticated: 20 generations/minute
+```
+
+**Reference:** `docs/pre-dev/18-api-specifications.md` for Explanation API specs
+
+---
+
+## MVP Content Plan
+
+### Law Categories (LawCategory enum)
+
+```prisma
+enum LawCategory {
+  constitution
+  criminal
+  business
+  labour
+  property
+  tax
+  intellectual_property  // Added Jan 28, 2026
+}
+```
+
+### MVP Laws (9 total)
+
+| Law | Category | Source | Status |
+|-----|----------|--------|--------|
+| Constitution 1999 (updated) | constitution | [PLAC](https://placng.org/i/wp-content/uploads/2023/11/Constitution-of-the-Federal-Republic-of-Nigeria-1999-Updated.pdf) | Ready |
+| Criminal Code Act | criminal | PLAC | Ready |
+| CAMA 2020 | business | [ICNL](https://www.icnl.org/resources/library/companies-and-allied-matters-act-2020) | Ready |
+| Labour Act | labour | [PLAC](https://lawsofnigeria.placng.org/laws/L1.pdf) | Ready |
+| Lagos Tenancy Law 2011 | property | [Lagos MOJ](http://lagosministryofjustice.org/wp-content/uploads/2022/01/Tenancy-Law-2011.pdf) | Ready |
+| FIRS Act | tax | [PLAC](https://www.placng.org/lawsofnigeria/laws/F36.pdf) | Ready |
+| **Copyright Act 2022** | intellectual_property | [PLAC](https://placng.org/i/wp-content/uploads/2023/04/Copyright-Act-2022.pdf) | Ready |
+| Trademarks Act (Cap T13) | intellectual_property | [PLAC](https://placng.org/lawsofnigeria/laws/TRADE%20MARKS%20ACT.pdf) | Ready |
+| Patents & Designs Act (Cap P2) | intellectual_property | [PLAC](http://lawsofnigeria.placng.org/laws/P2.pdf) | Ready |
+
+**Full source research:** `docs/law-sources-research.md`
+
+### Target Personas
+
+1. **Adaeze** (Tenant) — Tenancy rights
+2. **Chukwuemeka** (SME Owner) — Business compliance
+3. **Tunde** (Employee) — Labour rights
+4. **Ngozi** (Citizen) — Constitutional rights
+5. **Kelechi** (Content Creator) — IP/Copyright protection
+
+---
+
+## Key Infrastructure
 
 ### Authentication
 - **Providers:** Apple OAuth, Google OAuth (pending), Facebook OAuth (pending), Email/Password, Magic Link
@@ -125,11 +199,26 @@ npm run db:studio    # Open Prisma Studio (GUI)
 - **Routes:** `/sign-in`, `/sign-up`, `/forgot-password`, `/reset-password`, `/dashboard`
 
 ### Subscription & Usage (Freemium)
-- **Models:** `Subscription`, `UsageRecord` ✅ (applied to database)
+- **Models:** `Subscription`, `UsageRecord` ✅
 - **Tiers:** free, premium
 - **Free limits:** 5 explanations/day, 50/month, 20 searches/day
 - **Service:** `src/services/subscription/subscription.service.ts`
 - **Config:** `src/constants/subscription.ts`
+
+### API Endpoints (Phase 3 Complete)
+
+| Endpoint | Methods | Auth |
+|----------|---------|------|
+| `/api/v1/laws` | GET | Optional |
+| `/api/v1/laws/[slug]` | GET | Optional |
+| `/api/v1/laws/[lawSlug]/sections/[sectionSlug]` | GET | Optional |
+| `/api/v1/scenarios` | GET | Optional |
+| `/api/v1/scenarios/[slug]` | GET | Optional |
+| `/api/v1/search` | GET | Optional |
+| `/api/v1/search/suggestions` | GET | Optional |
+| `/api/v1/bookmarks` | GET, POST | Required |
+| `/api/v1/bookmarks/[id]` | DELETE | Required |
+| `/api/v1/feedback` | POST | Optional |
 
 ### Design System
 - **Colors:** Warm Trust (Teal #1A5F7A + Gold #F4B942)
@@ -143,41 +232,20 @@ npm run db:studio    # Open Prisma Studio (GUI)
 
 ---
 
-## Session Notes (Jan 28, 2026) - Law Sources & NigerianLawsAPI Planning
+## Key Documentation
 
-### Completed This Session
+| Document | Purpose |
+|----------|---------|
+| `prd.md` | Product Requirements Document |
+| `plan.md` | Development plan (source of truth for phases) |
+| `docs/nigerian-laws-api-plan.md` | NigerianLawsAPI B2B strategy |
+| `docs/law-sources-research.md` | Law source evaluation & download links |
+| `docs/pre-dev/18-api-specifications.md` | API endpoint specs |
+| `prisma/schema.prisma` | Database schema (12 models) |
 
-1. **Law Sources Research** — Complete
-   - Evaluated 6+ sources for Nigerian law content
-   - Identified PLAC as primary source for 5/6 MVP laws
-   - Documented direct download links for all 6 laws
-   - Created `docs/law-sources-research.md`
+---
 
-2. **NigerianLawsAPI Strategic Planning** — Complete
-   - Defined dual product strategy (B2C + B2B)
-   - Established scope separation (API = raw laws only, no scenarios)
-   - Designed freemium business model (₦0 - ₦25,000/mo tiers)
-   - Planned schema enhancements for API readiness
-   - Created `docs/nigerian-laws-api-plan.md`
-
-3. **Content Acquisition Decisions**
-   - Primary source: PLAC (placng.org)
-   - CAMA 2020: ICNL (not PLAC's old version)
-   - Lagos Tenancy Law: Lagos Ministry of Justice
-   - Defined content ingestion workflow
-
-### Law Sources Summary
-
-| Law | Source | Status |
-|-----|--------|--------|
-| Constitution 1999 (updated) | PLAC | Ready to download |
-| Labour Act | PLAC | Ready to download |
-| CAMA 2020 | ICNL | Ready to download |
-| Police Act 2020 | PLAC | Ready to download |
-| Tax Acts (FIRS, CITA) | PLAC | Ready to download |
-| Lagos Tenancy Law 2011 | Lagos MOJ | Ready to download |
-
-### Schema Enhancements Planned (for Phase 8)
+## Schema Enhancements (Planned for Phase 8)
 
 New fields for `Law` model:
 - `officialCitation`, `jurisdiction`, `status`, `version`
@@ -187,87 +255,8 @@ New fields for `Law` model:
 New models:
 - `LawSource` — Track where data comes from
 - `Amendment` — Track law amendments
-- `ApiKey`, `ApiUsage` — For future API (post-MVP)
-
-### Action Items for Next Session
-
-1. **Continue Phase 4:** AI Integration (current priority)
-   - Install OpenAI SDK and Vercel AI SDK
-   - Create prompt templates for plain-language explanations
-   - Implement streaming explanation endpoint
-
-2. **When reaching Phase 8:** Content & Data
-   - Apply schema enhancements (LawSource, enhanced Law fields)
-   - Download and structure 6 MVP laws from identified sources
-   - Build content ingestion workflow
-
-### Key Documentation Created
-
-| Document | Purpose |
-|----------|---------|
-| `docs/nigerian-laws-api-plan.md` | Full NigerianLawsAPI strategy |
-| `docs/law-sources-research.md` | Law source evaluation & download links |
-
-### Reference Docs for Phase 4
-- `docs/pre-dev/18-api-specifications.md` — Explanation API specs
-- `plan.md` — Task checklist (sections 4.1-4.4)
-- `prisma/schema.prisma` — Explanation model
+- `ApiKey`, `ApiUsage` — For NigerianLawsAPI (post-MVP)
 
 ---
 
-## Session Notes (Jan 28, 2026) - Intellectual Property Law Addition
-
-### Completed This Session
-
-1. **Added Intellectual Property (IP) Law to MVP** — Complete
-   - Target audience: Young Nigerian creatives (content creators, musicians, streamers, designers)
-   - Added `intellectual_property` to `LawCategory` enum in Prisma schema
-   - Updated Zod validation schemas in `src/lib/api/validation.ts`
-   - Pushed schema changes to database
-
-2. **IP Law Sources Research** — Complete
-   - Copyright Act 2022: [PLAC PDF](https://placng.org/i/wp-content/uploads/2023/04/Copyright-Act-2022.pdf)
-   - Trademarks Act (Cap T13): [PLAC PDF](https://placng.org/lawsofnigeria/laws/TRADE%20MARKS%20ACT.pdf)
-   - Patents & Designs Act (Cap P2): [PLAC PDF](http://lawsofnigeria.placng.org/laws/P2.pdf)
-
-3. **Documentation Updates** — Complete
-   - Updated `docs/law-sources-research.md` with IP law section
-   - Updated `plan.md` Phase 8 tasks (added IP law seeding, IP scenarios)
-   - Updated `prd.md` (new persona "Kelechi the Creator", updated law count)
-   - Updated content goals: 7 core laws + 2 supplementary IP laws
-
-### IP Law Coverage (MVP)
-
-| Law | Category | Target Audience |
-|-----|----------|-----------------|
-| **Copyright Act 2022** | intellectual_property | Musicians, YouTubers, writers, artists |
-| Trademarks Act (Cap T13) | intellectual_property | Brand owners, channel creators |
-| Patents & Designs Act (Cap P2) | intellectual_property | Inventors, product designers |
-
-### IP Scenarios Planned
-
-- "Someone reposted my content without credit"
-- "How do I copyright my music/video?"
-- "Can I use trending sounds in my content?"
-- "Do I own content I post on social media?"
-- "How do I license my artwork to a brand?"
-- "Someone is using my logo/brand name"
-- "How do I protect my podcast/channel name?"
-- "Can I remix someone else's song legally?"
-
-### Files Modified
-
-| File | Change |
-|------|--------|
-| `prisma/schema.prisma` | Added `intellectual_property` to `LawCategory` enum |
-| `src/lib/api/validation.ts` | Added `intellectual_property` to 2 Zod schemas |
-| `docs/law-sources-research.md` | Added Section 10: IP Laws |
-| `plan.md` | Added IP law tasks to Phase 8 |
-| `prd.md` | Added Persona 5, updated content goals |
-
-### Why IP Law for MVP?
-
-1. **Target Audience Fit**: Young Nigerians (creators) are exactly the demographic LawMadeSimple targets
-2. **Recent Legislation**: Copyright Act 2022 is new (commenced March 2023), highly relevant
-3. **Differentiation**: Most legal platforms don't focus on creator-friendly IP content
-4. **Dual Product Benefit**: IP laws also serve NigerianLawsAPI customers (legal tech builders)
+*Last updated: January 28, 2026*
