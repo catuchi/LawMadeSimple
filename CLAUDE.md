@@ -50,6 +50,12 @@ npm run lint:fix     # Auto-fix lint issues
 npm run typecheck    # TypeScript check
 npm run format       # Format with Prettier
 npm run format:check # Check formatting
+
+# Database
+npm run db:generate  # Generate Prisma client
+npm run db:push      # Push schema to database
+npm run db:seed      # Seed sample data
+npm run db:studio    # Open Prisma Studio (GUI)
 ```
 
 ## Development Guidelines
@@ -64,18 +70,19 @@ npm run format:check # Check formatting
 
 ## Current Phase
 
-**Phase 6: Database & Backend Foundation** — Not Started
+**Phase 7: Authentication** — Up Next
 
 ### Progress
 - ✅ Phase 0-4: Complete (Ideation → Architecture)
 - ✅ Phase 5: Foundation — Complete (deployed to Vercel)
-- 🔄 Phase 6: Database & Backend — **Up Next**
-- ⏳ Phase 7-12: Pending
+- ✅ Phase 6: Database & Backend — Complete (Prisma + Supabase)
+- 🔄 Phase 7: Authentication — **Up Next**
+- ⏳ Phase 8-12: Pending
 
 ### Key Files
 - `prd.md` — Product Requirements Document
 - `plan.md` — Development plan (142 tasks)
-- `.claude/session-state.md` — Session state tracking
+- `prisma/schema.prisma` — Database schema (10 models)
 
 ### Design System
 - **Colors:** Warm Trust (Teal #1A5F7A + Gold #F4B942)
