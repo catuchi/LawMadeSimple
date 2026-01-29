@@ -236,12 +236,17 @@ function buildPrompt(contentType: ExplanationContentType, content: ContentData):
 
 /**
  * Get cached explanation if available and not expired
+ * @param contentType - Type of content (section, article, scenario)
+ * @param contentId - UUID of the content
+ * @param contentText - Actual text content for proper cache invalidation
  */
 export async function getCachedExplanation(
   contentType: ExplanationContentType,
-  contentId: string
+  contentId: string,
+  contentText: string
 ): Promise<CachedExplanation | null> {
-  const promptHash = generatePromptHash(contentType as ContentType, contentId);
+  // Hash includes actual content so cache invalidates when content changes
+  const promptHash = generatePromptHash(contentType as ContentType, contentText);
 
   const explanation = await prisma.explanation.findUnique({
     where: {
@@ -273,16 +278,25 @@ export async function getCachedExplanation(
 
 /**
  * Save explanation to cache
+ * @param contentType - Type of content (section, article, scenario)
+ * @param contentId - UUID of the content
+ * @param contentText - Actual text content for proper cache key generation
+ * @param explanationText - The generated explanation
+ * @param examples - Extracted examples
+ * @param modelUsed - AI model used for generation
+ * @param tokenCount - Estimated token count
  */
 export async function saveExplanation(
   contentType: ExplanationContentType,
   contentId: string,
+  contentText: string,
   explanationText: string,
   examples: ExplanationExample[],
   modelUsed: string,
   tokenCount?: number
 ): Promise<string> {
-  const promptHash = generatePromptHash(contentType as ContentType, contentId);
+  // Hash includes actual content so cache invalidates when content changes
+  const promptHash = generatePromptHash(contentType as ContentType, contentText);
 
   // Convert examples to JSON-compatible format for Prisma
   const examplesJson = JSON.parse(JSON.stringify(examples));

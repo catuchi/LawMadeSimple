@@ -19,8 +19,32 @@ import {
 import {
   checkUsageLimit,
   recordExplanationUsage,
+  checkGuestUsageLimit,
+  recordGuestUsage,
 } from '@/services/subscription/subscription.service';
 import type { ExplanationContentType, ExplanationExample, StreamEvent } from '@/types/api';
+
+// ============================================================================
+// Helpers
+// ============================================================================
+
+/**
+ * Get client IP address from request headers
+ * Uses x-forwarded-for in production (behind proxy) or x-real-ip
+ */
+function getClientIP(request: Request): string {
+  // Vercel provides x-real-ip which is more reliable
+  const realIP = request.headers.get('x-real-ip');
+  if (realIP) return realIP;
+
+  // Fallback to x-forwarded-for (first IP in chain)
+  const forwarded = request.headers.get('x-forwarded-for');
+  if (forwarded) {
+    return forwarded.split(',')[0]?.trim() || 'unknown';
+  }
+
+  return 'unknown';
+}
 
 // ============================================================================
 // Request Validation
@@ -91,8 +115,12 @@ export async function POST(request: Request) {
 
     const { contentType, contentId, forceRegenerate } = validationResult.data;
 
-    // Check usage limits for authenticated users
+    // Get client IP for guest tracking
+    const clientIP = getClientIP(request);
+
+    // Check usage limits
     if (userId) {
+      // Authenticated user limits
       const usageCheck = await checkUsageLimit(userId, 'explanation_generated');
       if (!usageCheck.allowed) {
         return badRequest(
@@ -104,6 +132,17 @@ export async function POST(request: Request) {
           }
         );
       }
+    } else {
+      // Guest user limits (more restrictive)
+      const guestCheck = await checkGuestUsageLimit(clientIP, 'explanation_generated');
+      if (!guestCheck.allowed) {
+        return badRequest('Daily limit reached for guest users. Sign in for more explanations.', {
+          limit: guestCheck.limit,
+          used: guestCheck.used,
+          resetAt: guestCheck.resetAt.toISOString(),
+          hint: 'Create a free account to get 5 explanations per day.',
+        });
+      }
     }
 
     // Check if content exists
@@ -114,7 +153,11 @@ export async function POST(request: Request) {
 
     // Check cache first (unless force regenerate)
     if (!forceRegenerate) {
-      const cached = await getCachedExplanation(contentType as ExplanationContentType, contentId);
+      const cached = await getCachedExplanation(
+        contentType as ExplanationContentType,
+        contentId,
+        content.content
+      );
       if (cached) {
         // Return cached result as SSE stream (immediate completion)
         const { stream, enqueue, close } = createSSEStream();
@@ -210,15 +253,19 @@ export async function POST(request: Request) {
         const explanationId = await saveExplanation(
           contentType as ExplanationContentType,
           contentId,
+          contentData.content,
           fullText,
           examples,
           model,
           tokenCount
         );
 
-        // Record usage for authenticated users
+        // Record usage
         if (userId) {
           await recordExplanationUsage(userId, contentId, model, tokenCount);
+        } else {
+          // Record guest usage for daily limit tracking
+          await recordGuestUsage(clientIP, 'explanation_generated');
         }
 
         // Build final explanation data

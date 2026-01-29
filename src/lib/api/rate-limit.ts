@@ -1,7 +1,10 @@
 // Rate Limiting for API Routes
-// Simple in-memory rate limiter (replace with Redis for production scaling)
+// Uses Upstash Redis for production (serverless-compatible)
+// Falls back to in-memory for local development
 
 import { NextResponse } from 'next/server';
+import { Ratelimit } from '@upstash/ratelimit';
+import { Redis } from '@upstash/redis';
 import type { ApiErrorResponse, ResponseMeta } from '@/types/api';
 
 // ============================================================================
@@ -9,34 +12,13 @@ import type { ApiErrorResponse, ResponseMeta } from '@/types/api';
 // ============================================================================
 
 interface RateLimitConfig {
-  windowMs: number; // Time window in milliseconds
-  maxRequests: number; // Max requests per window
+  windowMs: number;
+  maxRequests: number;
 }
 
 interface RateLimitEntry {
   count: number;
   resetAt: number;
-}
-
-// ============================================================================
-// In-Memory Store (replace with Redis for horizontal scaling)
-// ============================================================================
-
-const rateLimitStore = new Map<string, RateLimitEntry>();
-
-// Cleanup old entries periodically (every 5 minutes)
-if (typeof setInterval !== 'undefined') {
-  setInterval(
-    () => {
-      const now = Date.now();
-      for (const [key, entry] of rateLimitStore.entries()) {
-        if (entry.resetAt < now) {
-          rateLimitStore.delete(key);
-        }
-      }
-    },
-    5 * 60 * 1000
-  );
 }
 
 // ============================================================================
@@ -84,31 +66,77 @@ export const RATE_LIMITS = {
 export type RateLimitEndpoint = keyof typeof RATE_LIMITS;
 
 // ============================================================================
-// Rate Limiting Functions
+// Upstash Redis Rate Limiter (Production)
 // ============================================================================
 
-/**
- * Get client identifier for rate limiting
- * Uses IP address, falling back to a default for local development
- */
-export function getClientId(request: Request, userId?: string | null): string {
-  // If authenticated, use user ID for more accurate per-user limits
-  if (userId) {
-    return `user:${userId}`;
+let redis: Redis | null = null;
+let rateLimiters: Map<string, Ratelimit> | null = null;
+
+function getRedis(): Redis | null {
+  if (redis) return redis;
+
+  const url = process.env.UPSTASH_REDIS_REST_URL;
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+
+  if (!url || !token) {
+    return null;
   }
 
-  // Use IP address for anonymous users
-  const forwarded = request.headers.get('x-forwarded-for');
-  const ip = forwarded?.split(',')[0]?.trim() || 'unknown';
-
-  return `ip:${ip}`;
+  redis = new Redis({ url, token });
+  return redis;
 }
 
-/**
- * Check rate limit for a client
- * Returns null if allowed, or error response if rate limited
- */
-export function checkRateLimit(
+function getRateLimiter(endpoint: RateLimitEndpoint, isAuthenticated: boolean): Ratelimit | null {
+  const redisClient = getRedis();
+  if (!redisClient) return null;
+
+  if (!rateLimiters) {
+    rateLimiters = new Map();
+  }
+
+  const key = `${endpoint}:${isAuthenticated ? 'auth' : 'guest'}`;
+  const existing = rateLimiters.get(key);
+  if (existing) {
+    return existing;
+  }
+
+  const config = RATE_LIMITS[endpoint] ?? RATE_LIMITS.default;
+  const limits: RateLimitConfig = isAuthenticated ? config.authenticated : config.guest;
+
+  // Create rate limiter with sliding window
+  const limiter = new Ratelimit({
+    redis: redisClient,
+    limiter: Ratelimit.slidingWindow(limits.maxRequests, `${limits.windowMs}ms`),
+    prefix: `ratelimit:${key}`,
+    analytics: true,
+  });
+
+  rateLimiters.set(key, limiter);
+  return limiter;
+}
+
+// ============================================================================
+// In-Memory Rate Limiter (Fallback for Development)
+// ============================================================================
+
+const inMemoryStore = new Map<string, RateLimitEntry>();
+
+// Cleanup old entries periodically (every 5 minutes)
+if (typeof setInterval !== 'undefined') {
+  setInterval(
+    () => {
+      const now = Date.now();
+      for (const [key, entry] of inMemoryStore.entries()) {
+        if (entry.resetAt < now) {
+          inMemoryStore.delete(key);
+        }
+      }
+    },
+    5 * 60 * 1000
+  );
+}
+
+function checkInMemoryRateLimit(
   clientId: string,
   endpoint: RateLimitEndpoint,
   isAuthenticated: boolean
@@ -119,7 +147,7 @@ export function checkRateLimit(
   const key = `${clientId}:${endpoint}`;
   const now = Date.now();
 
-  let entry = rateLimitStore.get(key);
+  let entry = inMemoryStore.get(key);
 
   // Create new entry if doesn't exist or expired
   if (!entry || entry.resetAt < now) {
@@ -141,7 +169,7 @@ export function checkRateLimit(
 
   // Increment counter
   entry.count++;
-  rateLimitStore.set(key, entry);
+  inMemoryStore.set(key, entry);
 
   return {
     allowed: true,
@@ -149,6 +177,66 @@ export function checkRateLimit(
     resetAt: entry.resetAt,
     limit: limits.maxRequests,
   };
+}
+
+// ============================================================================
+// Rate Limiting Functions
+// ============================================================================
+
+/**
+ * Get client identifier for rate limiting
+ * Uses x-real-ip (Vercel) for production, x-forwarded-for as fallback
+ */
+export function getClientId(request: Request, userId?: string | null): string {
+  // If authenticated, use user ID for more accurate per-user limits
+  if (userId) {
+    return `user:${userId}`;
+  }
+
+  // Use x-real-ip (provided by Vercel) - more secure than x-forwarded-for
+  const realIP = request.headers.get('x-real-ip');
+  if (realIP) {
+    return `ip:${realIP}`;
+  }
+
+  // Fallback to x-forwarded-for (first IP in chain)
+  const forwarded = request.headers.get('x-forwarded-for');
+  const ip = forwarded?.split(',')[0]?.trim() || 'unknown';
+
+  return `ip:${ip}`;
+}
+
+/**
+ * Check rate limit using Redis (production) or in-memory (development)
+ */
+async function checkRateLimit(
+  clientId: string,
+  endpoint: RateLimitEndpoint,
+  isAuthenticated: boolean
+): Promise<{ allowed: boolean; remaining: number; resetAt: number; limit: number }> {
+  // Try Redis first
+  const limiter = getRateLimiter(endpoint, isAuthenticated);
+
+  if (limiter) {
+    try {
+      const result = await limiter.limit(clientId);
+      const config = RATE_LIMITS[endpoint] ?? RATE_LIMITS.default;
+      const limits = isAuthenticated ? config.authenticated : config.guest;
+
+      return {
+        allowed: result.success,
+        remaining: result.remaining,
+        resetAt: result.reset,
+        limit: limits.maxRequests,
+      };
+    } catch (error) {
+      // Log but don't fail - fall back to in-memory
+      console.error('[RateLimit] Redis error, falling back to in-memory:', error);
+    }
+  }
+
+  // Fallback to in-memory
+  return checkInMemoryRateLimit(clientId, endpoint, isAuthenticated);
 }
 
 /**
@@ -172,7 +260,7 @@ export function rateLimitResponse(
         code: 'RATE_LIMITED' as const,
         message: 'Too many requests. Please try again later.',
         details: {
-          retryAfterSeconds: retryAfter,
+          retryAfterSeconds: Math.max(1, retryAfter),
         },
       },
       meta,
@@ -181,7 +269,7 @@ export function rateLimitResponse(
   );
 
   // Add rate limit headers
-  response.headers.set('Retry-After', String(retryAfter));
+  response.headers.set('Retry-After', String(Math.max(1, retryAfter)));
   response.headers.set('X-RateLimit-Limit', '0');
   response.headers.set('X-RateLimit-Remaining', '0');
   response.headers.set('X-RateLimit-Reset', String(Math.ceil(resetAt / 1000)));
@@ -218,7 +306,7 @@ export async function withRateLimit(
   const clientId = getClientId(request, userId);
   const isAuthenticated = !!userId;
 
-  const result = checkRateLimit(clientId, endpoint, isAuthenticated);
+  const result = await checkRateLimit(clientId, endpoint, isAuthenticated);
 
   const headers: Record<string, string> = {
     'X-RateLimit-Limit': String(result.limit),

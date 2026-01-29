@@ -61,8 +61,8 @@ export async function GET(request: Request, { params }: RouteParams) {
       return notFound(contentType, { contentId });
     }
 
-    // Get cached explanation
-    const cached = await getCachedExplanation(contentType, contentId);
+    // Get cached explanation (pass content text for proper cache key)
+    const cached = await getCachedExplanation(contentType, contentId, content.content);
     if (!cached) {
       return notFound('explanation', {
         message:

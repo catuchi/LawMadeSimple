@@ -45,8 +45,9 @@ See `docs/nigerian-laws-api-plan.md` for full strategy.
 - **Frontend:** Next.js 14+, React 18, Tailwind CSS 4, shadcn/ui
 - **Backend:** Next.js API Routes
 - **Database:** Supabase (PostgreSQL) + Prisma ORM
+- **Cache/Rate Limiting:** Upstash Redis
 - **Auth:** Supabase Auth (OAuth + magic links)
-- **AI:** OpenAI API (GPT-4o/mini) + Vercel AI SDK
+- **AI:** OpenAI API (GPT-4o-mini) + Vercel AI SDK
 - **Hosting:** Vercel
 
 ## Project Structure
@@ -115,21 +116,27 @@ npm run db:studio    # Open Prisma Studio (GUI)
 - ⏳ Phase 8: Content & Data — Pending
 - ⏳ Phase 9-12: Testing, Security, Docs, Launch — Pending
 
-### Phase 4 Summary (Completed Jan 28, 2026)
+### Phase 4 Summary (Completed Jan 28-29, 2026)
 
 **AI Integration complete with:**
 - OpenAI + Vercel AI SDK (`ai`, `@ai-sdk/openai`)
 - Plain language prompt templates for Nigerian law context
 - Streaming explanations with SSE
-- 30-day cache with prompt hash versioning
-- Usage tracking and rate limiting (5/min guest, 20/min auth)
+- 30-day cache with content-based prompt hash versioning
+- Rate limiting: 5/min guest, 20/min auth (Upstash Redis)
+- Daily usage limits: 3/day guest, 5/day free, unlimited premium
 
-**New files:**
+**Phase 4 files:**
 - `src/lib/openai.ts` — OpenAI client configuration
 - `src/constants/prompts.ts` — Prompt templates + disclaimers
 - `src/services/explanation/explanation.service.ts` — Generation + caching logic
 - `src/app/api/v1/explanations/stream/route.ts` — POST streaming endpoint
 - `src/app/api/v1/explanations/[contentType]/[contentId]/route.ts` — GET cached endpoint
+
+**Phase 4 Review Fixes (Jan 29, 2026):**
+1. **Prompt hash fix** — Cache now uses actual content text (not just ID) for proper invalidation
+2. **Guest usage limits** — Added `GuestUsage` model, 3 explanations/day for anonymous users
+3. **Redis rate limiter** — Switched to Upstash Redis for serverless compatibility
 
 ### Next Session: Continue Phase 5/6
 
@@ -187,9 +194,12 @@ enum LawCategory {
 - **Routes:** `/sign-in`, `/sign-up`, `/forgot-password`, `/reset-password`, `/dashboard`
 
 ### Subscription & Usage (Freemium)
-- **Models:** `Subscription`, `UsageRecord` ✅
-- **Tiers:** free, premium
+- **Models:** `Subscription`, `UsageRecord`, `GuestUsage` ✅
+- **Tiers:** guest (anonymous), free (signed in), premium
+- **Guest limits:** 3 explanations/day, 10 searches/day (IP-based, hashed for privacy)
 - **Free limits:** 5 explanations/day, 50/month, 20 searches/day
+- **Premium:** Unlimited
+- **Rate limiting:** Upstash Redis (serverless-compatible)
 - **Service:** `src/services/subscription/subscription.service.ts`
 - **Config:** `src/constants/subscription.ts`
 
@@ -231,7 +241,7 @@ enum LawCategory {
 | `docs/nigerian-laws-api-plan.md` | NigerianLawsAPI B2B strategy |
 | `docs/law-sources-research.md` | Law source evaluation & download links |
 | `docs/pre-dev/18-api-specifications.md` | API endpoint specs |
-| `prisma/schema.prisma` | Database schema (12 models) |
+| `prisma/schema.prisma` | Database schema (13 models) |
 
 ---
 
@@ -249,4 +259,4 @@ New models:
 
 ---
 
-*Last updated: January 28, 2026*
+*Last updated: January 29, 2026*

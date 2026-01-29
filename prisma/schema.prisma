@@ -295,3 +295,24 @@ model UsageRecord {
   @@index([userId, action, createdAt])
   @@map("usage_records")
 }
+
+// ============================================================================
+// Guest Usage Tracking (for anonymous users)
+// ============================================================================
+
+model GuestUsage {
+  id          String      @id @default(uuid())
+  ipHash      String      @map("ip_hash") // Hashed IP for privacy
+  action      UsageAction
+  date        DateTime    @db.Date // Date only for daily tracking
+
+  // Usage counter for the day
+  count       Int         @default(1)
+
+  createdAt   DateTime    @default(now()) @map("created_at")
+  updatedAt   DateTime    @updatedAt @map("updated_at")
+
+  @@unique([ipHash, action, date])
+  @@index([date]) // For cleanup of old records
+  @@map("guest_usage")
+}

@@ -1,6 +1,12 @@
 import { SubscriptionTier, UsageAction, Prisma } from '@prisma/client';
+import { createHash } from 'crypto';
 import { prisma } from '@/lib/db';
-import { TIER_LIMITS, DEFAULT_TIER, GRACE_PERIOD_DAYS } from '@/constants/subscription';
+import {
+  TIER_LIMITS,
+  DEFAULT_TIER,
+  GRACE_PERIOD_DAYS,
+  GUEST_LIMITS,
+} from '@/constants/subscription';
 
 // ============================================================================
 // Types
@@ -381,4 +387,124 @@ function getNextReset(period: Period): Date {
     nextMonth.setHours(0, 0, 0, 0);
     return nextMonth;
   }
+}
+
+// ============================================================================
+// Guest Usage (Anonymous Users)
+// ============================================================================
+
+/**
+ * Hash IP address for privacy (we don't store raw IPs)
+ */
+function hashIP(ip: string): string {
+  return createHash('sha256').update(ip).digest('hex').substring(0, 32);
+}
+
+/**
+ * Get today's date (date only, no time) for daily tracking
+ */
+function getToday(): Date {
+  const now = new Date();
+  return new Date(now.getFullYear(), now.getMonth(), now.getDate());
+}
+
+export interface GuestUsageCheckResult {
+  allowed: boolean;
+  remaining: number;
+  limit: number;
+  used: number;
+  resetAt: Date;
+}
+
+/**
+ * Check if a guest (anonymous) user can perform an action
+ * Uses IP-based daily limits stored in database
+ */
+export async function checkGuestUsageLimit(
+  ipAddress: string,
+  action: UsageAction
+): Promise<GuestUsageCheckResult> {
+  const ipHash = hashIP(ipAddress);
+  const today = getToday();
+  const tomorrow = getNextReset('day');
+
+  // Get limit for this action
+  let limit: number;
+  switch (action) {
+    case 'explanation_generated':
+    case 'explanation_regenerated':
+      limit = GUEST_LIMITS.explanationsPerDay;
+      break;
+    case 'search_performed':
+      limit = GUEST_LIMITS.searchesPerDay;
+      break;
+    default:
+      limit = 10; // Default fallback
+  }
+
+  // Check current usage
+  const usage = await prisma.guestUsage.findUnique({
+    where: {
+      ipHash_action_date: {
+        ipHash,
+        action,
+        date: today,
+      },
+    },
+  });
+
+  const used = usage?.count ?? 0;
+  const remaining = Math.max(0, limit - used);
+
+  return {
+    allowed: used < limit,
+    remaining,
+    limit,
+    used,
+    resetAt: tomorrow,
+  };
+}
+
+/**
+ * Record guest usage (call after successful action)
+ */
+export async function recordGuestUsage(ipAddress: string, action: UsageAction): Promise<void> {
+  const ipHash = hashIP(ipAddress);
+  const today = getToday();
+
+  await prisma.guestUsage.upsert({
+    where: {
+      ipHash_action_date: {
+        ipHash,
+        action,
+        date: today,
+      },
+    },
+    update: {
+      count: { increment: 1 },
+    },
+    create: {
+      ipHash,
+      action,
+      date: today,
+      count: 1,
+    },
+  });
+}
+
+/**
+ * Cleanup old guest usage records (call periodically via cron)
+ * Keeps last 7 days for abuse detection
+ */
+export async function cleanupOldGuestUsage(): Promise<number> {
+  const sevenDaysAgo = new Date();
+  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+  const result = await prisma.guestUsage.deleteMany({
+    where: {
+      date: { lt: sevenDaysAgo },
+    },
+  });
+
+  return result.count;
 }

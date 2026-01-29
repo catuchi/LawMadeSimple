@@ -34,3 +34,12 @@ export const DEFAULT_TIER: SubscriptionTier = 'free';
  * User keeps premium features during this period
  */
 export const GRACE_PERIOD_DAYS = 3;
+
+/**
+ * Guest (anonymous) user limits
+ * More restrictive than free tier to encourage sign-up
+ */
+export const GUEST_LIMITS = {
+  explanationsPerDay: 3,
+  searchesPerDay: 10,
+} as const;
