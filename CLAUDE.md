@@ -151,19 +151,34 @@ npm run db:studio    # Open Prisma Studio (GUI)
 | Race condition on explanation cache | Concurrent requests for same uncached content = duplicate AI calls | When traffic increases; add "generation in progress" flag or distributed lock |
 | No data seeded | Pages show "Coming Soon" placeholders | Phase 8: seed law content |
 
-### Next Session: Phase 7 & 8
+### Next Session: Pending Tasks
+
+**Immediate (do first):**
+- [ ] Change post-login redirect from `/dashboard` to `/` (homepage)
+  - File: `src/constants/auth.ts` line 26
+  - Change `AFTER_SIGN_IN: '/dashboard'` to `AFTER_SIGN_IN: '/'`
+  - Rationale: Users want to search/browse laws immediately, not see a placeholder dashboard
+- [ ] Set up Facebook OAuth (optional, can defer)
 
 **Phase 7 - Integration & Polish:**
-- Polish API integration (typed client wrapper, error handling)
-- Search suggestions with debouncing
-- Loading/error states polish
-- Mobile optimization testing
-- Page transition animations
+- [ ] Polish API integration (typed client wrapper, error handling)
+- [ ] Search suggestions with debouncing
+- [ ] Loading/error states polish
+- [ ] Mobile optimization testing
+- [ ] Page transition animations
 
 **Phase 8 - Content & Data:**
-- Seed 9 MVP laws (Constitution, Criminal Code, CAMA, Labour Act, etc.)
-- Create scenarios and map to sections
-- Generate initial AI explanations for key sections
+- [ ] Seed 9 MVP laws (Constitution, Criminal Code, CAMA, Labour Act, etc.)
+- [ ] Create scenarios and map to sections
+- [ ] Generate initial AI explanations for key sections
+
+**Future: Build Proper Dashboard**
+When user data exists, build `/dashboard` with:
+- Recent views / search history
+- Saved items summary
+- Personalized scenario recommendations
+- Usage stats (explanations remaining)
+- Premium upsell for free users
 
 Reference `plan.md` for full task lists.
 
@@ -214,9 +229,10 @@ enum LawCategory {
 ## Key Infrastructure
 
 ### Authentication
-- **Providers:** Apple OAuth, Google OAuth (pending), Facebook OAuth (pending), Email/Password, Magic Link
+- **Providers:** Apple OAuth ✅, Google OAuth ✅, Facebook OAuth (pending), Email/Password ✅, Magic Link ✅
 - **Auto-rotation:** Apple client secret rotates monthly via GitHub Actions
 - **Routes:** `/sign-in`, `/sign-up`, `/forgot-password`, `/reset-password`, `/dashboard`
+- **Production URL:** `https://law-made-simple.vercel.app`
 
 ### Subscription & Usage (Freemium)
 - **Models:** `Subscription`, `UsageRecord`, `GuestUsage` ✅
@@ -284,4 +300,4 @@ New models:
 
 ---
 
-*Last updated: January 29, 2026 (Phase 6 Complete)*
+*Last updated: January 29, 2026 (Google OAuth configured, pending tasks documented)*
