@@ -197,19 +197,27 @@ export async function GET(request: Request) {
     // Trim to limit for 'all' type
     const finalResults = type === 'all' ? results.slice(0, limit) : results;
 
+    // Sanitize query for logging (prevent log injection, limit length, remove control chars)
+    const sanitizedQuery = q
+      .substring(0, 200)
+      .replace(/[\x00-\x1f\x7f-\x9f]/g, '') // Remove control characters
+      .trim();
+
     // Log search and record usage (fire and forget)
     Promise.all([
       // Log to search analytics
       prisma.searchLog.create({
         data: {
           userId,
-          query: q,
+          query: sanitizedQuery,
           resultCount: totalResults,
           filters: { type, lawIds },
         },
       }),
       // Record usage for authenticated users (counts toward daily limit)
-      userId ? recordUsage(userId, 'search_performed', { query: q }) : Promise.resolve(),
+      userId
+        ? recordUsage(userId, 'search_performed', { query: sanitizedQuery })
+        : Promise.resolve(),
     ]).catch((err) => console.error('Failed to log search:', err));
 
     const pagination = calculatePagination(page, limit, totalResults);

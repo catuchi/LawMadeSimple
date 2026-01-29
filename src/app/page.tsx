@@ -1,6 +1,9 @@
 export default function Home() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center bg-[var(--background-secondary)] px-4">
+    <main
+      id="main-content"
+      className="flex min-h-screen flex-col items-center justify-center bg-[var(--background-secondary)] px-4"
+    >
       <div className="w-full max-w-2xl text-center">
         {/* Logo / Brand */}
         <div className="mb-8">
@@ -34,21 +37,27 @@ export default function Home() {
           {/* Features Preview */}
           <div className="mt-8 grid gap-4 text-left md:grid-cols-3">
             <div className="rounded-xl bg-[var(--color-primary-50)] p-4">
-              <div className="mb-2 text-2xl">📖</div>
+              <div className="mb-2 text-2xl" aria-hidden="true">
+                📖
+              </div>
               <h3 className="font-medium text-[var(--foreground)]">Plain Language</h3>
               <p className="text-sm text-[var(--foreground-muted)]">
                 Legal jargon translated into everyday words
               </p>
             </div>
             <div className="rounded-xl bg-[var(--color-accent-50)] p-4">
-              <div className="mb-2 text-2xl">💡</div>
+              <div className="mb-2 text-2xl" aria-hidden="true">
+                💡
+              </div>
               <h3 className="font-medium text-[var(--foreground)]">Practical Examples</h3>
               <p className="text-sm text-[var(--foreground-muted)]">
                 Real scenarios showing how laws apply to you
               </p>
             </div>
             <div className="rounded-xl bg-[var(--background-tertiary)] p-4">
-              <div className="mb-2 text-2xl">🔍</div>
+              <div className="mb-2 text-2xl" aria-hidden="true">
+                🔍
+              </div>
               <h3 className="font-medium text-[var(--foreground)]">Easy Search</h3>
               <p className="text-sm text-[var(--foreground-muted)]">
                 Find answers by describing your situation

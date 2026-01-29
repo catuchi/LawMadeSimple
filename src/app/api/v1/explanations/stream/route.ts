@@ -6,6 +6,7 @@ import { badRequest, notFound, aiUnavailable, withRateLimit } from '@/lib/api';
 import { handleError, safeParseJson, logError } from '@/lib/api/errors';
 import { getCurrentUser } from '@/lib/api/auth';
 import { estimateTokens } from '@/lib/openai';
+import { acquireLock, isLocked } from '@/lib/redis';
 import { STANDARD_DISCLAIMER } from '@/constants/prompts';
 import {
   generateExplanationStream,
@@ -205,6 +206,105 @@ export async function POST(request: Request) {
       }
     }
 
+    // Acquire distributed lock to prevent duplicate AI generations
+    // This prevents race conditions where multiple requests generate the same explanation
+    const lockKey = `explanation:${contentType}:${contentId}`;
+
+    // Quick check if generation is already in progress
+    if (await isLocked(lockKey)) {
+      // Another request is generating - wait briefly and check cache again
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+      const cachedAfterWait = await getCachedExplanation(
+        contentType as ExplanationContentType,
+        contentId,
+        content.content
+      );
+      if (cachedAfterWait) {
+        // Cached result appeared - return it
+        const { stream, enqueue, close } = createSSEStream();
+        (async () => {
+          try {
+            enqueue(formatSSE({ type: 'start', id: cachedAfterWait.id }));
+            enqueue(formatSSE({ type: 'chunk', content: cachedAfterWait.explanationText }));
+            const source = buildExplanationSource(content);
+            const examples = Array.isArray(cachedAfterWait.examples)
+              ? (cachedAfterWait.examples as ExplanationExample[])
+              : [];
+            const explanation = formatExplanationData(
+              cachedAfterWait.id,
+              contentType as ExplanationContentType,
+              contentId,
+              cachedAfterWait.explanationText,
+              examples,
+              source,
+              true,
+              cachedAfterWait.createdAt
+            );
+            enqueue(formatSSE({ type: 'done', explanation }));
+            close();
+          } catch {
+            // Ignore errors
+          }
+        })();
+        return new Response(stream, {
+          headers: {
+            'Content-Type': 'text/event-stream',
+            'Cache-Control': 'no-cache',
+            Connection: 'keep-alive',
+            ...rateLimitCheck.headers,
+          },
+        });
+      }
+    }
+
+    // Acquire lock for generation
+    const lock = await acquireLock(lockKey, { ttlSeconds: 120, waitTimeoutMs: 10000 });
+
+    // Double-check cache after acquiring lock (another request may have finished)
+    if (lock.acquired && !forceRegenerate) {
+      const cachedAfterLock = await getCachedExplanation(
+        contentType as ExplanationContentType,
+        contentId,
+        content.content
+      );
+      if (cachedAfterLock) {
+        await lock.release();
+        const { stream, enqueue, close } = createSSEStream();
+        (async () => {
+          try {
+            enqueue(formatSSE({ type: 'start', id: cachedAfterLock.id }));
+            enqueue(formatSSE({ type: 'chunk', content: cachedAfterLock.explanationText }));
+            const source = buildExplanationSource(content);
+            const examples = Array.isArray(cachedAfterLock.examples)
+              ? (cachedAfterLock.examples as ExplanationExample[])
+              : [];
+            const explanation = formatExplanationData(
+              cachedAfterLock.id,
+              contentType as ExplanationContentType,
+              contentId,
+              cachedAfterLock.explanationText,
+              examples,
+              source,
+              true,
+              cachedAfterLock.createdAt
+            );
+            enqueue(formatSSE({ type: 'done', explanation }));
+            close();
+          } catch {
+            // Ignore errors
+          }
+        })();
+        return new Response(stream, {
+          headers: {
+            'Content-Type': 'text/event-stream',
+            'Cache-Control': 'no-cache',
+            Connection: 'keep-alive',
+            ...rateLimitCheck.headers,
+          },
+        });
+      }
+    }
+
     // Generate new explanation with streaming
     let generationStream;
     try {
@@ -213,6 +313,8 @@ export async function POST(request: Request) {
         contentId
       );
     } catch (error) {
+      // Release lock on error
+      await lock.release();
       logError(error, { endpoint: 'POST /api/v1/explanations/stream' });
       return aiUnavailable();
     }
@@ -294,6 +396,8 @@ export async function POST(request: Request) {
           })
         );
       } finally {
+        // Release the distributed lock
+        await lock.release();
         try {
           close();
         } catch {

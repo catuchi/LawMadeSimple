@@ -103,40 +103,37 @@ npm run db:studio    # Open Prisma Studio (GUI)
 
 ## Current Phase
 
-**Phase 5: Frontend Foundation** — Up Next
+**Phase 6: Frontend Pages** — Up Next
 
 ### Progress (aligned with plan.md)
 - ✅ Phase 1: Project Foundation — Complete
 - ✅ Phase 2: Database & Backend — Complete
-- ✅ Phase 3: Core API Endpoints — Complete (11 API routes)
-- ✅ **Phase 4: AI Integration — Complete** (2 new endpoints)
-- ⚠️ Phase 5: Frontend Foundation — Partial (auth components done)
+- ✅ Phase 3: Core API Endpoints — Complete (13 API routes)
+- ✅ Phase 4: AI Integration — Complete
+- ✅ **Phase 5: Frontend Foundation — Complete** (design system + components)
 - ⚠️ Phase 6: Frontend Pages — Partial (auth pages done)
 - ⚠️ Phase 7: Integration & Polish — Partial (auth state done)
 - ⏳ Phase 8: Content & Data — Pending
 - ⏳ Phase 9-12: Testing, Security, Docs, Launch — Pending
 
-### Phase 4 Summary (Completed Jan 28-29, 2026)
+### Phase 5 Summary (Completed Jan 29, 2026)
 
-**AI Integration complete with:**
-- OpenAI + Vercel AI SDK (`ai`, `@ai-sdk/openai`)
-- Plain language prompt templates for Nigerian law context
-- Streaming explanations with SSE
-- 30-day cache with content-based prompt hash versioning
-- Rate limiting: 5/min guest, 20/min auth (Upstash Redis)
-- Daily usage limits: 3/day guest, 5/day free, unlimited premium
+**Frontend Foundation complete with:**
+- shadcn/ui setup with Tailwind CSS 4
+- Custom "Warm Trust" theme (Teal #1A5F7A + Gold #F4B942)
+- Google Fonts (Lora headings, Inter body)
 
-**Phase 4 files:**
-- `src/lib/openai.ts` — OpenAI client configuration
-- `src/constants/prompts.ts` — Prompt templates + disclaimers
-- `src/services/explanation/explanation.service.ts` — Generation + caching logic
-- `src/app/api/v1/explanations/stream/route.ts` — POST streaming endpoint
-- `src/app/api/v1/explanations/[contentType]/[contentId]/route.ts` — GET cached endpoint
+**UI Components installed/created:**
+- **Base (shadcn):** Button, Input, Badge, Card, Dialog, Sheet, Skeleton, Accordion, Sonner (toast)
+- **Custom atoms:** Spinner, DisclaimerBadge
+- **Molecules:** SearchBar, ScenarioCard, LawCard
+- **Organisms:** Header/Navbar, MobileMenu (Sheet drawer), Footer
 
-**Phase 4 Review Fixes (Jan 29, 2026):**
-1. **Prompt hash fix** — Cache now uses actual content text (not just ID) for proper invalidation
-2. **Guest usage limits** — Added `GuestUsage` model, 3 explanations/day for anonymous users
-3. **Redis rate limiter** — Switched to Upstash Redis for serverless compatibility
+**Phase 5 files:**
+- `src/components/ui/` — shadcn/ui components + custom atoms
+- `src/components/features/` — SearchBar, ScenarioCard, LawCard
+- `src/components/layout/` — Header, Footer, MobileMenu
+- `src/app/globals.css` — Design system CSS variables
 
 ### Known Limitations (Address When Scaling)
 
@@ -144,9 +141,17 @@ npm run db:studio    # Open Prisma Studio (GUI)
 |-------|--------|-------------|
 | Race condition on explanation cache | Concurrent requests for same uncached content = duplicate AI calls | When traffic increases; add "generation in progress" flag or distributed lock |
 
-### Next Session: Continue Phase 5/6
+### Next Session: Phase 6 Frontend Pages
 
-Frontend work in progress. Reference `docs/design/21-frontend-design-spec.md` for UI specs.
+Build out the main pages using the new components:
+- Homepage with hero, search, and scenario cards
+- Scenario results page
+- Explanation page with accordions
+- Search results page
+- Laws browser
+- Saved items page
+
+Reference `docs/design/21-frontend-design-spec.md` for UI specs.
 
 ---
 

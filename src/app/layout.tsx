@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import { Inter, Lora } from 'next/font/google';
 import { AuthProvider } from '@/components/auth/auth-provider';
+import { Toaster } from '@/components/ui/sonner';
+import { SkipLink } from '@/components/ui/skip-link';
 import './globals.css';
 
 const inter = Inter({
@@ -38,7 +40,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.variable} ${lora.variable} antialiased`}>
+        <SkipLink />
         <AuthProvider>{children}</AuthProvider>
+        <Toaster position="top-right" />
       </body>
     </html>
   );

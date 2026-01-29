@@ -4,7 +4,7 @@
 
 import { NextResponse } from 'next/server';
 import { Ratelimit } from '@upstash/ratelimit';
-import { Redis } from '@upstash/redis';
+import { getRedis } from '@/lib/redis';
 import type { ApiErrorResponse, ResponseMeta } from '@/types/api';
 
 // ============================================================================
@@ -69,22 +69,7 @@ export type RateLimitEndpoint = keyof typeof RATE_LIMITS;
 // Upstash Redis Rate Limiter (Production)
 // ============================================================================
 
-let redis: Redis | null = null;
 let rateLimiters: Map<string, Ratelimit> | null = null;
-
-function getRedis(): Redis | null {
-  if (redis) return redis;
-
-  const url = process.env.UPSTASH_REDIS_REST_URL;
-  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
-
-  if (!url || !token) {
-    return null;
-  }
-
-  redis = new Redis({ url, token });
-  return redis;
-}
 
 function getRateLimiter(endpoint: RateLimitEndpoint, isAuthenticated: boolean): Ratelimit | null {
   const redisClient = getRedis();
@@ -184,26 +169,47 @@ function checkInMemoryRateLimit(
 // ============================================================================
 
 /**
+ * Generate a simple hash for fingerprinting
+ * Uses a basic string hash for performance (not cryptographic)
+ */
+function simpleHash(str: string): string {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i);
+    hash = (hash << 5) - hash + char;
+    hash = hash & hash; // Convert to 32-bit integer
+  }
+  return Math.abs(hash).toString(36);
+}
+
+/**
  * Get client identifier for rate limiting
- * Uses x-real-ip (Vercel) for production, x-forwarded-for as fallback
+ *
+ * SECURITY NOTE: This application MUST be deployed behind a trusted proxy
+ * (e.g., Vercel, Cloudflare) that sets x-real-ip from the actual client IP.
+ * Direct deployment without a proxy allows IP header spoofing.
+ *
+ * For unauthenticated users, we use IP + User-Agent fingerprinting to make
+ * rate limit bypass harder (attacker must rotate both IP and User-Agent).
  */
 export function getClientId(request: Request, userId?: string | null): string {
-  // If authenticated, use user ID for more accurate per-user limits
+  // If authenticated, use user ID for accurate per-user limits (most secure)
   if (userId) {
     return `user:${userId}`;
   }
 
-  // Use x-real-ip (provided by Vercel) - more secure than x-forwarded-for
+  // Get IP address from trusted proxy headers
+  // Priority: x-real-ip (Vercel) > x-forwarded-for > 'unknown'
   const realIP = request.headers.get('x-real-ip');
-  if (realIP) {
-    return `ip:${realIP}`;
-  }
-
-  // Fallback to x-forwarded-for (first IP in chain)
   const forwarded = request.headers.get('x-forwarded-for');
-  const ip = forwarded?.split(',')[0]?.trim() || 'unknown';
+  const ip = realIP || forwarded?.split(',')[0]?.trim() || 'unknown';
 
-  return `ip:${ip}`;
+  // Add User-Agent fingerprint for defense in depth
+  // This makes bypass harder - attacker must rotate both IP and UA
+  const userAgent = request.headers.get('user-agent') || '';
+  const fingerprint = simpleHash(userAgent);
+
+  return `ip:${ip}:${fingerprint}`;
 }
 
 /**

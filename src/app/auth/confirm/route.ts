@@ -57,7 +57,8 @@ export async function GET(request: NextRequest) {
   if (verifyError) {
     console.error('Email verification error:', verifyError);
     const redirectUrl = new URL('/sign-in', origin);
-    redirectUrl.searchParams.set('error', verifyError.message);
+    // Use generic error message to avoid exposing internal details
+    redirectUrl.searchParams.set('error', AUTH_ERRORS.UNKNOWN_ERROR);
     return NextResponse.redirect(redirectUrl);
   }
 
