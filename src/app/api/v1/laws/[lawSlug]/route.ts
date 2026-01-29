@@ -1,4 +1,4 @@
-// GET /api/v1/laws/[slug] - Get law with sections
+// GET /api/v1/laws/[lawSlug] - Get law with sections
 // Auth: Optional
 
 import { prisma } from '@/lib/db';
@@ -7,7 +7,7 @@ import { getCurrentUser } from '@/lib/api/auth';
 import type { LawDetail, SectionListItem } from '@/types/api';
 
 interface RouteParams {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ lawSlug: string }>;
 }
 
 export async function GET(request: Request, { params }: RouteParams) {
@@ -19,11 +19,11 @@ export async function GET(request: Request, { params }: RouteParams) {
       return rateLimitCheck.error;
     }
 
-    const { slug } = await params;
+    const { lawSlug } = await params;
 
     // Fetch law with top-level sections
     const law = await prisma.law.findUnique({
-      where: { slug },
+      where: { slug: lawSlug },
       include: {
         sections: {
           where: { parentSectionId: null }, // Only top-level sections
@@ -43,7 +43,7 @@ export async function GET(request: Request, { params }: RouteParams) {
     });
 
     if (!law) {
-      return notFound('law', { slug });
+      return notFound('law', { slug: lawSlug });
     }
 
     // Transform sections
@@ -72,6 +72,6 @@ export async function GET(request: Request, { params }: RouteParams) {
 
     return success(data);
   } catch (error) {
-    return handleError(error, { endpoint: 'GET /api/v1/laws/[slug]' });
+    return handleError(error, { endpoint: 'GET /api/v1/laws/[lawSlug]' });
   }
 }
