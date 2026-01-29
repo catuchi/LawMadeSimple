@@ -138,6 +138,12 @@ npm run db:studio    # Open Prisma Studio (GUI)
 2. **Guest usage limits** — Added `GuestUsage` model, 3 explanations/day for anonymous users
 3. **Redis rate limiter** — Switched to Upstash Redis for serverless compatibility
 
+### Known Limitations (Address When Scaling)
+
+| Issue | Impact | When to Fix |
+|-------|--------|-------------|
+| Race condition on explanation cache | Concurrent requests for same uncached content = duplicate AI calls | When traffic increases; add "generation in progress" flag or distributed lock |
+
 ### Next Session: Continue Phase 5/6
 
 Frontend work in progress. Reference `docs/design/21-frontend-design-spec.md` for UI specs.
