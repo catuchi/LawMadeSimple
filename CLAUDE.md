@@ -214,7 +214,7 @@ enum LawCategory {
 | Endpoint | Methods | Auth |
 |----------|---------|------|
 | `/api/v1/laws` | GET | Optional |
-| `/api/v1/laws/[slug]` | GET | Optional |
+| `/api/v1/laws/[lawSlug]` | GET | Optional |
 | `/api/v1/laws/[lawSlug]/sections/[sectionSlug]` | GET | Optional |
 | `/api/v1/scenarios` | GET | Optional |
 | `/api/v1/scenarios/[slug]` | GET | Optional |
