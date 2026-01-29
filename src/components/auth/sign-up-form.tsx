@@ -47,28 +47,6 @@ export function SignUpForm() {
         )}
 
         <div className="space-y-2">
-          <label htmlFor="name" className="block text-sm font-medium">
-            Full Name <span className="text-foreground-muted">(optional)</span>
-          </label>
-          <input
-            id="name"
-            name="name"
-            type="text"
-            autoComplete="name"
-            disabled={isPending || !!state.success}
-            aria-invalid={!!state.fieldErrors?.name}
-            aria-describedby={state.fieldErrors?.name ? 'name-error' : undefined}
-            className="border-border placeholder:text-foreground-muted focus:border-primary focus:ring-ring/20 block w-full rounded-lg border bg-white px-4 py-3 text-sm focus:ring-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
-            placeholder="John Doe"
-          />
-          {state.fieldErrors?.name && (
-            <p id="name-error" className="text-error text-sm" role="alert">
-              {state.fieldErrors.name}
-            </p>
-          )}
-        </div>
-
-        <div className="space-y-2">
           <label htmlFor="email" className="block text-sm font-medium">
             Email
           </label>

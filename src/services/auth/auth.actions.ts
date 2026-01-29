@@ -69,7 +69,6 @@ export async function signUp(
 ): Promise<AuthFormState> {
   const email = formData.get('email') as string;
   const password = formData.get('password') as string;
-  const name = formData.get('name') as string | null;
   const acceptedTos = formData.get('tos') === 'on';
 
   // Validate inputs
@@ -103,9 +102,6 @@ export async function signUp(
     password,
     options: {
       emailRedirectTo: `${origin}/auth/confirm`,
-      data: {
-        full_name: name,
-      },
     },
   });
 
