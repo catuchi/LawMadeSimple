@@ -103,55 +103,69 @@ npm run db:studio    # Open Prisma Studio (GUI)
 
 ## Current Phase
 
-**Phase 6: Frontend Pages** — Up Next
+**Phase 7: Integration & Polish** — Up Next
 
 ### Progress (aligned with plan.md)
 - ✅ Phase 1: Project Foundation — Complete
 - ✅ Phase 2: Database & Backend — Complete
 - ✅ Phase 3: Core API Endpoints — Complete (13 API routes)
 - ✅ Phase 4: AI Integration — Complete
-- ✅ **Phase 5: Frontend Foundation — Complete** (design system + components)
-- ⚠️ Phase 6: Frontend Pages — Partial (auth pages done)
+- ✅ Phase 5: Frontend Foundation — Complete (design system + components)
+- ✅ **Phase 6: Frontend Pages — Complete** (all pages built)
 - ⚠️ Phase 7: Integration & Polish — Partial (auth state done)
 - ⏳ Phase 8: Content & Data — Pending
 - ⏳ Phase 9-12: Testing, Security, Docs, Launch — Pending
 
-### Phase 5 Summary (Completed Jan 29, 2026)
+### Phase 6 Summary (Completed Jan 29, 2026)
 
-**Frontend Foundation complete with:**
-- shadcn/ui setup with Tailwind CSS 4
-- Custom "Warm Trust" theme (Teal #1A5F7A + Gold #F4B942)
-- Google Fonts (Lora headings, Inter body)
+**All frontend pages built:**
 
-**UI Components installed/created:**
-- **Base (shadcn):** Button, Input, Badge, Card, Dialog, Sheet, Skeleton, Accordion, Sonner (toast)
-- **Custom atoms:** Spinner, DisclaimerBadge
-- **Molecules:** SearchBar, ScenarioCard, LawCard
-- **Organisms:** Header/Navbar, MobileMenu (Sheet drawer), Footer
+| Page | Route | Description |
+|------|-------|-------------|
+| Homepage | `/` | Hero, search bar, scenario pills, topic cards |
+| Scenarios Index | `/scenarios` | Lists all 8 scenario categories |
+| Scenario Detail | `/scenarios/[slug]` | Scenario info + related law sections |
+| Search Results | `/search?q=...` | Full-text search with type filters |
+| Laws Browser | `/laws` | Laws grouped by category |
+| Law Detail | `/laws/[lawSlug]` | Law info + sections list |
+| Explanation | `/explain/[lawSlug]/[sectionSlug]` | AI explanations with accordions |
+| Saved Items | `/saved` | User bookmarks (auth required) |
+| Auth Pages | `/sign-in`, `/sign-up`, etc. | Authentication flows |
 
-**Phase 5 files:**
-- `src/components/ui/` — shadcn/ui components + custom atoms
-- `src/components/features/` — SearchBar, ScenarioCard, LawCard
-- `src/components/layout/` — Header, Footer, MobileMenu
-- `src/app/globals.css` — Design system CSS variables
+**New component created:**
+- `src/components/ui/breadcrumb.tsx` — Navigation path indicator
+
+**Phase 6 files:**
+- `src/app/scenarios/page.tsx` — Scenarios index
+- `src/app/scenarios/[slug]/page.tsx` — Scenario detail
+- `src/app/search/page.tsx` — Search results
+- `src/app/laws/page.tsx` — Laws browser
+- `src/app/laws/[lawSlug]/page.tsx` — Law detail
+- `src/app/explain/[lawSlug]/[sectionSlug]/page.tsx` — Explanation page
+- `src/app/(protected)/saved/page.tsx` — Saved items
 
 ### Known Limitations (Address When Scaling)
 
 | Issue | Impact | When to Fix |
 |-------|--------|-------------|
 | Race condition on explanation cache | Concurrent requests for same uncached content = duplicate AI calls | When traffic increases; add "generation in progress" flag or distributed lock |
+| No data seeded | Pages show "Coming Soon" placeholders | Phase 8: seed law content |
 
-### Next Session: Phase 6 Frontend Pages
+### Next Session: Phase 7 & 8
 
-Build out the main pages using the new components:
-- Homepage with hero, search, and scenario cards
-- Scenario results page
-- Explanation page with accordions
-- Search results page
-- Laws browser
-- Saved items page
+**Phase 7 - Integration & Polish:**
+- Polish API integration (typed client wrapper, error handling)
+- Search suggestions with debouncing
+- Loading/error states polish
+- Mobile optimization testing
+- Page transition animations
 
-Reference `docs/design/21-frontend-design-spec.md` for UI specs.
+**Phase 8 - Content & Data:**
+- Seed 9 MVP laws (Constitution, Criminal Code, CAMA, Labour Act, etc.)
+- Create scenarios and map to sections
+- Generate initial AI explanations for key sections
+
+Reference `plan.md` for full task lists.
 
 ---
 
@@ -270,4 +284,4 @@ New models:
 
 ---
 
-*Last updated: January 29, 2026*
+*Last updated: January 29, 2026 (Phase 6 Complete)*
