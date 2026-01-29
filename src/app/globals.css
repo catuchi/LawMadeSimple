@@ -191,10 +191,15 @@ body {
   font-family: var(--font-sans), system-ui, sans-serif;
 }
 
-/* Focus styles */
-*:focus-visible {
+/* Focus styles - exclude inputs that handle their own focus */
+*:focus-visible:not(input):not(textarea) {
   outline: 2px solid var(--ring);
   outline-offset: 2px;
+}
+
+input:focus-visible,
+textarea:focus-visible {
+  outline: none;
 }
 
 @layer base {

@@ -1,77 +1,190 @@
+import { Header } from '@/components/layout/header';
+import { Footer } from '@/components/layout/footer';
+import { SearchBar } from '@/components/features/search-bar';
+import { ScenarioPill } from '@/components/features/scenario-pill';
+import { ScenarioCard } from '@/components/features/scenario-card';
+
+const scenarioPills = [
+  { label: 'Landlord Issues', href: '/scenarios/landlord-tenant', iconEmoji: '🏠' },
+  { label: 'Police Encounters', href: '/scenarios/police-encounters', iconEmoji: '👮' },
+  { label: 'Employment', href: '/scenarios/employment', iconEmoji: '💼' },
+  { label: 'Starting a Business', href: '/scenarios/business', iconEmoji: '🏢' },
+  { label: 'Tax Questions', href: '/scenarios/tax', iconEmoji: '💰' },
+  { label: 'My Rights', href: '/scenarios/constitutional-rights', iconEmoji: '⚖️' },
+];
+
+const popularTopics = [
+  {
+    title: 'Tenant Rights',
+    description:
+      'Understand your rights as a tenant including rent increases, eviction notice periods, and security deposits.',
+    href: '/scenarios/landlord-tenant',
+    iconEmoji: '🏠',
+  },
+  {
+    title: 'Know Your Rights',
+    description:
+      'What to do when stopped by police, your rights during arrest, and how to protect yourself legally.',
+    href: '/scenarios/police-encounters',
+    iconEmoji: '👮',
+  },
+  {
+    title: 'Register a Business',
+    description: 'Step-by-step guide to registering your business in Nigeria under CAMA 2020.',
+    href: '/scenarios/business',
+    iconEmoji: '🏢',
+  },
+  {
+    title: 'Employment Rights',
+    description:
+      'Know your rights at work including termination, leave entitlements, and workplace safety.',
+    href: '/scenarios/employment',
+    iconEmoji: '💼',
+  },
+  {
+    title: 'Copyright Protection',
+    description:
+      'Protect your creative work under the Copyright Act 2022 - music, art, writing, and more.',
+    href: '/scenarios/copyright',
+    iconEmoji: '©️',
+  },
+  {
+    title: 'Constitutional Rights',
+    description: 'Your fundamental rights as a Nigerian citizen under the 1999 Constitution.',
+    href: '/scenarios/constitutional-rights',
+    iconEmoji: '📜',
+  },
+];
+
 export default function Home() {
   return (
-    <main
-      id="main-content"
-      className="flex min-h-screen flex-col items-center justify-center bg-[var(--background-secondary)] px-4"
-    >
-      <div className="w-full max-w-2xl text-center">
-        {/* Logo / Brand */}
-        <div className="mb-8">
-          <h1
-            className="text-4xl font-bold tracking-tight text-[var(--color-primary-500)] md:text-5xl"
-            style={{ fontFamily: 'var(--font-lora), Georgia, serif' }}
-          >
-            LawMadeSimple
-          </h1>
-          <div className="mx-auto mt-2 h-1 w-16 rounded-full bg-[var(--color-accent-500)]" />
-        </div>
+    <div className="flex min-h-screen flex-col">
+      <Header />
 
-        {/* Coming Soon Message */}
-        <div className="rounded-2xl bg-white p-8 shadow-sm md:p-12">
-          <p className="mb-4 text-lg text-[var(--foreground-secondary)]">
-            Nigerian law, explained simply.
-          </p>
+      <main id="main-content" className="flex-1">
+        {/* Hero Section */}
+        <section className="bg-gradient-to-b from-[var(--color-primary-50)] to-white px-4 pt-16 pb-12 md:pt-24 md:pb-16">
+          <div className="mx-auto max-w-4xl text-center">
+            {/* Title */}
+            <h1 className="font-heading text-4xl font-bold tracking-tight text-[var(--color-primary-500)] md:text-5xl lg:text-6xl">
+              LawMadeSimple
+            </h1>
 
-          <h2
-            className="mb-6 text-2xl font-semibold text-[var(--foreground)] md:text-3xl"
-            style={{ fontFamily: 'var(--font-lora), Georgia, serif' }}
-          >
-            Coming Soon
-          </h2>
+            {/* Subtitle */}
+            <p className="mt-4 text-lg text-[var(--color-neutral-600)] md:text-xl">
+              Nigerian law in plain language
+            </p>
 
-          <p className="mx-auto max-w-md text-[var(--foreground-muted)]">
-            We&apos;re building a platform to help Nigerians understand their legal rights through
-            plain language explanations and practical examples.
-          </p>
-
-          {/* Features Preview */}
-          <div className="mt-8 grid gap-4 text-left md:grid-cols-3">
-            <div className="rounded-xl bg-[var(--color-primary-50)] p-4">
-              <div className="mb-2 text-2xl" aria-hidden="true">
-                📖
-              </div>
-              <h3 className="font-medium text-[var(--foreground)]">Plain Language</h3>
-              <p className="text-sm text-[var(--foreground-muted)]">
-                Legal jargon translated into everyday words
-              </p>
-            </div>
-            <div className="rounded-xl bg-[var(--color-accent-50)] p-4">
-              <div className="mb-2 text-2xl" aria-hidden="true">
-                💡
-              </div>
-              <h3 className="font-medium text-[var(--foreground)]">Practical Examples</h3>
-              <p className="text-sm text-[var(--foreground-muted)]">
-                Real scenarios showing how laws apply to you
-              </p>
-            </div>
-            <div className="rounded-xl bg-[var(--background-tertiary)] p-4">
-              <div className="mb-2 text-2xl" aria-hidden="true">
-                🔍
-              </div>
-              <h3 className="font-medium text-[var(--foreground)]">Easy Search</h3>
-              <p className="text-sm text-[var(--foreground-muted)]">
-                Find answers by describing your situation
-              </p>
+            {/* Search Bar */}
+            <div className="mx-auto mt-8 max-w-2xl">
+              <SearchBar size="hero" autoFocus />
             </div>
           </div>
-        </div>
+        </section>
 
-        {/* Disclaimer */}
-        <p className="mt-8 text-xs text-[var(--foreground-muted)]">
-          LawMadeSimple provides general legal information, not legal advice. Always consult a
-          qualified lawyer for specific legal matters.
-        </p>
-      </div>
-    </main>
+        {/* Scenario Pills Section */}
+        <section className="border-b border-[var(--color-neutral-200)] bg-white px-4 py-8">
+          <div className="mx-auto max-w-5xl">
+            <h2 className="mb-6 text-center text-sm font-medium tracking-wide text-[var(--color-neutral-500)] uppercase">
+              I&apos;m dealing with...
+            </h2>
+
+            {/* Pills - horizontal scroll on mobile, wrap on desktop */}
+            <div className="relative flex justify-center">
+              {/* Fade gradient hint - mobile only */}
+              <div className="pointer-events-none absolute top-0 right-0 z-10 h-full w-12 bg-gradient-to-l from-white to-transparent md:hidden" />
+
+              <div className="flex gap-3 overflow-x-auto pb-2 md:flex-wrap md:justify-center md:overflow-x-visible md:pb-0">
+                {scenarioPills.map((pill) => (
+                  <ScenarioPill
+                    key={pill.href}
+                    label={pill.label}
+                    href={pill.href}
+                    iconEmoji={pill.iconEmoji}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Popular Topics Section */}
+        <section className="bg-[var(--background-secondary)] px-4 py-12 md:py-16">
+          <div className="mx-auto max-w-6xl">
+            <h2 className="font-heading mb-8 text-center text-2xl font-semibold text-[var(--color-neutral-800)] md:text-3xl">
+              Popular Topics
+            </h2>
+
+            {/* Cards Grid */}
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {popularTopics.map((topic) => (
+                <ScenarioCard
+                  key={topic.href}
+                  title={topic.title}
+                  description={topic.description}
+                  href={topic.href}
+                  iconEmoji={topic.iconEmoji}
+                />
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Trust/Value Proposition Section */}
+        <section className="border-t border-[var(--color-neutral-200)] bg-white px-4 py-12 md:py-16">
+          <div className="mx-auto max-w-4xl">
+            <h2 className="font-heading mb-8 text-center text-2xl font-semibold text-[var(--color-neutral-800)]">
+              Why LawMadeSimple?
+            </h2>
+
+            <div className="grid gap-8 md:grid-cols-3">
+              <div className="text-center">
+                <div className="mx-auto mb-4 flex size-12 items-center justify-center rounded-full bg-[var(--color-primary-50)]">
+                  <span className="text-2xl" aria-hidden="true">
+                    📖
+                  </span>
+                </div>
+                <h3 className="font-heading mb-2 font-semibold text-[var(--color-neutral-800)]">
+                  Plain Language
+                </h3>
+                <p className="text-sm text-[var(--color-neutral-600)]">
+                  Legal jargon translated into everyday words you can understand and act on.
+                </p>
+              </div>
+
+              <div className="text-center">
+                <div className="mx-auto mb-4 flex size-12 items-center justify-center rounded-full bg-[var(--color-accent-50)]">
+                  <span className="text-2xl" aria-hidden="true">
+                    💡
+                  </span>
+                </div>
+                <h3 className="font-heading mb-2 font-semibold text-[var(--color-neutral-800)]">
+                  Practical Examples
+                </h3>
+                <p className="text-sm text-[var(--color-neutral-600)]">
+                  Real scenarios showing exactly how Nigerian laws apply to your situation.
+                </p>
+              </div>
+
+              <div className="text-center">
+                <div className="mx-auto mb-4 flex size-12 items-center justify-center rounded-full bg-[var(--color-neutral-100)]">
+                  <span className="text-2xl" aria-hidden="true">
+                    🔍
+                  </span>
+                </div>
+                <h3 className="font-heading mb-2 font-semibold text-[var(--color-neutral-800)]">
+                  Easy Search
+                </h3>
+                <p className="text-sm text-[var(--color-neutral-600)]">
+                  Describe your situation in your own words and find relevant laws instantly.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <Footer />
+    </div>
   );
 }

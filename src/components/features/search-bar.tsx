@@ -184,7 +184,7 @@ export function SearchBar({
             aria-activedescendant={
               selectedIndex >= 0 ? `suggestion-${suggestions[selectedIndex]?.id}` : undefined
             }
-            className="h-full flex-1 bg-transparent px-3 outline-none placeholder:text-[var(--color-neutral-400)]"
+            className="h-full flex-1 bg-transparent px-3 outline-none placeholder:text-[var(--color-neutral-400)] focus-visible:outline-none [&::-webkit-search-cancel-button]:hidden [&::-webkit-search-decoration]:hidden"
           />
           {query && (
             <button
