@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import {
@@ -27,6 +27,7 @@ import {
 } from '@/components/ui/accordion';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
+import { ErrorState } from '@/components/ui/error-state';
 import { toast } from 'sonner';
 import { useAuth } from '@/hooks/use-auth';
 import type { SectionDetail, ExplanationData, ApiSuccessResponse } from '@/types/api';
@@ -53,49 +54,82 @@ export default function ExplanationPage() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [streamedText, setStreamedText] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [errorVariant, setErrorVariant] = useState<'default' | 'not-found' | 'rate-limited'>(
+    'default'
+  );
+  const [isRetrying, setIsRetrying] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [feedbackGiven, setFeedbackGiven] = useState<'helpful' | 'not-helpful' | null>(null);
   const [lawCategory, setLawCategory] = useState<string>('');
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   // Fetch section details
-  useEffect(() => {
+  const fetchSection = useCallback(async () => {
     if (!params.lawSlug || !params.sectionSlug) return;
 
-    const fetchSection = async () => {
-      setIsLoadingSection(true);
-      setError(null);
+    // Cancel any in-flight request
+    abortControllerRef.current?.abort();
+    abortControllerRef.current = new AbortController();
 
-      try {
-        const response = await fetch(
-          `/api/v1/laws/${params.lawSlug}/sections/${params.sectionSlug}`
-        );
+    setIsLoadingSection(true);
+    setError(null);
 
-        if (!response.ok) {
-          if (response.status === 404) {
-            setError('Section not found');
-            return;
-          }
-          throw new Error('Failed to fetch section');
+    try {
+      const response = await fetch(
+        `/api/v1/laws/${params.lawSlug}/sections/${params.sectionSlug}`,
+        { signal: abortControllerRef.current.signal }
+      );
+
+      if (!response.ok) {
+        if (response.status === 404) {
+          setError('Section not found');
+          setErrorVariant('not-found');
+          return;
         }
-
-        const json: ApiSuccessResponse<SectionDetail> = await response.json();
-        setSection(json.data);
-
-        // Fetch law to get category
-        const lawResponse = await fetch(`/api/v1/laws/${params.lawSlug}`);
-        if (lawResponse.ok) {
-          const lawJson = await lawResponse.json();
-          setLawCategory(lawJson.data.category);
+        if (response.status === 429) {
+          setError('Too many requests. Please wait a moment and try again.');
+          setErrorVariant('rate-limited');
+          return;
         }
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'An error occurred');
-      } finally {
-        setIsLoadingSection(false);
+        throw new Error('Failed to fetch section');
       }
-    };
 
-    fetchSection();
+      const json: ApiSuccessResponse<SectionDetail> = await response.json();
+      setSection(json.data);
+
+      // Fetch law to get category
+      const lawResponse = await fetch(`/api/v1/laws/${params.lawSlug}`, {
+        signal: abortControllerRef.current.signal,
+      });
+      if (lawResponse.ok) {
+        const lawJson = await lawResponse.json();
+        setLawCategory(lawJson.data.category);
+      }
+    } catch (err) {
+      if (err instanceof Error && err.name === 'AbortError') {
+        return;
+      }
+      setError(err instanceof Error ? err.message : 'An error occurred');
+      setErrorVariant('default');
+    } finally {
+      setIsLoadingSection(false);
+      setIsRetrying(false);
+    }
   }, [params.lawSlug, params.sectionSlug]);
+
+  // Initial fetch
+  useEffect(() => {
+    fetchSection();
+    return () => {
+      abortControllerRef.current?.abort();
+    };
+  }, [fetchSection]);
+
+  // Retry handler
+  const handleRetry = useCallback(() => {
+    setIsRetrying(true);
+    fetchSection();
+  }, [fetchSection]);
 
   // Fetch or generate explanation
   useEffect(() => {
@@ -270,25 +304,24 @@ export default function ExplanationPage() {
   const catInfo = categoryInfo[lawCategory] || { label: lawCategory, iconEmoji: '📄' };
   const explanationText = explanation?.explanation || streamedText;
 
-  if (error) {
+  if (error && !isLoadingSection) {
     return (
       <div className="flex min-h-screen flex-col">
         <Header />
         <main className="flex flex-1 items-center justify-center p-4">
-          <div className="text-center">
-            <h1 className="font-heading text-2xl font-bold text-[var(--color-neutral-800)]">
-              {error}
-            </h1>
-            <p className="mt-2 text-[var(--color-neutral-600)]">
-              The section you&apos;re looking for doesn&apos;t exist or has been moved.
-            </p>
-            <Link
-              href="/laws"
-              className="mt-6 inline-block rounded-lg bg-[var(--color-primary-500)] px-6 py-2.5 text-sm font-medium text-white"
-            >
-              Browse Laws
-            </Link>
-          </div>
+          <ErrorState
+            variant={errorVariant}
+            message={
+              errorVariant === 'not-found'
+                ? "The section you're looking for doesn't exist or has been moved."
+                : error
+            }
+            onRetry={errorVariant !== 'not-found' ? handleRetry : undefined}
+            isRetrying={isRetrying}
+            backHref="/laws"
+            backLabel="Browse Laws"
+            className="max-w-md"
+          />
         </main>
         <Footer />
       </div>

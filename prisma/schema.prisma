@@ -92,6 +92,12 @@ model Section {
   createdAt       DateTime  @default(now()) @map("created_at")
   updatedAt       DateTime  @updatedAt @map("updated_at")
 
+  // Embedding fields for semantic search (pgvector)
+  embedding      Unsupported("vector(1536)")?
+  embeddingModel String?   @map("embedding_model")
+  embeddedAt     DateTime? @map("embedded_at")
+  contentHash    String?   @map("content_hash")
+
   law           Law               @relation(fields: [lawId], references: [id], onDelete: Cascade)
   parentSection Section?          @relation("SubSections", fields: [parentSectionId], references: [id])
   subSections   Section[]         @relation("SubSections")
@@ -135,6 +141,12 @@ model Scenario {
   viewCount   Int         @default(0) @map("view_count")
   createdAt   DateTime    @default(now()) @map("created_at")
   updatedAt   DateTime    @updatedAt @map("updated_at")
+
+  // Embedding fields for semantic search (pgvector)
+  embedding      Unsupported("vector(1536)")?
+  embeddingModel String?   @map("embedding_model")
+  embeddedAt     DateTime? @map("embedded_at")
+  contentHash    String?   @map("content_hash")
 
   sections ScenarioSection[]
 

@@ -8,6 +8,7 @@ import { Footer } from '@/components/layout/footer';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
+import { ErrorState } from '@/components/ui/error-state';
 import { toast } from 'sonner';
 import { useAuth } from '@/hooks/use-auth';
 import type { BookmarkItem, ApiPaginatedResponse } from '@/types/api';
@@ -16,6 +17,8 @@ export default function SavedItemsPage() {
   const { user, isLoading: isAuthLoading } = useAuth();
   const [bookmarks, setBookmarks] = useState<BookmarkItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [isRetrying, setIsRetrying] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -25,21 +28,28 @@ export default function SavedItemsPage() {
     if (!user) return;
 
     setIsLoading(true);
+    setError(null);
 
     try {
       const response = await fetch(`/api/v1/bookmarks?page=${page}&limit=10`);
 
       if (!response.ok) {
+        if (response.status === 429) {
+          throw new Error('Too many requests. Please wait a moment and try again.');
+        }
         throw new Error('Failed to fetch bookmarks');
       }
 
       const json: ApiPaginatedResponse<BookmarkItem> = await response.json();
       setBookmarks(json.data);
       setTotalPages(json.pagination.totalPages);
-    } catch {
-      toast.error('Failed to load saved items');
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to load saved items';
+      setError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
+      setIsRetrying(false);
     }
   }, [user, page]);
 
@@ -50,6 +60,12 @@ export default function SavedItemsPage() {
       setIsLoading(false);
     }
   }, [user, isAuthLoading, fetchBookmarks]);
+
+  // Retry handler
+  const handleRetry = useCallback(() => {
+    setIsRetrying(true);
+    fetchBookmarks();
+  }, [fetchBookmarks]);
 
   // Delete bookmark
   const handleDelete = async (bookmarkId: string) => {
@@ -179,6 +195,14 @@ export default function SavedItemsPage() {
                   </div>
                 ))}
               </div>
+            ) : error ? (
+              /* Error State */
+              <ErrorState
+                message={error}
+                variant={error.includes('Too many') ? 'rate-limited' : 'default'}
+                onRetry={handleRetry}
+                isRetrying={isRetrying}
+              />
             ) : bookmarks.length === 0 ? (
               /* Empty State */
               <div className="rounded-xl border border-[var(--color-neutral-200)] bg-white p-8 text-center">

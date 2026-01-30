@@ -1,7 +1,7 @@
 'use client';
 
-import { useSearchParams } from 'next/navigation';
-import { useState, useEffect, Suspense } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
+import { useState, useEffect, Suspense, useCallback } from 'react';
 import Link from 'next/link';
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
@@ -9,88 +9,69 @@ import { SearchBar } from '@/components/features/search-bar';
 import { LawCard } from '@/components/features/law-card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Search, AlertCircle } from 'lucide-react';
+import { Spinner } from '@/components/ui/spinner';
+import { Search, AlertCircle, RefreshCw } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import type { SearchResult, ApiPaginatedResponse, PaginationMeta } from '@/types/api';
+import { useSearch } from '@/hooks/use-api';
+import type { SearchResult } from '@/types/api';
 
 type SearchType = 'all' | 'law' | 'section' | 'scenario';
 
 function SearchResultsContent() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const initialQuery = searchParams.get('q') || '';
   const initialType = (searchParams.get('type') as SearchType) || 'all';
+  const initialPage = parseInt(searchParams.get('page') || '1', 10);
 
   const [query, setQuery] = useState(initialQuery);
   const [type, setType] = useState<SearchType>(initialType);
-  const [results, setResults] = useState<SearchResult[]>([]);
-  const [pagination, setPagination] = useState<PaginationMeta | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(initialPage);
 
-  // Fetch results when query, type, or page changes
-  useEffect(() => {
-    if (!initialQuery) {
-      setResults([]);
-      setPagination(null);
-      return;
-    }
+  // Use the typed API hook
+  const { results, pagination, isLoading, error, isError, refetch } = useSearch(
+    { q: initialQuery, type, page, limit: 10 },
+    { enabled: !!initialQuery }
+  );
 
-    const fetchResults = async () => {
-      setIsLoading(true);
-      setError(null);
-
-      try {
-        const params = new URLSearchParams({
-          q: initialQuery,
-          type,
-          page: page.toString(),
-          limit: '10',
-        });
-
-        const response = await fetch(`/api/v1/search?${params}`);
-        if (!response.ok) {
-          if (response.status === 429) {
-            throw new Error('You have reached your daily search limit. Please try again later.');
-          }
-          throw new Error('Failed to fetch search results');
-        }
-
-        const data: ApiPaginatedResponse<SearchResult> = await response.json();
-        setResults(data.data);
-        setPagination(data.pagination);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'An error occurred');
-        setResults([]);
-        setPagination(null);
-      } finally {
-        setIsLoading(false);
+  // Sync URL with state changes
+  const updateUrl = useCallback(
+    (newQuery?: string, newType?: SearchType, newPage?: number) => {
+      const url = new URL(window.location.href);
+      if (newQuery !== undefined) url.searchParams.set('q', newQuery);
+      if (newType !== undefined) url.searchParams.set('type', newType);
+      if (newPage !== undefined && newPage > 1) {
+        url.searchParams.set('page', newPage.toString());
+      } else {
+        url.searchParams.delete('page');
       }
-    };
-
-    fetchResults();
-  }, [initialQuery, type, page]);
+      router.push(url.pathname + url.search, { scroll: false });
+    },
+    [router]
+  );
 
   // Reset page when type changes
   useEffect(() => {
-    setPage(1);
+    if (page !== 1) {
+      setPage(1);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [type]);
 
   const handleSearch = (newQuery: string) => {
     setQuery(newQuery);
     setPage(1);
-    // Update URL without full page reload
-    const url = new URL(window.location.href);
-    url.searchParams.set('q', newQuery);
-    window.history.pushState({}, '', url);
+    updateUrl(newQuery, type, 1);
   };
 
   const handleTypeChange = (newType: SearchType) => {
     setType(newType);
-    // Update URL
-    const url = new URL(window.location.href);
-    url.searchParams.set('type', newType);
-    window.history.pushState({}, '', url);
+    updateUrl(undefined, newType, 1);
+  };
+
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage);
+    updateUrl(undefined, undefined, newPage);
   };
 
   const getResultHref = (result: SearchResult) => {
@@ -141,7 +122,7 @@ function SearchResultsContent() {
                         {pagination.total !== 1 ? 's' : ''} for &quot;
                         <span className="font-medium">{initialQuery}</span>&quot;
                       </p>
-                    ) : error ? null : (
+                    ) : isError ? null : (
                       <p className="text-[var(--color-neutral-700)]">
                         No results for &quot;<span className="font-medium">{initialQuery}</span>
                         &quot;
@@ -169,13 +150,20 @@ function SearchResultsContent() {
                 </div>
 
                 {/* Error State */}
-                {error && (
+                {isError && error && (
                   <div className="mb-6 flex items-start gap-3 rounded-lg border border-[var(--color-error)] bg-[var(--color-error-light)] p-4">
                     <AlertCircle className="mt-0.5 size-5 shrink-0 text-[var(--color-error)]" />
-                    <div>
+                    <div className="flex-1">
                       <p className="font-medium text-[var(--color-error-dark)]">Search Error</p>
                       <p className="text-sm text-[var(--color-neutral-700)]">{error}</p>
                     </div>
+                    <button
+                      onClick={() => refetch()}
+                      className="flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium text-[var(--color-error-dark)] transition-colors hover:bg-[var(--color-error)]/10"
+                    >
+                      <RefreshCw className="size-4" />
+                      Retry
+                    </button>
                   </div>
                 )}
 
@@ -197,7 +185,7 @@ function SearchResultsContent() {
                 )}
 
                 {/* Results List */}
-                {!isLoading && !error && results.length > 0 && (
+                {!isLoading && !isError && results.length > 0 && (
                   <div className="space-y-4">
                     {results.map((result) => (
                       <LawCard
@@ -223,7 +211,7 @@ function SearchResultsContent() {
                 )}
 
                 {/* Empty State */}
-                {!isLoading && !error && results.length === 0 && (
+                {!isLoading && !isError && results.length === 0 && (
                   <div className="rounded-xl border border-[var(--color-neutral-200)] bg-white p-8 text-center">
                     <div className="mx-auto mb-4 flex size-16 items-center justify-center rounded-full bg-[var(--color-neutral-100)]">
                       <Search className="size-8 text-[var(--color-neutral-400)]" />
@@ -256,7 +244,7 @@ function SearchResultsContent() {
                 {!isLoading && pagination && pagination.totalPages > 1 && (
                   <div className="mt-8 flex items-center justify-center gap-2">
                     <button
-                      onClick={() => setPage((p) => Math.max(1, p - 1))}
+                      onClick={() => handlePageChange(Math.max(1, page - 1))}
                       disabled={page === 1}
                       className="rounded-lg border border-[var(--color-neutral-300)] bg-white px-4 py-2 text-sm font-medium text-[var(--color-neutral-700)] transition-colors hover:bg-[var(--color-neutral-50)] disabled:cursor-not-allowed disabled:opacity-50"
                     >
@@ -266,7 +254,7 @@ function SearchResultsContent() {
                       Page {page} of {pagination.totalPages}
                     </span>
                     <button
-                      onClick={() => setPage((p) => Math.min(pagination.totalPages, p + 1))}
+                      onClick={() => handlePageChange(Math.min(pagination.totalPages, page + 1))}
                       disabled={page === pagination.totalPages}
                       className="rounded-lg border border-[var(--color-neutral-300)] bg-white px-4 py-2 text-sm font-medium text-[var(--color-neutral-700)] transition-colors hover:bg-[var(--color-neutral-50)] disabled:cursor-not-allowed disabled:opacity-50"
                     >
@@ -312,7 +300,7 @@ export default function SearchPage() {
         <div className="flex min-h-screen flex-col">
           <Header />
           <main className="flex flex-1 items-center justify-center">
-            <div className="size-8 animate-spin rounded-full border-2 border-[var(--color-primary-500)] border-t-transparent" />
+            <Spinner size="lg" />
           </main>
           <Footer />
         </div>

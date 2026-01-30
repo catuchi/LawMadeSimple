@@ -160,8 +160,9 @@ npm run db:studio    # Open Prisma Studio (GUI)
 - [x] ~~Auth security audit and fixes~~ ✅ (reset password validation, soft delete, sync failure handling)
 
 **Phase 7 - Integration & Polish:**
-- [ ] Polish API integration (typed client wrapper, error handling)
-- [ ] Search suggestions with debouncing
+- [x] Polish API integration (typed client wrapper, error handling) ✅
+- [x] Search suggestions with debouncing ✅
+- [x] Semantic search with pgvector + RRF hybrid fusion ✅
 - [ ] Loading/error states polish
 - [ ] Mobile optimization testing
 - [ ] Page transition animations
@@ -266,6 +267,28 @@ enum LawCategory {
 | `/api/v1/explanations/stream` | POST | Optional (rate limited) |
 | `/api/v1/explanations/[contentType]/[contentId]` | GET | Optional |
 
+### Semantic Search (pgvector) ✅
+- **Extension:** pgvector enabled in Supabase for vector similarity search
+- **Embedding Model:** OpenAI text-embedding-3-small (1536 dimensions)
+- **Search Modes:** `keyword`, `semantic`, `hybrid` (default: `hybrid`)
+- **Algorithm:** Reciprocal Rank Fusion (RRF) combines semantic + keyword results
+- **Index Type:** HNSW for fast approximate nearest neighbor search
+- **Backfill Script:** `npx tsx scripts/backfill-embeddings.ts`
+
+Search API supports `mode` parameter:
+```
+/api/v1/search?q=tenant+rights&mode=hybrid  # Default: semantic + keyword fusion
+/api/v1/search?q=Section+33&mode=keyword    # Exact keyword match only
+/api/v1/search?q=can+police+arrest&mode=semantic  # Pure semantic search
+```
+
+**Embedding Files:**
+- `src/constants/embeddings.ts` — Configuration (model, dimensions, RRF params)
+- `src/services/embedding/embedding.service.ts` — Embedding generation and storage
+- `src/services/search/semantic-search.service.ts` — Vector search + RRF fusion
+- `scripts/backfill-embeddings.ts` — Batch embedding script
+- `prisma/migrations/001_pgvector_setup.sql` — Database migration (run in Supabase SQL Editor)
+
 ### Design System
 - **Colors:** Warm Trust (Teal #1A5F7A + Gold #F4B942)
 - **Fonts:** Lora (headings) + Inter (body)
@@ -305,7 +328,10 @@ New models:
 
 **Recently Added (Jan 30, 2026):**
 - `User.deletedAt` — Soft delete timestamp (blocks login when set)
+- `Section.embedding` — pgvector(1536) for semantic search
+- `Section.embeddingModel`, `Section.embeddedAt`, `Section.contentHash` — Embedding metadata
+- `Scenario.embedding`, `Scenario.embeddingModel`, `Scenario.embeddedAt`, `Scenario.contentHash` — Same for scenarios
 
 ---
 
-*Last updated: January 30, 2026 (Auth security fixes: soft delete, session validation, sync failure handling)*
+*Last updated: January 30, 2026 (pgvector semantic search implementation)*

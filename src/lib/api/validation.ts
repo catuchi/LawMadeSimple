@@ -71,6 +71,7 @@ export type ScenarioListQuery = z.infer<typeof scenarioListQuerySchema>;
 export const searchQuerySchema = z.object({
   q: z.string().min(1, 'Search query is required'),
   type: z.enum(['law', 'section', 'scenario', 'all']).optional().default('all'),
+  mode: z.enum(['keyword', 'semantic', 'hybrid']).optional().default('hybrid'),
   lawIds: z
     .string()
     .transform((val) => val.split(',').filter(Boolean))
@@ -80,6 +81,7 @@ export const searchQuerySchema = z.object({
 });
 
 export type SearchQuery = z.infer<typeof searchQuerySchema>;
+export type SearchMode = 'keyword' | 'semantic' | 'hybrid';
 
 export const searchSuggestionsQuerySchema = z.object({
   q: z.string().min(2, 'Query must be at least 2 characters'),

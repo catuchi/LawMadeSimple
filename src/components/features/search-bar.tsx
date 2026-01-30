@@ -1,17 +1,11 @@
 'use client';
 
-import { useState, useRef, useEffect, useCallback } from 'react';
-import { Search, X } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
+import { Search, X, Clock, Sparkles } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { Spinner } from '@/components/ui/spinner';
-
-interface SearchSuggestion {
-  id: string;
-  title: string;
-  type: 'recent' | 'popular' | 'result';
-  category?: string;
-}
+import { useSearchSuggestions, type TransformedSuggestion } from '@/hooks/use-api';
 
 interface SearchBarProps {
   placeholder?: string;
@@ -34,8 +28,6 @@ export function SearchBar({
 }: SearchBarProps) {
   const [query, setQuery] = useState(defaultValue);
   const [isFocused, setIsFocused] = useState(false);
-  const [suggestions, setSuggestions] = useState<SearchSuggestion[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const inputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -43,44 +35,16 @@ export function SearchBar({
 
   const suggestionsId = 'search-suggestions';
 
-  // Debounced search suggestions
-  const fetchSuggestions = useCallback(async (searchQuery: string) => {
-    if (!searchQuery || searchQuery.length < 2) {
-      setSuggestions([]);
-      return;
-    }
+  // Use the typed API hook with built-in debouncing
+  const { suggestions, isLoading } = useSearchSuggestions(query, {
+    enabled: showSuggestions && isFocused,
+    debounceMs: 300,
+    limit: 6,
+  });
 
-    setIsLoading(true);
-    try {
-      const response = await fetch(
-        `/api/v1/search/suggestions?q=${encodeURIComponent(searchQuery)}`
-      );
-      if (response.ok) {
-        const data = await response.json();
-        setSuggestions(data.suggestions || []);
-      }
-    } catch {
-      // Silently fail on suggestion fetch errors
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
-  // Debounce effect
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (showSuggestions && query) {
-        fetchSuggestions(query);
-      }
-    }, 300);
-
-    return () => clearTimeout(timer);
-  }, [query, showSuggestions, fetchSuggestions]);
-
-  // Reset selected index when suggestions change
-  useEffect(() => {
-    setSelectedIndex(-1);
-  }, [suggestions]);
+  // Clamp selected index to valid range (handles suggestions changing)
+  const validSelectedIndex =
+    selectedIndex >= 0 && selectedIndex < suggestions.length ? selectedIndex : -1;
 
   // Click outside handler
   useEffect(() => {
@@ -108,14 +72,21 @@ export function SearchBar({
 
   const handleClear = () => {
     setQuery('');
-    setSuggestions([]);
     inputRef.current?.focus();
   };
 
-  const handleSuggestionClick = (suggestion: SearchSuggestion) => {
+  const handleSuggestionClick = (suggestion: TransformedSuggestion) => {
     setQuery(suggestion.title);
     setIsFocused(false);
     setSelectedIndex(-1);
+
+    // If it's a scenario, navigate directly to it
+    if (suggestion.type === 'scenario' && suggestion.slug) {
+      router.push(`/scenarios/${suggestion.slug}`);
+      return;
+    }
+
+    // Otherwise, search for the title
     if (onSearch) {
       onSearch(suggestion.title);
     } else {
@@ -136,9 +107,9 @@ export function SearchBar({
         setSelectedIndex((prev) => Math.max(prev - 1, -1));
         break;
       case 'Enter':
-        if (selectedIndex >= 0 && selectedIndex < suggestions.length) {
+        if (validSelectedIndex >= 0) {
           e.preventDefault();
-          handleSuggestionClick(suggestions[selectedIndex]);
+          handleSuggestionClick(suggestions[validSelectedIndex]);
         }
         break;
       case 'Escape':
@@ -169,7 +140,10 @@ export function SearchBar({
             type="search"
             role="combobox"
             value={query}
-            onChange={(e) => setQuery(e.target.value)}
+            onChange={(e) => {
+              setQuery(e.target.value);
+              setSelectedIndex(-1); // Reset selection when typing
+            }}
             onFocus={() => setIsFocused(true)}
             onKeyDown={handleKeyDown}
             placeholder={placeholder}
@@ -182,7 +156,9 @@ export function SearchBar({
             }
             aria-expanded={showSuggestions && isFocused && suggestions.length > 0}
             aria-activedescendant={
-              selectedIndex >= 0 ? `suggestion-${suggestions[selectedIndex]?.id}` : undefined
+              validSelectedIndex >= 0
+                ? `suggestion-${suggestions[validSelectedIndex]?.id}`
+                : undefined
             }
             className="h-full flex-1 bg-transparent px-3 outline-none placeholder:text-[var(--color-neutral-400)] focus-visible:outline-none [&::-webkit-search-cancel-button]:hidden [&::-webkit-search-decoration]:hidden"
           />
@@ -226,29 +202,32 @@ export function SearchBar({
                   key={suggestion.id}
                   id={`suggestion-${suggestion.id}`}
                   role="option"
-                  aria-selected={index === selectedIndex}
+                  aria-selected={index === validSelectedIndex}
                 >
                   <button
                     type="button"
                     onClick={() => handleSuggestionClick(suggestion)}
                     className={cn(
                       'flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left hover:bg-[var(--color-neutral-50)]',
-                      index === selectedIndex && 'bg-[var(--color-neutral-100)]'
+                      index === validSelectedIndex && 'bg-[var(--color-neutral-100)]'
                     )}
                   >
-                    <Search className="size-4 text-[var(--color-neutral-400)]" />
+                    {suggestion.type === 'scenario' ? (
+                      <Sparkles className="size-4 text-[var(--color-accent)]" />
+                    ) : suggestion.type === 'recent' ? (
+                      <Clock className="size-4 text-[var(--color-neutral-400)]" />
+                    ) : (
+                      <Search className="size-4 text-[var(--color-neutral-400)]" />
+                    )}
                     <div className="flex-1">
                       <span className="text-sm text-[var(--color-neutral-800)]">
                         {suggestion.title}
                       </span>
-                      {suggestion.category && (
-                        <span className="ml-2 text-xs text-[var(--color-neutral-500)]">
-                          in {suggestion.category}
-                        </span>
-                      )}
                     </div>
-                    {suggestion.type === 'recent' && (
-                      <span className="text-xs text-[var(--color-neutral-400)]">Recent</span>
+                    {suggestion.type === 'scenario' && (
+                      <span className="rounded-full bg-[var(--color-accent)]/10 px-2 py-0.5 text-xs text-[var(--color-accent)]">
+                        Scenario
+                      </span>
                     )}
                   </button>
                 </li>
