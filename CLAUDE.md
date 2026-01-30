@@ -154,9 +154,10 @@ npm run db:studio    # Open Prisma Studio (GUI)
 
 ### Next Session: Pending Tasks
 
-**Immediate (do first):**
-- [x] ~~Change post-login redirect from `/dashboard` to `/` (homepage)~~ ✅ Done
-- [x] ~~Set up Facebook OAuth~~ ✅ Done
+**Completed (Jan 30, 2026):**
+- [x] ~~Change post-login redirect from `/dashboard` to `/` (homepage)~~ ✅
+- [x] ~~Set up Facebook OAuth~~ ✅
+- [x] ~~Auth security audit and fixes~~ ✅ (reset password validation, soft delete, sync failure handling)
 
 **Phase 7 - Integration & Polish:**
 - [ ] Polish API integration (typed client wrapper, error handling)
@@ -227,10 +228,16 @@ enum LawCategory {
 ## Key Infrastructure
 
 ### Authentication
-- **Providers:** Apple OAuth ✅, Google OAuth ✅, Facebook OAuth ✅, Email/Password ✅, Magic Link ✅
+- **Providers:** Apple OAuth ✅, Google OAuth ✅, Facebook OAuth ✅, Email/Password ✅, Magic Link ✅, OTP (6-digit code) ✅
 - **Auto-rotation:** Apple client secret rotates monthly via GitHub Actions
 - **Routes:** `/sign-in`, `/sign-up`, `/forgot-password`, `/reset-password`, `/dashboard`
 - **Production URL:** `https://law-made-simple.vercel.app`
+- **Security Features:**
+  - Server-validated sessions (`getUser()` not `getSession()`)
+  - Reset password link expiry validation
+  - Soft delete for account deletion (blocks re-login)
+  - User sync failure handling (prevents inconsistent state)
+  - Open redirect prevention on all callbacks
 
 ### Subscription & Usage (Freemium)
 - **Models:** `Subscription`, `UsageRecord`, `GuestUsage` ✅
@@ -296,6 +303,9 @@ New models:
 - `Amendment` — Track law amendments
 - `ApiKey`, `ApiUsage` — For NigerianLawsAPI (post-MVP)
 
+**Recently Added (Jan 30, 2026):**
+- `User.deletedAt` — Soft delete timestamp (blocks login when set)
+
 ---
 
-*Last updated: January 29, 2026 (Facebook OAuth configured, all OAuth providers complete)*
+*Last updated: January 30, 2026 (Auth security fixes: soft delete, session validation, sync failure handling)*
