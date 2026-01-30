@@ -74,9 +74,16 @@ export function MobileMenu({
           {isLoading ? (
             <div className="h-10 animate-pulse rounded-md bg-[var(--color-neutral-100)]" />
           ) : user ? (
-            <Link href="/dashboard" onClick={handleLinkClick}>
-              <Button className="w-full">Dashboard</Button>
-            </Link>
+            <div className="flex flex-col gap-3">
+              <Link href="/saved" onClick={handleLinkClick}>
+                <Button variant="outline" className="w-full">
+                  Saved Items
+                </Button>
+              </Link>
+              <Link href="/settings" onClick={handleLinkClick}>
+                <Button className="w-full">Settings</Button>
+              </Link>
+            </div>
           ) : (
             <div className="flex flex-col gap-3">
               <Link href="/sign-in" onClick={handleLinkClick}>

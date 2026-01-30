@@ -16,6 +16,10 @@ export function SignUpForm() {
     <div className="space-y-6">
       <OAuthButtons disabled={isPending} />
 
+      <p className="text-foreground-muted text-center text-xs">
+        Already have an account with Google, Apple, or Facebook? Use those buttons above to sign in.
+      </p>
+
       <div className="relative">
         <div className="absolute inset-0 flex items-center">
           <span className="border-border w-full border-t" />

@@ -9,12 +9,18 @@ export const AUTH_ROUTES = {
 } as const;
 
 // Protected routes that require authentication
-export const PROTECTED_ROUTES = ['/dashboard', '/bookmarks', '/profile', '/settings'] as const;
+export const PROTECTED_ROUTES = [
+  '/dashboard',
+  '/bookmarks',
+  '/profile',
+  '/settings',
+  '/saved',
+] as const;
 
 // Public routes that don't require authentication
 export const PUBLIC_ROUTES = ['/', '/laws', '/scenarios', '/search'] as const;
 
-// Routes that should redirect to dashboard if user is already authenticated
+// Routes that should redirect to home if user is already authenticated
 export const AUTH_PAGES = [
   AUTH_ROUTES.SIGN_IN,
   AUTH_ROUTES.SIGN_UP,
@@ -23,7 +29,7 @@ export const AUTH_PAGES = [
 
 // Default redirect paths
 export const DEFAULT_REDIRECT = {
-  AFTER_SIGN_IN: '/dashboard',
+  AFTER_SIGN_IN: '/',
   AFTER_SIGN_OUT: '/',
   AFTER_SIGN_UP: '/sign-in',
   UNAUTHENTICATED: '/sign-in',
@@ -32,8 +38,12 @@ export const DEFAULT_REDIRECT = {
 // Auth error messages
 export const AUTH_ERRORS = {
   INVALID_CREDENTIALS: 'Invalid email or password. Please try again.',
+  INVALID_CREDENTIALS_TRY_OAUTH:
+    'Invalid email or password. If you signed up with Google, Apple, or Facebook, use those buttons instead.',
   EMAIL_NOT_CONFIRMED: 'Please confirm your email before signing in.',
   EMAIL_ALREADY_EXISTS: 'An account with this email already exists.',
+  EMAIL_EXISTS_WITH_OAUTH:
+    'An account with this email exists. Try signing in with Google, Apple, or Facebook instead.',
   WEAK_PASSWORD: 'Password must be 8+ characters with uppercase, lowercase, and a number.',
   PASSWORDS_DONT_MATCH: 'Passwords do not match.',
   INVALID_EMAIL: 'Please enter a valid email address.',
@@ -48,6 +58,9 @@ export const AUTH_ERRORS = {
   TOS_REQUIRED: 'You must accept the Terms of Service to continue.',
   NOT_AUTHENTICATED: 'You must be signed in to perform this action.',
   DELETE_CONFIRMATION_MISMATCH: 'Please type "DELETE" to confirm account deletion.',
+  OTP_USER_NOT_FOUND: 'No account found with this email. Please sign up first.',
+  INVALID_OTP: 'Invalid code. Please check and try again.',
+  OTP_EXPIRED: 'Code has expired. Please request a new one.',
 } as const;
 
 // Auth success messages
@@ -62,6 +75,7 @@ export const AUTH_SUCCESS = {
   CONFIRMATION_RESENT: 'Confirmation email resent! Check your inbox.',
   EMAIL_CHANGE_SENT: 'Email change request sent! Check both your old and new email addresses.',
   ACCOUNT_DELETED: 'Your account has been deleted.',
+  OTP_SENT: 'Code sent! Check your email for a 6-digit code.',
 } as const;
 
 // Password requirements

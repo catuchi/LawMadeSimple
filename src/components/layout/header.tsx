@@ -56,11 +56,18 @@ export function Header() {
           {isLoading ? (
             <div className="size-8 animate-pulse rounded-md bg-[var(--color-neutral-100)]" />
           ) : user ? (
-            <Link href="/dashboard">
-              <Button variant="ghost" size="sm">
-                Dashboard
-              </Button>
-            </Link>
+            <>
+              <Link href="/saved">
+                <Button variant="ghost" size="sm">
+                  Saved
+                </Button>
+              </Link>
+              <Link href="/settings">
+                <Button variant="ghost" size="sm">
+                  Settings
+                </Button>
+              </Link>
+            </>
           ) : (
             <>
               <Link href="/sign-in">

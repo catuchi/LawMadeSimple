@@ -150,15 +150,13 @@ npm run db:studio    # Open Prisma Studio (GUI)
 |-------|--------|-------------|
 | Race condition on explanation cache | Concurrent requests for same uncached content = duplicate AI calls | When traffic increases; add "generation in progress" flag or distributed lock |
 | No data seeded | Pages show "Coming Soon" placeholders | Phase 8: seed law content |
+| Supabase built-in email limit | 2 emails/hour max (confirmations, magic links, password resets) | Before production launch: set up custom SMTP (Resend, SendGrid, or Postmark) |
 
 ### Next Session: Pending Tasks
 
 **Immediate (do first):**
-- [ ] Change post-login redirect from `/dashboard` to `/` (homepage)
-  - File: `src/constants/auth.ts` line 26
-  - Change `AFTER_SIGN_IN: '/dashboard'` to `AFTER_SIGN_IN: '/'`
-  - Rationale: Users want to search/browse laws immediately, not see a placeholder dashboard
-- [ ] Set up Facebook OAuth (optional, can defer)
+- [x] ~~Change post-login redirect from `/dashboard` to `/` (homepage)~~ ✅ Done
+- [x] ~~Set up Facebook OAuth~~ ✅ Done
 
 **Phase 7 - Integration & Polish:**
 - [ ] Polish API integration (typed client wrapper, error handling)
@@ -229,7 +227,7 @@ enum LawCategory {
 ## Key Infrastructure
 
 ### Authentication
-- **Providers:** Apple OAuth ✅, Google OAuth ✅, Facebook OAuth (pending), Email/Password ✅, Magic Link ✅
+- **Providers:** Apple OAuth ✅, Google OAuth ✅, Facebook OAuth ✅, Email/Password ✅, Magic Link ✅
 - **Auto-rotation:** Apple client secret rotates monthly via GitHub Actions
 - **Routes:** `/sign-in`, `/sign-up`, `/forgot-password`, `/reset-password`, `/dashboard`
 - **Production URL:** `https://law-made-simple.vercel.app`
@@ -300,4 +298,4 @@ New models:
 
 ---
 
-*Last updated: January 29, 2026 (Google OAuth configured, pending tasks documented)*
+*Last updated: January 29, 2026 (Facebook OAuth configured, all OAuth providers complete)*

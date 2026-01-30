@@ -26,7 +26,7 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(redirectUrl);
   }
 
-  // Redirect authenticated users from auth pages to dashboard
+  // Redirect authenticated users from auth pages to home
   if (isAuthPage && user) {
     return NextResponse.redirect(new URL(DEFAULT_REDIRECT.AFTER_SIGN_IN, request.url));
   }

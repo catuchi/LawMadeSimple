@@ -12,6 +12,7 @@ import {
   DEFAULT_REDIRECT,
   PASSWORD_REQUIREMENTS,
 } from '@/constants/auth';
+import { getUserByEmail } from './auth.service';
 
 /**
  * Validates email format
@@ -107,6 +108,11 @@ export async function signUp(
 
   if (error) {
     if (error.message.includes('already registered')) {
+      // Check if user exists in our database - they may have used OAuth
+      const existingUser = await getUserByEmail(email);
+      if (existingUser) {
+        return { error: AUTH_ERRORS.EMAIL_EXISTS_WITH_OAUTH };
+      }
       return { error: AUTH_ERRORS.EMAIL_ALREADY_EXISTS };
     }
     if (error.message.toLowerCase().includes('rate limit')) {
@@ -155,6 +161,12 @@ export async function signIn(
 
   if (error) {
     if (error.message.includes('Invalid login credentials')) {
+      // Check if user exists in our database (they may have signed up with OAuth)
+      const existingUser = await getUserByEmail(email);
+      if (existingUser) {
+        // User exists but password is wrong - they likely used OAuth
+        return { error: AUTH_ERRORS.INVALID_CREDENTIALS_TRY_OAUTH };
+      }
       return { error: AUTH_ERRORS.INVALID_CREDENTIALS };
     }
     if (error.message.includes('Email not confirmed')) {
@@ -174,7 +186,7 @@ export async function signIn(
     }
   }
 
-  // Redirect to the intended destination or dashboard (validated for security)
+  // Redirect to the intended destination or home (validated for security)
   const destination = getSafeRedirectPath(redirectTo, DEFAULT_REDIRECT.AFTER_SIGN_IN);
   redirect(destination);
 }
@@ -369,6 +381,98 @@ export async function signInWithFacebook(): Promise<void> {
   if (data.url) {
     redirect(data.url);
   }
+}
+
+/**
+ * Send OTP code for sign-in (6-digit code instead of magic link)
+ */
+export async function sendSignInOtp(
+  _prevState: AuthFormState,
+  formData: FormData
+): Promise<AuthFormState> {
+  const email = formData.get('email') as string;
+
+  if (!email) {
+    return { fieldErrors: { email: AUTH_ERRORS.REQUIRED_FIELD } };
+  }
+
+  if (!isValidEmail(email)) {
+    return { fieldErrors: { email: AUTH_ERRORS.INVALID_EMAIL } };
+  }
+
+  const supabase = await createClient();
+
+  const { error } = await supabase.auth.signInWithOtp({
+    email,
+    options: {
+      shouldCreateUser: false, // Only allow existing users
+    },
+  });
+
+  if (error) {
+    if (error.message.includes('rate limit')) {
+      return { error: AUTH_ERRORS.RATE_LIMITED };
+    }
+    if (error.message.includes('Signups not allowed')) {
+      return { error: AUTH_ERRORS.OTP_USER_NOT_FOUND };
+    }
+    return { error: error.message };
+  }
+
+  return { success: AUTH_SUCCESS.OTP_SENT };
+}
+
+/**
+ * Verify OTP code and sign in
+ */
+export async function verifySignInOtp(
+  _prevState: AuthFormState,
+  formData: FormData
+): Promise<AuthFormState> {
+  const email = formData.get('email') as string;
+  const token = formData.get('token') as string;
+  const redirectTo = formData.get('redirectTo') as string | null;
+
+  if (!email || !token) {
+    return { error: AUTH_ERRORS.REQUIRED_FIELD };
+  }
+
+  if (token.length !== 6 || !/^\d{6}$/.test(token)) {
+    return { error: AUTH_ERRORS.INVALID_OTP };
+  }
+
+  const supabase = await createClient();
+
+  const { data, error } = await supabase.auth.verifyOtp({
+    email,
+    token,
+    type: 'email',
+  });
+
+  if (error) {
+    if (error.message.includes('Token has expired')) {
+      return { error: AUTH_ERRORS.OTP_EXPIRED };
+    }
+    if (error.message.includes('Invalid') || error.message.includes('invalid')) {
+      return { error: AUTH_ERRORS.INVALID_OTP };
+    }
+    if (error.message.toLowerCase().includes('rate limit')) {
+      return { error: AUTH_ERRORS.RATE_LIMITED };
+    }
+    return { error: error.message };
+  }
+
+  // Sync user to Prisma
+  if (data.user) {
+    const syncResult = await syncUserToPrisma(data.user);
+    if (!syncResult.success) {
+      console.error('User sync failed after OTP sign in');
+    }
+  }
+
+  // Redirect to the intended destination or home
+  const destination = getSafeRedirectPath(redirectTo, DEFAULT_REDIRECT.AFTER_SIGN_IN);
+  redirect(destination);
 }
 
 /**
