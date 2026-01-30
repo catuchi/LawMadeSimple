@@ -49,17 +49,19 @@ export function created<T>(data: T, requestId?: string): NextResponse<ApiSuccess
   );
 }
 
-export function paginated<T>(
+export function paginated<T, E extends Record<string, unknown> = Record<string, never>>(
   data: T[],
   pagination: PaginationMeta,
+  extra?: E,
   requestId?: string
-): NextResponse<ApiPaginatedResponse<T>> {
+): NextResponse<ApiPaginatedResponse<T> & { extra?: E }> {
   return NextResponse.json(
     {
       success: true as const,
       data,
       meta: createMeta(requestId),
       pagination,
+      ...(extra && Object.keys(extra).length > 0 ? { extra } : {}),
     },
     { status: 200 }
   );

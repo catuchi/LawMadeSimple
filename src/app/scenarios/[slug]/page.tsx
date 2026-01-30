@@ -8,7 +8,8 @@ import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { LawCard } from '@/components/features/law-card';
 import { Badge } from '@/components/ui/badge';
 import { DisclaimerBadge } from '@/components/ui/disclaimer-badge';
-import type { ScenarioDetail, ApiSuccessResponse } from '@/types/api';
+import { prisma } from '@/lib/db';
+import type { ScenarioDetail, RelatedSectionItem } from '@/types/api';
 
 // Scenario metadata for static generation and SEO
 const scenarioMeta: Record<
@@ -113,20 +114,57 @@ export async function generateStaticParams() {
 
 async function getScenarioData(slug: string): Promise<ScenarioDetail | null> {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
-    const response = await fetch(`${baseUrl}/api/v1/scenarios/${slug}`, {
-      next: { revalidate: 3600 }, // Cache for 1 hour
+    // Query database directly instead of fetching from API
+    // This works during build time (static generation) without needing a running server
+    const scenario = await prisma.scenario.findUnique({
+      where: { slug },
+      select: {
+        id: true,
+        slug: true,
+        title: true,
+        description: true,
+        category: true,
+        sections: {
+          select: {
+            relevanceNote: true,
+            relevanceOrder: true,
+            section: {
+              select: {
+                id: true,
+                slug: true,
+                title: true,
+                law: {
+                  select: { slug: true },
+                },
+              },
+            },
+          },
+          orderBy: { relevanceOrder: 'asc' },
+        },
+      },
     });
 
-    if (!response.ok) {
-      if (response.status === 404) {
-        return null;
-      }
-      throw new Error(`Failed to fetch scenario: ${response.status}`);
+    if (!scenario) {
+      return null;
     }
 
-    const json: ApiSuccessResponse<ScenarioDetail> = await response.json();
-    return json.data;
+    // Transform related sections
+    const relatedSections: RelatedSectionItem[] = scenario.sections.map((ss) => ({
+      id: ss.section.id,
+      lawSlug: ss.section.law.slug,
+      sectionSlug: ss.section.slug,
+      title: ss.section.title,
+      relevanceNote: ss.relevanceNote,
+    }));
+
+    return {
+      id: scenario.id,
+      slug: scenario.slug,
+      title: scenario.title,
+      description: scenario.description,
+      category: scenario.category,
+      relatedSections,
+    };
   } catch (error) {
     console.error('Error fetching scenario:', error);
     return null;

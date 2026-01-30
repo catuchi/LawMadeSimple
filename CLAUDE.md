@@ -354,7 +354,7 @@ enum LawCategory {
 - **Service:** `src/services/subscription/subscription.service.ts`
 - **Config:** `src/constants/subscription.ts`
 
-### API Endpoints (13 total)
+### API Endpoints (14 total)
 
 | Endpoint | Methods | Auth |
 |----------|---------|------|
@@ -370,6 +370,7 @@ enum LawCategory {
 | `/api/v1/feedback` | POST | Optional |
 | `/api/v1/explanations/stream` | POST | Optional (rate limited) |
 | `/api/v1/explanations/[contentType]/[contentId]` | GET | Optional |
+| `/api/v1/admin/embeddings` | GET | Required |
 
 ### Semantic Search (pgvector) ✅
 - **Extension:** pgvector enabled in Supabase for vector similarity search
@@ -377,7 +378,7 @@ enum LawCategory {
 - **Search Modes:** `keyword`, `semantic`, `hybrid` (default: `hybrid`)
 - **Algorithm:** Reciprocal Rank Fusion (RRF) combines semantic + keyword results
 - **Index Type:** HNSW for fast approximate nearest neighbor search
-- **Similarity Threshold:** 0.15 (lowered from 0.7 for text-embedding-3-small)
+- **Similarity Threshold:** 0.15 (configurable per-request via `similarityThreshold` option)
 - **Backfill Script:** `DOTENV_CONFIG_PATH=.env.local npx tsx -r dotenv/config scripts/backfill-embeddings.ts`
 - **Status:** ✅ Working in production (sample data embedded)
 
@@ -388,12 +389,27 @@ Search API supports `mode` parameter:
 /api/v1/search?q=can+police+arrest&mode=semantic  # Pure semantic search
 ```
 
+**Search API Response Enhancement:**
+The search API now returns additional metadata in the `extra` field:
+- `searchMode`: Actual mode used (`hybrid`, `semantic`, `keyword`, or `keyword_fallback`)
+- `semanticAvailable`: Boolean indicating if semantic search was available
+
+**Embedding Resilience Features (Jan 30, 2026):**
+- Exponential backoff retry (3 attempts) for OpenAI API failures
+- 30-second timeout on embedding generation
+- Proper error handling for storage failures (won't silently fail)
+- API key validation function for startup checks
+- True batch OpenAI API calls (single request for multiple texts)
+- Structured logging throughout embedding and search services
+
 **Embedding Files:**
-- `src/constants/embeddings.ts` — Configuration (model, dimensions, RRF params)
-- `src/services/embedding/embedding.service.ts` — Embedding generation and storage
-- `src/services/search/semantic-search.service.ts` — Vector search + RRF fusion
+- `src/constants/embeddings.ts` — Configuration (model, dimensions, RRF params) with documentation
+- `src/services/embedding/embedding.service.ts` — Embedding generation and storage with retry/timeout
+- `src/services/search/semantic-search.service.ts` — Vector search + RRF fusion with logging
+- `src/app/api/v1/admin/embeddings/route.ts` — Admin status endpoint for monitoring
 - `scripts/backfill-embeddings.ts` — Batch embedding script
 - `prisma/migrations/001_pgvector_setup.sql` — Database migration (run in Supabase SQL Editor)
+- `prisma/migrations/002_pgvector_indexes.sql` — Backfill optimization indexes (run in Supabase SQL Editor)
 
 ### Design System
 - **Colors:** Warm Trust (Teal #1A5F7A + Gold #F4B942)
@@ -440,4 +456,4 @@ New models:
 
 ---
 
-*Last updated: January 30, 2026 (pgvector working, semantic search live, sample embeddings generated)*
+*Last updated: January 30, 2026 (semantic search hardening: retry logic, timeouts, batch API, admin endpoint, tests)*

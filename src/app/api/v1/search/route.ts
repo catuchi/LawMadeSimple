@@ -56,6 +56,8 @@ export async function GET(request: Request) {
 
     let results: SearchResult[];
     let totalResults = 0;
+    let actualSearchMode: 'hybrid' | 'semantic' | 'keyword' | 'keyword_fallback' = mode;
+    let semanticAvailable = true;
 
     // Use semantic/hybrid search for 'hybrid' or 'semantic' modes
     if (mode === 'hybrid' || mode === 'semantic') {
@@ -86,8 +88,17 @@ export async function GET(request: Request) {
           ...(r.law ? { law: r.law } : {}),
         }));
       } catch (error) {
-        // Fallback to keyword search if semantic search fails (e.g., no embeddings)
-        console.error('Semantic search failed, falling back to keyword:', error);
+        // Fallback to keyword search if semantic search fails
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        console.error('[Search] Semantic search failed, falling back to keyword:', {
+          requestedMode: mode,
+          error: errorMessage,
+          query: q.slice(0, 100),
+        });
+
+        semanticAvailable = false;
+        actualSearchMode = 'keyword_fallback';
+
         const keywordResults = await semanticKeywordSearch(q, { type, limit, lawIds });
         totalResults = keywordResults.length;
         results = keywordResults.map((r) => ({
@@ -101,6 +112,7 @@ export async function GET(request: Request) {
       }
     } else {
       // Pure keyword search (original behavior)
+      actualSearchMode = 'keyword';
       const keywordResults = await performKeywordSearch(q, type, lawIds, page, limit);
       results = keywordResults.results;
       totalResults = keywordResults.total;
@@ -132,7 +144,10 @@ export async function GET(request: Request) {
     ]).catch((err) => console.error('Failed to log search:', err));
 
     const pagination = calculatePagination(page, limit, totalResults);
-    return paginated(finalResults, pagination);
+    return paginated(finalResults, pagination, {
+      searchMode: actualSearchMode,
+      semanticAvailable,
+    });
   } catch (error) {
     return handleError(error, { endpoint: 'GET /api/v1/search' });
   }

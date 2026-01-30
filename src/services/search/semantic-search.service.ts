@@ -7,6 +7,19 @@ import { EMBEDDING_CONFIG } from '@/constants/embeddings';
 import { generateEmbedding } from '@/services/embedding/embedding.service';
 
 // ============================================================================
+// Structured Logging
+// ============================================================================
+
+/**
+ * Log search events with structured data
+ * Uses console.warn for visibility in logs (console.log not allowed by lint)
+ */
+function logSearch(event: string, data: Record<string, unknown>): void {
+  const timestamp = new Date().toISOString();
+  console.warn(`[Search] ${timestamp} ${event}`, JSON.stringify(data));
+}
+
+// ============================================================================
 // Types
 // ============================================================================
 
@@ -29,7 +42,18 @@ export interface HybridSearchOptions {
   type?: 'all' | 'law' | 'section' | 'scenario';
   limit?: number;
   semanticWeight?: number; // 0-1, weight for semantic vs keyword (default 0.6)
+  similarityThreshold?: number; // Override default similarity threshold (0-1)
   lawIds?: string[];
+}
+
+export interface HybridSearchResponse {
+  results: SemanticSearchResult[];
+  meta: {
+    searchMode: 'hybrid' | 'semantic' | 'keyword';
+    semanticResultCount: number;
+    keywordResultCount: number;
+    queryEmbeddingMs?: number;
+  };
 }
 
 interface VectorSearchResult {
@@ -242,8 +266,14 @@ async function searchLawsByKeyword(
 /**
  * Calculate Reciprocal Rank Fusion score
  * RRF(d) = sum(1 / (k + r_i)) where r_i is rank in list i
+ *
+ * @param semanticRank - Rank in semantic results (1-indexed), null if not in semantic results
+ * @param keywordRank - Rank in keyword results (1-indexed), null if not in keyword results
+ * @param k - RRF constant (default 60). Higher values reduce impact of rank differences
+ * @param semanticWeight - Weight for semantic vs keyword (0-1, default 0.6)
+ * @returns Combined RRF score
  */
-function calculateRRFScore(
+export function calculateRRFScore(
   semanticRank: number | null,
   keywordRank: number | null,
   k: number = EMBEDDING_CONFIG.rrfK,
@@ -264,8 +294,9 @@ function calculateRRFScore(
 
 /**
  * Merge semantic and keyword results using RRF
+ * Returns results sorted by RRF score (highest first)
  */
-function mergeWithRRF<T extends { id: string }>(
+export function mergeWithRRF<T extends { id: string }>(
   semanticResults: T[],
   keywordResults: T[],
   semanticWeight: number
@@ -329,20 +360,39 @@ export async function hybridSearch(
     type = 'all',
     limit = 20,
     semanticWeight = EMBEDDING_CONFIG.defaultSemanticWeight,
+    similarityThreshold,
     lawIds,
   } = options;
 
-  // Generate query embedding for semantic search
-  const queryEmbedding = await generateEmbedding(query);
+  const startTime = Date.now();
+  let semanticResultCount = 0;
+  let keywordResultCount = 0;
+  let queryEmbeddingMs = 0;
+
+  // Determine search mode based on semantic weight
+  const searchMode: 'hybrid' | 'semantic' | 'keyword' =
+    semanticWeight === 1.0 ? 'semantic' : semanticWeight === 0.0 ? 'keyword' : 'hybrid';
+
+  // Generate query embedding for semantic search (skip if pure keyword)
+  let queryEmbedding: number[] | null = null;
+  if (semanticWeight > 0) {
+    const embeddingStart = Date.now();
+    queryEmbedding = await generateEmbedding(query);
+    queryEmbeddingMs = Date.now() - embeddingStart;
+  }
 
   const results: SemanticSearchResult[] = [];
+  const vectorOptions = { lawIds, threshold: similarityThreshold };
 
   // Search sections (for 'all' or 'section' type)
   if (type === 'all' || type === 'section') {
     const [semanticSections, keywordSections] = await Promise.all([
-      searchSectionsByVector(queryEmbedding, { lawIds }),
+      queryEmbedding ? searchSectionsByVector(queryEmbedding, vectorOptions) : Promise.resolve([]),
       searchSectionsByKeyword(query, { lawIds }),
     ]);
+
+    semanticResultCount += semanticSections.length;
+    keywordResultCount += keywordSections.length;
 
     const mergedSections = mergeWithRRF(semanticSections, keywordSections, semanticWeight);
 
@@ -365,9 +415,14 @@ export async function hybridSearch(
   // Search scenarios (for 'all' or 'scenario' type)
   if (type === 'all' || type === 'scenario') {
     const [semanticScenarios, keywordScenarios] = await Promise.all([
-      searchScenariosByVector(queryEmbedding),
+      queryEmbedding
+        ? searchScenariosByVector(queryEmbedding, { threshold: similarityThreshold })
+        : Promise.resolve([]),
       searchScenariosByKeyword(query),
     ]);
+
+    semanticResultCount += semanticScenarios.length;
+    keywordResultCount += keywordScenarios.length;
 
     const mergedScenarios = mergeWithRRF(semanticScenarios, keywordScenarios, semanticWeight);
 
@@ -389,6 +444,8 @@ export async function hybridSearch(
       limit: type === 'law' ? limit : Math.ceil(limit / 3),
     });
 
+    keywordResultCount += laws.length;
+
     results.push(
       ...laws.map((law, index) => ({
         type: 'law' as const,
@@ -406,6 +463,18 @@ export async function hybridSearch(
 
   // Sort all results by relevance score
   results.sort((a, b) => b.relevanceScore - a.relevanceScore);
+
+  // Log search completed
+  logSearch('completed', {
+    query: query.slice(0, 100),
+    type,
+    searchMode,
+    resultCount: results.length,
+    semanticResultCount,
+    keywordResultCount,
+    durationMs: Date.now() - startTime,
+    queryEmbeddingMs,
+  });
 
   // Return top results
   return results.slice(0, limit);
