@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import { useAuth } from '@/hooks/use-auth';
 import { createClient } from '@/lib/supabase/client';
+import { UpdateEmailForm } from '@/components/auth/update-email-form';
+import { DeleteAccountForm } from '@/components/auth/delete-account-form';
 import type { UserIdentity, Provider } from '@supabase/supabase-js';
 
 // OAuth providers that can be linked
@@ -192,14 +194,31 @@ export default function SettingsPage() {
         </section>
       )}
 
+      {/* Update Email */}
+      <section className="mb-8">
+        <h2 className="text-foreground mb-4 text-lg font-semibold">Change Email</h2>
+        <div className="border-border rounded-lg border bg-white p-4">
+          <UpdateEmailForm currentEmail={user.email} />
+        </div>
+      </section>
+
       {/* Sign Out */}
-      <section className="border-t border-gray-200 pt-8">
+      <section className="border-border mb-8 border-t pt-8">
+        <h2 className="text-foreground mb-4 text-lg font-semibold">Session</h2>
         <button
           onClick={signOut}
           className="border-border hover:bg-background-secondary rounded-lg border bg-white px-4 py-2 text-sm font-medium transition-colors"
         >
           Sign Out
         </button>
+      </section>
+
+      {/* Delete Account */}
+      <section className="border-error/20 border-t pt-8">
+        <h2 className="text-error mb-4 text-lg font-semibold">Danger Zone</h2>
+        <div className="border-border rounded-lg border bg-white p-4">
+          <DeleteAccountForm />
+        </div>
       </section>
     </div>
   );

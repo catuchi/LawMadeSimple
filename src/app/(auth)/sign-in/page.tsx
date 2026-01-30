@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import { SignInForm } from '@/components/auth/sign-in-form';
 
 export const metadata: Metadata = {
@@ -28,11 +29,25 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
           className="border-error/20 bg-error-light text-error-dark mb-6 rounded-lg border p-3 text-sm"
           role="alert"
         >
-          {error}
+          <p>{error}</p>
+          {error.toLowerCase().includes('confirm') && (
+            <p className="mt-1">
+              <Link href="/resend-confirmation" className="font-medium underline">
+                Resend confirmation email
+              </Link>
+            </p>
+          )}
         </div>
       )}
 
       <SignInForm redirectTo={redirectTo} />
+
+      <p className="text-foreground-muted mt-6 text-center text-xs">
+        Need to confirm your email?{' '}
+        <Link href="/resend-confirmation" className="text-primary hover:underline">
+          Resend confirmation
+        </Link>
+      </p>
     </div>
   );
 }

@@ -2,8 +2,14 @@
 
 import { useActionState, useState, useRef, useCallback } from 'react';
 import Link from 'next/link';
-import { signIn, sendSignInOtp, verifySignInOtp } from '@/services/auth/auth.actions';
+import {
+  signIn,
+  sendSignInOtp,
+  verifySignInOtp,
+  sendMagicLink,
+} from '@/services/auth/auth.actions';
 import { OAuthButtons } from './oauth-buttons';
+import { AUTH_ERRORS } from '@/constants/auth';
 import type { AuthFormState } from '@/types/auth';
 
 interface SignInFormProps {
@@ -11,6 +17,13 @@ interface SignInFormProps {
 }
 
 const initialState: AuthFormState = {};
+
+// Messages that should be styled as info (blue) rather than error (red)
+const INFO_MESSAGES = [AUTH_ERRORS.OTP_USER_NOT_FOUND];
+
+function isInfoMessage(message: string): boolean {
+  return INFO_MESSAGES.includes(message as (typeof INFO_MESSAGES)[number]);
+}
 
 export function SignInForm({ redirectTo }: SignInFormProps) {
   const [passwordState, passwordAction, isPasswordPending] = useActionState(signIn, initialState);
@@ -22,18 +35,23 @@ export function SignInForm({ redirectTo }: SignInFormProps) {
     verifySignInOtp,
     initialState
   );
+  const [magicLinkState, magicLinkAction, isMagicLinkPending] = useActionState(
+    sendMagicLink,
+    initialState
+  );
 
-  // Mode: 'password' or 'code'
-  const [mode, setMode] = useState<'password' | 'code'>('password');
+  // Mode: 'password', 'code', or 'magic'
+  const [mode, setMode] = useState<'password' | 'code' | 'magic'>('password');
   // Email stored when switching to code mode
   const [otpEmail, setOtpEmail] = useState('');
-  // 6-digit code input
+  // 6-digit code input (matches Supabase Email OTP Length setting)
   const [codeDigits, setCodeDigits] = useState(['', '', '', '', '', '']);
   const codeInputRefs = useRef<(HTMLInputElement | null)[]>([]);
   // Form ref for resend functionality
   const otpFormRef = useRef<HTMLFormElement>(null);
 
-  const isPending = isPasswordPending || isOtpSendPending || isOtpVerifyPending;
+  const isPending =
+    isPasswordPending || isOtpSendPending || isOtpVerifyPending || isMagicLinkPending;
 
   // Derive whether code was sent from action state
   const codeSent = !!otpSendState.success;
@@ -46,10 +64,13 @@ export function SignInForm({ redirectTo }: SignInFormProps) {
   }, []);
 
   const handleSwitchToCodeMode = () => {
-    // Get email from password form if available
+    // Get email from current form if available
     const emailInput = document.getElementById('email') as HTMLInputElement;
+    const magicEmailInput = document.getElementById('magic-email') as HTMLInputElement;
     if (emailInput?.value) {
       setOtpEmail(emailInput.value);
+    } else if (magicEmailInput?.value) {
+      setOtpEmail(magicEmailInput.value);
     }
     setMode('code');
     setCodeDigits(['', '', '', '', '', '']);
@@ -58,6 +79,18 @@ export function SignInForm({ redirectTo }: SignInFormProps) {
   const handleSwitchToPasswordMode = () => {
     setMode('password');
     setCodeDigits(['', '', '', '', '', '']);
+  };
+
+  const handleSwitchToMagicMode = () => {
+    // Get email from current form if available
+    const emailInput = document.getElementById('email') as HTMLInputElement;
+    const otpEmailInput = document.getElementById('otp-email') as HTMLInputElement;
+    if (emailInput?.value) {
+      setOtpEmail(emailInput.value);
+    } else if (otpEmailInput?.value) {
+      setOtpEmail(otpEmailInput.value);
+    }
+    setMode('magic');
   };
 
   const handleCodeDigitChange = (index: number, value: string) => {
@@ -185,13 +218,22 @@ export function SignInForm({ redirectTo }: SignInFormProps) {
                 {passwordState.fieldErrors.password}
               </p>
             )}
-            <button
-              type="button"
-              onClick={handleSwitchToCodeMode}
-              className="text-primary/70 hover:text-primary text-sm transition-colors"
-            >
-              Sign in with a code instead
-            </button>
+            <div className="flex justify-between">
+              <button
+                type="button"
+                onClick={handleSwitchToCodeMode}
+                className="text-primary text-sm transition-colors hover:underline"
+              >
+                Sign in with a code
+              </button>
+              <button
+                type="button"
+                onClick={handleSwitchToMagicMode}
+                className="text-primary text-sm transition-colors hover:underline"
+              >
+                Use magic link
+              </button>
+            </div>
           </div>
 
           <button
@@ -203,6 +245,123 @@ export function SignInForm({ redirectTo }: SignInFormProps) {
             {isPasswordPending ? 'Signing in...' : 'Sign in'}
           </button>
         </form>
+
+        <p className="text-foreground-muted text-center text-sm">
+          Don&apos;t have an account?{' '}
+          <Link href="/sign-up" className="text-primary font-medium hover:underline">
+            Sign up
+          </Link>
+        </p>
+      </div>
+    );
+  }
+
+  // Magic link mode
+  if (mode === 'magic') {
+    return (
+      <div className="space-y-6">
+        <OAuthButtons disabled={isPending} />
+
+        <p className="text-foreground-muted text-center text-xs">
+          Previously signed up with Google, Apple, or Facebook? Use those buttons above.
+        </p>
+
+        <div className="relative">
+          <div className="absolute inset-0 flex items-center">
+            <span className="border-border w-full border-t" />
+          </div>
+          <div className="relative flex justify-center text-xs uppercase">
+            <span className="text-foreground-muted bg-white px-2">Or continue with email</span>
+          </div>
+        </div>
+
+        <form action={magicLinkAction} className="space-y-4">
+          {magicLinkState.error && (
+            <div
+              className={`rounded-lg border p-3 text-sm ${
+                isInfoMessage(magicLinkState.error)
+                  ? 'border-primary/20 bg-primary/5 text-primary-700'
+                  : 'border-error/20 bg-error-light text-error-dark'
+              }`}
+              role="alert"
+              aria-live="polite"
+            >
+              {magicLinkState.error}
+              {isInfoMessage(magicLinkState.error) && (
+                <p className="mt-1">
+                  <Link href="/sign-up" className="font-medium underline">
+                    Sign up here
+                  </Link>
+                </p>
+              )}
+            </div>
+          )}
+
+          {magicLinkState.success && (
+            <div
+              className="border-success/20 bg-success-light text-success-dark rounded-lg border p-3 text-sm"
+              role="alert"
+              aria-live="polite"
+            >
+              {magicLinkState.success}
+            </div>
+          )}
+
+          <div className="space-y-2">
+            <label htmlFor="magic-email" className="block text-sm font-medium">
+              Email
+            </label>
+            <input
+              id="magic-email"
+              name="email"
+              type="email"
+              autoComplete="email"
+              required
+              disabled={isPending || !!magicLinkState.success}
+              defaultValue={otpEmail}
+              aria-invalid={!!magicLinkState.fieldErrors?.email}
+              aria-describedby={magicLinkState.fieldErrors?.email ? 'magic-email-error' : undefined}
+              className="border-border placeholder:text-foreground-muted focus:border-primary focus:ring-ring/20 block w-full rounded-lg border bg-white px-4 py-3 text-sm focus:ring-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+              placeholder="you@example.com"
+            />
+            {magicLinkState.fieldErrors?.email && (
+              <p id="magic-email-error" className="text-error text-sm" role="alert">
+                {magicLinkState.fieldErrors.email}
+              </p>
+            )}
+          </div>
+
+          <p className="text-foreground-muted text-sm">
+            We&apos;ll send a sign-in link to your email. No password needed.
+          </p>
+
+          <button
+            type="submit"
+            disabled={isPending || !!magicLinkState.success}
+            aria-busy={isPending}
+            className="bg-primary hover:bg-primary-600 focus:ring-ring w-full rounded-lg px-4 py-3 text-sm font-medium text-white transition-colors focus:ring-2 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {isMagicLinkPending ? 'Sending...' : 'Send magic link'}
+          </button>
+        </form>
+
+        <div className="text-center">
+          <button
+            type="button"
+            onClick={handleSwitchToPasswordMode}
+            className="text-primary text-sm transition-colors hover:underline"
+          >
+            Sign in with password
+          </button>
+          <span className="text-foreground-muted mx-2">·</span>
+          <button
+            type="button"
+            onClick={handleSwitchToCodeMode}
+            className="text-primary text-sm transition-colors hover:underline"
+          >
+            Use 6-digit code
+          </button>
+        </div>
 
         <p className="text-foreground-muted text-center text-sm">
           Don&apos;t have an account?{' '}
@@ -245,11 +404,22 @@ export function SignInForm({ redirectTo }: SignInFormProps) {
         >
           {otpSendState.error && (
             <div
-              className="border-error/20 bg-error-light text-error-dark rounded-lg border p-3 text-sm"
+              className={`rounded-lg border p-3 text-sm ${
+                isInfoMessage(otpSendState.error)
+                  ? 'border-primary/20 bg-primary/5 text-primary-700'
+                  : 'border-error/20 bg-error-light text-error-dark'
+              }`}
               role="alert"
               aria-live="polite"
             >
               {otpSendState.error}
+              {isInfoMessage(otpSendState.error) && (
+                <p className="mt-1">
+                  <Link href="/sign-up" className="font-medium underline">
+                    Sign up here
+                  </Link>
+                </p>
+              )}
             </div>
           )}
 
@@ -291,13 +461,23 @@ export function SignInForm({ redirectTo }: SignInFormProps) {
           </button>
         </form>
 
-        <button
-          type="button"
-          onClick={handleSwitchToPasswordMode}
-          className="text-foreground-muted hover:text-primary w-full text-center text-sm transition-colors"
-        >
-          Sign in with password instead
-        </button>
+        <div className="text-center">
+          <button
+            type="button"
+            onClick={handleSwitchToPasswordMode}
+            className="text-primary text-sm transition-colors hover:underline"
+          >
+            Sign in with password
+          </button>
+          <span className="text-foreground-muted mx-2">·</span>
+          <button
+            type="button"
+            onClick={handleSwitchToMagicMode}
+            className="text-primary text-sm transition-colors hover:underline"
+          >
+            Use magic link
+          </button>
+        </div>
 
         <p className="text-foreground-muted text-center text-sm">
           Don&apos;t have an account?{' '}
@@ -391,7 +571,7 @@ export function SignInForm({ redirectTo }: SignInFormProps) {
         <button
           type="button"
           onClick={handleSwitchToPasswordMode}
-          className="text-foreground-muted hover:text-primary text-sm transition-colors"
+          className="text-primary text-sm transition-colors hover:underline"
         >
           Use password
         </button>

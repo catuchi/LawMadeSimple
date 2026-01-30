@@ -224,12 +224,16 @@ export async function sendMagicLink(
     email,
     options: {
       emailRedirectTo: `${origin}/auth/callback`,
+      shouldCreateUser: false, // Only allow existing users
     },
   });
 
   if (error) {
     if (error.message.includes('rate limit')) {
       return { error: AUTH_ERRORS.RATE_LIMITED };
+    }
+    if (error.message.includes('Signups not allowed')) {
+      return { error: AUTH_ERRORS.OTP_USER_NOT_FOUND };
     }
     return { error: error.message };
   }

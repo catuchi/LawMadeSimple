@@ -4,6 +4,7 @@ export const AUTH_ROUTES = {
   SIGN_UP: '/sign-up',
   FORGOT_PASSWORD: '/forgot-password',
   RESET_PASSWORD: '/reset-password',
+  RESEND_CONFIRMATION: '/resend-confirmation',
   CALLBACK: '/auth/callback',
   CONFIRM: '/auth/confirm',
 } as const;
@@ -25,6 +26,7 @@ export const AUTH_PAGES = [
   AUTH_ROUTES.SIGN_IN,
   AUTH_ROUTES.SIGN_UP,
   AUTH_ROUTES.FORGOT_PASSWORD,
+  AUTH_ROUTES.RESEND_CONFIRMATION,
 ] as const;
 
 // Default redirect paths

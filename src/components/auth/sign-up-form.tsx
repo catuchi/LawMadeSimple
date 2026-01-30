@@ -46,7 +46,13 @@ export function SignUpForm() {
             role="alert"
             aria-live="polite"
           >
-            {state.success}
+            <p>{state.success}</p>
+            <p className="mt-2">
+              Didn&apos;t receive it?{' '}
+              <Link href="/resend-confirmation" className="font-medium underline">
+                Resend confirmation email
+              </Link>
+            </p>
           </div>
         )}
 
