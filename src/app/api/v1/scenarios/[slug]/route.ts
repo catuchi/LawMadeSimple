@@ -22,11 +22,21 @@ export async function GET(request: Request, { params }: RouteParams) {
     const { slug } = await params;
 
     // Fetch scenario with related sections
+    // Use explicit select to avoid fetching Unsupported pgvector embedding field
     const scenario = await prisma.scenario.findUnique({
       where: { slug },
-      include: {
+      select: {
+        id: true,
+        slug: true,
+        title: true,
+        description: true,
+        category: true,
+        isFeatured: true,
+        viewCount: true,
         sections: {
-          include: {
+          select: {
+            relevanceNote: true,
+            relevanceOrder: true,
             section: {
               select: {
                 id: true,

@@ -218,18 +218,31 @@ async function getBookmarkContent(
 }
 
 // Helper: Verify content exists
+// Use explicit select: { id: true } to avoid fetching Unsupported pgvector embedding fields
 async function verifyContentExists(contentType: ContentType, contentId: string): Promise<boolean> {
   switch (contentType) {
     case 'section':
-      return !!(await prisma.section.findUnique({ where: { id: contentId } }));
+      return !!(await prisma.section.findUnique({
+        where: { id: contentId },
+        select: { id: true },
+      }));
     case 'law':
-      return !!(await prisma.law.findUnique({ where: { id: contentId } }));
+      return !!(await prisma.law.findUnique({ where: { id: contentId }, select: { id: true } }));
     case 'scenario':
-      return !!(await prisma.scenario.findUnique({ where: { id: contentId } }));
+      return !!(await prisma.scenario.findUnique({
+        where: { id: contentId },
+        select: { id: true },
+      }));
     case 'article':
-      return !!(await prisma.article.findUnique({ where: { id: contentId } }));
+      return !!(await prisma.article.findUnique({
+        where: { id: contentId },
+        select: { id: true },
+      }));
     case 'explanation':
-      return !!(await prisma.explanation.findUnique({ where: { id: contentId } }));
+      return !!(await prisma.explanation.findUnique({
+        where: { id: contentId },
+        select: { id: true },
+      }));
     default:
       return false;
   }

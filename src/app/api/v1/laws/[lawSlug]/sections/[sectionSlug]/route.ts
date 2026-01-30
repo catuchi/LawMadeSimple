@@ -32,6 +32,7 @@ export async function GET(request: Request, { params }: RouteParams) {
     }
 
     // Then find the section
+    // Use explicit select to avoid fetching Unsupported pgvector embedding field
     const section = await prisma.section.findUnique({
       where: {
         lawId_slug: {
@@ -39,7 +40,14 @@ export async function GET(request: Request, { params }: RouteParams) {
           slug: sectionSlug,
         },
       },
-      include: {
+      select: {
+        id: true,
+        slug: true,
+        number: true,
+        title: true,
+        content: true,
+        summary: true,
+        orderIndex: true,
         articles: {
           select: {
             id: true,
@@ -63,7 +71,7 @@ export async function GET(request: Request, { params }: RouteParams) {
           orderBy: { orderIndex: 'asc' },
         },
         scenarios: {
-          include: {
+          select: {
             scenario: {
               select: {
                 id: true,
@@ -71,6 +79,7 @@ export async function GET(request: Request, { params }: RouteParams) {
                 title: true,
               },
             },
+            relevanceOrder: true,
           },
           orderBy: { relevanceOrder: 'asc' },
         },
