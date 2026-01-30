@@ -137,6 +137,7 @@ export async function embedSection(sectionId: string): Promise<EmbeddingResult> 
     const embedding = await generateEmbedding(embeddingText);
 
     // Store embedding using raw SQL (Prisma doesn't support vector type)
+    // Cast column to text for comparison (Prisma params are text)
     await prisma.$executeRaw`
       UPDATE sections
       SET
@@ -144,7 +145,7 @@ export async function embedSection(sectionId: string): Promise<EmbeddingResult> 
         embedding_model = ${EMBEDDING_CONFIG.model},
         embedded_at = NOW(),
         content_hash = ${newHash}
-      WHERE id = ${sectionId}::uuid
+      WHERE id::text = ${sectionId}
     `;
 
     return { id: sectionId, success: true };
@@ -232,6 +233,7 @@ export async function embedScenario(scenarioId: string): Promise<EmbeddingResult
     const embedding = await generateEmbedding(embeddingText);
 
     // Store embedding using raw SQL (Prisma doesn't support vector type)
+    // Cast column to text for comparison (Prisma params are text)
     await prisma.$executeRaw`
       UPDATE scenarios
       SET
@@ -239,7 +241,7 @@ export async function embedScenario(scenarioId: string): Promise<EmbeddingResult
         embedding_model = ${EMBEDDING_CONFIG.model},
         embedded_at = NOW(),
         content_hash = ${newHash}
-      WHERE id = ${scenarioId}::uuid
+      WHERE id::text = ${scenarioId}
     `;
 
     return { id: scenarioId, success: true };

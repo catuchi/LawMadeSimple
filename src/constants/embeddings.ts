@@ -11,7 +11,7 @@ export const EMBEDDING_CONFIG = {
   maxTokensPerRequest: 8191, // OpenAI limit for text-embedding-3-small
 
   // Search configuration
-  defaultSimilarityThreshold: 0.7, // Minimum cosine similarity to include in results
+  defaultSimilarityThreshold: 0.15, // Minimum cosine similarity to include in results (lowered for text-embedding-3-small)
   maxSemanticResults: 50, // Max results from vector search before fusion
 
   // Reciprocal Rank Fusion (RRF) parameters
