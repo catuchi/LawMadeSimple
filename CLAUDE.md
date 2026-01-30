@@ -170,7 +170,70 @@ npm run db:studio    # Open Prisma Studio (GUI)
 **Phase 8 - Content & Data:**
 - [ ] Seed 9 MVP laws (Constitution, Criminal Code, CAMA, Labour Act, etc.)
 - [ ] Create scenarios and map to sections
+- [ ] **🔴 IMPORTANT: Run embedding backfill after seeding** (see below)
 - [ ] Generate initial AI explanations for key sections
+
+---
+
+## ⚠️ PHASE 8 CRITICAL STEP: Embedding Backfill
+
+**DO NOT SKIP THIS STEP after seeding content!**
+
+The semantic search infrastructure is ready but needs embeddings generated for each Section and Scenario. Without this step, search falls back to keyword-only mode.
+
+### When to Run
+Run this **immediately after** seeding laws and scenarios to the database.
+
+### How to Run
+
+```bash
+# 1. Check current status (should show pending items)
+npx tsx scripts/backfill-embeddings.ts --stats
+
+# 2. Preview what will be embedded (optional)
+npx tsx scripts/backfill-embeddings.ts --dry-run
+
+# 3. Run the actual backfill
+npx tsx scripts/backfill-embeddings.ts
+```
+
+### Expected Output
+```
+Embedding Backfill Script
+============================================================
+Current embedding status:
+  Sections:  0/150 embedded (150 pending)
+  Scenarios: 0/25 embedded (25 pending)
+
+Starting backfill...
+Results:
+  Sections:  150 successful, 0 failed
+  Scenarios: 25 successful, 0 failed
+
+Completed in 45.23s
+```
+
+### Verify in Supabase
+```sql
+SELECT COUNT(*) as total,
+       COUNT(embedding) as embedded
+FROM sections;
+
+SELECT COUNT(*) as total,
+       COUNT(embedding) as embedded
+FROM scenarios;
+```
+
+### Cost Estimate
+- ~500 sections + scenarios = ~$0.005 (less than 1 cent)
+- Uses OpenAI text-embedding-3-small
+
+### If It Fails
+- Check `OPENAI_API_KEY` is set in `.env.local`
+- Check `DATABASE_URL` is set
+- Failed items are logged with IDs - can re-run safely (idempotent)
+
+---
 
 **Future: Build Proper Dashboard**
 When user data exists, build `/dashboard` with:
@@ -334,4 +397,4 @@ New models:
 
 ---
 
-*Last updated: January 30, 2026 (pgvector semantic search implementation)*
+*Last updated: January 30, 2026 (pgvector setup complete, embedding backfill pending Phase 8)*
