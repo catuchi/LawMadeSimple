@@ -96,7 +96,7 @@ export function SignUpForm() {
             placeholder="••••••••"
           />
           <p id="password-hint" className="text-foreground-muted text-xs">
-            Minimum {PASSWORD_REQUIREMENTS.MIN_LENGTH} characters
+            {PASSWORD_REQUIREMENTS.MIN_LENGTH}+ characters with uppercase, lowercase, and a number
           </p>
           {state.fieldErrors?.password && (
             <p id="password-error" className="text-error text-sm" role="alert">

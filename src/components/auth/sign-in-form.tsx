@@ -42,12 +42,15 @@ export function SignInForm({ redirectTo }: SignInFormProps) {
 
   // Mode: 'password', 'code', or 'magic'
   const [mode, setMode] = useState<'password' | 'code' | 'magic'>('password');
-  // Email stored when switching to code mode
-  const [otpEmail, setOtpEmail] = useState('');
+  // Email stored across all modes (controlled input)
+  const [email, setEmail] = useState('');
   // 6-digit code input (matches Supabase Email OTP Length setting)
   const [codeDigits, setCodeDigits] = useState(['', '', '', '', '', '']);
+  // Track if OTP verification error should be shown (cleared on resend)
+  const [showOtpVerifyError, setShowOtpVerifyError] = useState(true);
+
+  // Refs
   const codeInputRefs = useRef<(HTMLInputElement | null)[]>([]);
-  // Form ref for resend functionality
   const otpFormRef = useRef<HTMLFormElement>(null);
 
   const isPending =
@@ -64,32 +67,18 @@ export function SignInForm({ redirectTo }: SignInFormProps) {
   }, []);
 
   const handleSwitchToCodeMode = () => {
-    // Get email from current form if available
-    const emailInput = document.getElementById('email') as HTMLInputElement;
-    const magicEmailInput = document.getElementById('magic-email') as HTMLInputElement;
-    if (emailInput?.value) {
-      setOtpEmail(emailInput.value);
-    } else if (magicEmailInput?.value) {
-      setOtpEmail(magicEmailInput.value);
-    }
     setMode('code');
     setCodeDigits(['', '', '', '', '', '']);
+    setShowOtpVerifyError(true);
   };
 
   const handleSwitchToPasswordMode = () => {
     setMode('password');
     setCodeDigits(['', '', '', '', '', '']);
+    setShowOtpVerifyError(true);
   };
 
   const handleSwitchToMagicMode = () => {
-    // Get email from current form if available
-    const emailInput = document.getElementById('email') as HTMLInputElement;
-    const otpEmailInput = document.getElementById('otp-email') as HTMLInputElement;
-    if (emailInput?.value) {
-      setOtpEmail(emailInput.value);
-    } else if (otpEmailInput?.value) {
-      setOtpEmail(otpEmailInput.value);
-    }
     setMode('magic');
   };
 
@@ -131,6 +120,7 @@ export function SignInForm({ redirectTo }: SignInFormProps) {
 
   const handleResendCode = () => {
     setCodeDigits(['', '', '', '', '', '']);
+    setShowOtpVerifyError(false); // Hide previous verification error
     // Submit the OTP form again to resend
     if (otpFormRef.current) {
       otpFormRef.current.requestSubmit();
@@ -180,6 +170,8 @@ export function SignInForm({ redirectTo }: SignInFormProps) {
               autoComplete="email"
               required
               disabled={isPending}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               aria-invalid={!!passwordState.fieldErrors?.email}
               aria-describedby={passwordState.fieldErrors?.email ? 'email-error' : undefined}
               className="border-border placeholder:text-foreground-muted focus:border-primary focus:ring-ring/20 block w-full rounded-lg border bg-white px-4 py-3 text-sm focus:ring-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
@@ -318,7 +310,8 @@ export function SignInForm({ redirectTo }: SignInFormProps) {
               autoComplete="email"
               required
               disabled={isPending || !!magicLinkState.success}
-              defaultValue={otpEmail}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               aria-invalid={!!magicLinkState.fieldErrors?.email}
               aria-describedby={magicLinkState.fieldErrors?.email ? 'magic-email-error' : undefined}
               className="border-border placeholder:text-foreground-muted focus:border-primary focus:ring-ring/20 block w-full rounded-lg border bg-white px-4 py-3 text-sm focus:ring-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
@@ -395,8 +388,6 @@ export function SignInForm({ redirectTo }: SignInFormProps) {
         <form
           ref={otpFormRef}
           action={async (formData) => {
-            const email = formData.get('email') as string;
-            setOtpEmail(email);
             await otpSendAction(formData);
             focusFirstCodeInput();
           }}
@@ -434,7 +425,8 @@ export function SignInForm({ redirectTo }: SignInFormProps) {
               autoComplete="email"
               required
               disabled={isPending}
-              defaultValue={otpEmail}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               aria-invalid={!!otpSendState.fieldErrors?.email}
               aria-describedby={otpSendState.fieldErrors?.email ? 'otp-email-error' : undefined}
               className="border-border placeholder:text-foreground-muted focus:border-primary focus:ring-ring/20 block w-full rounded-lg border bg-white px-4 py-3 text-sm focus:ring-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
@@ -494,7 +486,7 @@ export function SignInForm({ redirectTo }: SignInFormProps) {
     <div className="space-y-6">
       <div className="text-center">
         <div className="bg-success-light text-success-dark mx-auto mb-4 rounded-lg p-3 text-sm">
-          Code sent to <span className="font-medium">{otpEmail}</span>
+          Code sent to <span className="font-medium">{email}</span>
         </div>
       </div>
 
@@ -503,19 +495,20 @@ export function SignInForm({ redirectTo }: SignInFormProps) {
         ref={otpFormRef}
         action={async (formData) => {
           await otpSendAction(formData);
+          setShowOtpVerifyError(true); // Re-enable error display after resend completes
           focusFirstCodeInput();
         }}
         className="hidden"
       >
-        <input type="hidden" name="email" value={otpEmail} />
+        <input type="hidden" name="email" value={email} />
       </form>
 
       <form action={otpVerifyAction} className="space-y-4">
-        <input type="hidden" name="email" value={otpEmail} />
+        <input type="hidden" name="email" value={email} />
         <input type="hidden" name="token" value={codeDigits.join('')} />
         {redirectTo && <input type="hidden" name="redirectTo" value={redirectTo} />}
 
-        {otpVerifyState.error && (
+        {showOtpVerifyError && otpVerifyState.error && (
           <div
             className="border-error/20 bg-error-light text-error-dark rounded-lg border p-3 text-sm"
             role="alert"

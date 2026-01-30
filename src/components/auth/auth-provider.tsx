@@ -19,16 +19,31 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const supabase = useMemo(() => createClient(), []);
 
   // Initialize auth state
+  // Uses getUser() instead of getSession() for security - getUser() validates
+  // the JWT with Supabase server, while getSession() only reads from local storage
   useEffect(() => {
     const initializeAuth = async () => {
       try {
+        // getUser() validates the session with the server (more secure)
         const {
-          data: { session: initialSession },
-        } = await supabase.auth.getSession();
-        setSession(initialSession);
-        setUser(initialSession?.user ?? null);
+          data: { user: validatedUser },
+        } = await supabase.auth.getUser();
+
+        if (validatedUser) {
+          // Get fresh session after validation
+          const {
+            data: { session: currentSession },
+          } = await supabase.auth.getSession();
+          setSession(currentSession);
+          setUser(validatedUser);
+        } else {
+          setSession(null);
+          setUser(null);
+        }
       } catch (error) {
         console.error('Error initializing auth:', error);
+        setSession(null);
+        setUser(null);
       } finally {
         setIsLoading(false);
       }

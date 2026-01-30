@@ -26,11 +26,27 @@ export function extractUserSyncData(supabaseUser: SupabaseUser): UserSyncData {
  * Syncs a Supabase user to the Prisma User model.
  * Uses upsert to create or update the user record.
  * Called after successful sign-in, OAuth callback, or email confirmation.
+ *
+ * Returns error if user was previously deleted (soft delete).
  */
 export async function syncUserToPrisma(supabaseUser: SupabaseUser) {
   const userData = extractUserSyncData(supabaseUser);
 
   try {
+    // Check if user exists and was deleted
+    const existingUser = await prisma.user.findUnique({
+      where: { id: userData.id },
+      select: { deletedAt: true },
+    });
+
+    if (existingUser?.deletedAt) {
+      return {
+        success: false,
+        error: 'ACCOUNT_DELETED',
+        message: 'This account has been deleted.',
+      };
+    }
+
     const user = await prisma.user.upsert({
       where: { id: userData.id },
       create: {
@@ -101,16 +117,42 @@ export async function updateUserPreferences(userId: string, preferences: Prisma.
 }
 
 /**
- * Deletes a user from Prisma (for account deletion).
+ * Soft deletes a user from Prisma (for account deletion).
+ * Sets deletedAt timestamp instead of hard delete to:
+ * 1. Preserve data integrity (foreign keys)
+ * 2. Prevent re-registration with same Supabase ID
+ * 3. Allow potential account recovery in future
  */
 export async function deleteUser(userId: string) {
   try {
-    await prisma.user.delete({
+    await prisma.user.update({
       where: { id: userId },
+      data: {
+        deletedAt: new Date(),
+        // Clear sensitive data but keep record
+        name: null,
+        avatarUrl: null,
+        preferences: {},
+      },
     });
     return { success: true };
   } catch (error) {
     console.error('Failed to delete user:', error);
     return { success: false, error };
+  }
+}
+
+/**
+ * Check if a user account has been deleted.
+ */
+export async function isUserDeleted(userId: string): Promise<boolean> {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { deletedAt: true },
+    });
+    return !!user?.deletedAt;
+  } catch {
+    return false;
   }
 }

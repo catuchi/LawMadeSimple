@@ -182,7 +182,16 @@ export async function signIn(
   if (data.user) {
     const syncResult = await syncUserToPrisma(data.user);
     if (!syncResult.success) {
+      // Sign out to prevent inconsistent state
+      await supabase.auth.signOut();
+
+      // Check if account was deleted
+      if (syncResult.error === 'ACCOUNT_DELETED') {
+        return { error: AUTH_ERRORS.ACCOUNT_DELETED };
+      }
+
       console.error('User sync failed after sign in');
+      return { error: AUTH_ERRORS.USER_SYNC_FAILED };
     }
   }
 
@@ -470,7 +479,16 @@ export async function verifySignInOtp(
   if (data.user) {
     const syncResult = await syncUserToPrisma(data.user);
     if (!syncResult.success) {
+      // Sign out to prevent inconsistent state
+      await supabase.auth.signOut();
+
+      // Check if account was deleted
+      if (syncResult.error === 'ACCOUNT_DELETED') {
+        return { error: AUTH_ERRORS.ACCOUNT_DELETED };
+      }
+
       console.error('User sync failed after OTP sign in');
+      return { error: AUTH_ERRORS.USER_SYNC_FAILED };
     }
   }
 

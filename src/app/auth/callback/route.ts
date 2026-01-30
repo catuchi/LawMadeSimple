@@ -46,7 +46,20 @@ export async function GET(request: NextRequest) {
   if (data.user) {
     const syncResult = await syncUserToPrisma(data.user);
     if (!syncResult.success) {
-      console.error('User sync failed after OAuth callback');
+      console.error('User sync failed after OAuth callback:', syncResult.error);
+
+      // Sign out to prevent inconsistent state
+      await supabase.auth.signOut();
+
+      // Handle deleted account
+      const errorMessage =
+        syncResult.error === 'ACCOUNT_DELETED'
+          ? 'This account has been deleted and cannot be used.'
+          : AUTH_ERRORS.USER_SYNC_FAILED;
+
+      const errorUrl = new URL('/sign-in', origin);
+      errorUrl.searchParams.set('error', errorMessage);
+      return NextResponse.redirect(errorUrl);
     }
   }
 

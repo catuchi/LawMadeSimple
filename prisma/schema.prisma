@@ -160,13 +160,14 @@ model ScenarioSection {
 // ============================================================================
 
 model User {
-  id          String   @id // Matches Supabase auth.users.id
-  email       String   @unique
+  id          String    @id // Matches Supabase auth.users.id
+  email       String    @unique
   name        String?
-  avatarUrl   String?  @map("avatar_url")
-  preferences Json     @default("{}")
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
+  avatarUrl   String?   @map("avatar_url")
+  preferences Json      @default("{}")
+  deletedAt   DateTime? @map("deleted_at") // Soft delete - null means active
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
 
   bookmarks    Bookmark[]
   feedback     Feedback[]
@@ -174,6 +175,7 @@ model User {
   subscription Subscription?
   usageRecords UsageRecord[]
 
+  @@index([deletedAt]) // For filtering active users
   @@map("users")
 }
 

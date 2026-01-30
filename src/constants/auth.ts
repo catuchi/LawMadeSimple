@@ -22,6 +22,7 @@ export const PROTECTED_ROUTES = [
 export const PUBLIC_ROUTES = ['/', '/laws', '/scenarios', '/search'] as const;
 
 // Routes that should redirect to home if user is already authenticated
+// Note: reset-password is NOT included because authenticated users may want to change password
 export const AUTH_PAGES = [
   AUTH_ROUTES.SIGN_IN,
   AUTH_ROUTES.SIGN_UP,
@@ -56,13 +57,14 @@ export const AUTH_ERRORS = {
   PASSWORD_RESET_SENT: 'Check your email for password reset instructions.',
   UNKNOWN_ERROR: 'An unexpected error occurred. Please try again.',
   RATE_LIMITED: 'Too many attempts. Please try again later.',
-  USER_SYNC_FAILED: 'Failed to sync user data. Please try again.',
+  USER_SYNC_FAILED: 'Unable to complete sign in. Please try again.',
   TOS_REQUIRED: 'You must accept the Terms of Service to continue.',
   NOT_AUTHENTICATED: 'You must be signed in to perform this action.',
   DELETE_CONFIRMATION_MISMATCH: 'Please type "DELETE" to confirm account deletion.',
   OTP_USER_NOT_FOUND: 'No account found with this email. Please sign up first.',
   INVALID_OTP: 'Invalid code. Please check and try again.',
   OTP_EXPIRED: 'Code has expired. Please request a new one.',
+  ACCOUNT_DELETED: 'This account has been deleted and cannot be used.',
 } as const;
 
 // Auth success messages
