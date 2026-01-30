@@ -99,6 +99,42 @@ npm run db:studio    # Open Prisma Studio (GUI)
 - TypeScript strict mode enforced
 - ESLint as errors (not warnings)
 
+### ⚠️ pgvector / Prisma Gotchas
+
+**1. Always use explicit `select` for Section/Scenario queries:**
+
+The `embedding` field uses `Unsupported("vector(1536)")` which Prisma cannot deserialize. Any query that fetches all fields will fail.
+
+```typescript
+// ❌ BAD - fetches embedding field, causes error
+prisma.section.findUnique({ where: { id } })
+prisma.scenario.findUnique({ where: { slug }, include: { sections: true } })
+
+// ✅ GOOD - explicit select excludes embedding
+prisma.section.findUnique({
+  where: { id },
+  select: { id: true, title: true, content: true, ... }
+})
+```
+
+**2. Use `id::text` for UUID comparisons in raw SQL:**
+
+Prisma parameters are text, so cast the column instead of the parameter.
+
+```typescript
+// ❌ BAD - type mismatch
+WHERE id = ${sectionId}::uuid
+
+// ✅ GOOD - cast column to text
+WHERE id::text = ${sectionId}
+```
+
+**3. OpenAI API key required for:**
+- Semantic/hybrid search (query embedding generation)
+- AI explanations (GPT-4o-mini)
+
+Set `OPENAI_API_KEY` in both `.env.local` and Vercel environment variables.
+
 ---
 
 ## Current Phase
@@ -158,6 +194,11 @@ npm run db:studio    # Open Prisma Studio (GUI)
 - [x] ~~Change post-login redirect from `/dashboard` to `/` (homepage)~~ ✅
 - [x] ~~Set up Facebook OAuth~~ ✅
 - [x] ~~Auth security audit and fixes~~ ✅ (reset password validation, soft delete, sync failure handling)
+- [x] ~~Fix pgvector Unsupported type causing API errors~~ ✅ (use explicit `select` in routes)
+- [x] ~~Fix embedding backfill UUID casting~~ ✅ (use `id::text` for Prisma raw SQL)
+- [x] ~~Configure OpenAI API key~~ ✅ (local + Vercel)
+- [x] ~~Run embedding backfill for sample data~~ ✅ (5 sections, 1 scenario)
+- [x] ~~Test semantic search end-to-end~~ ✅
 
 **Phase 7 - Integration & Polish:**
 - [x] Polish API integration (typed client wrapper, error handling) ✅
@@ -188,13 +229,13 @@ Run this **immediately after** seeding laws and scenarios to the database.
 
 ```bash
 # 1. Check current status (should show pending items)
-npx tsx scripts/backfill-embeddings.ts --stats
+DOTENV_CONFIG_PATH=.env.local npx tsx -r dotenv/config scripts/backfill-embeddings.ts --stats
 
 # 2. Preview what will be embedded (optional)
-npx tsx scripts/backfill-embeddings.ts --dry-run
+DOTENV_CONFIG_PATH=.env.local npx tsx -r dotenv/config scripts/backfill-embeddings.ts --dry-run
 
 # 3. Run the actual backfill
-npx tsx scripts/backfill-embeddings.ts
+DOTENV_CONFIG_PATH=.env.local npx tsx -r dotenv/config scripts/backfill-embeddings.ts
 ```
 
 ### Expected Output
@@ -336,7 +377,9 @@ enum LawCategory {
 - **Search Modes:** `keyword`, `semantic`, `hybrid` (default: `hybrid`)
 - **Algorithm:** Reciprocal Rank Fusion (RRF) combines semantic + keyword results
 - **Index Type:** HNSW for fast approximate nearest neighbor search
-- **Backfill Script:** `npx tsx scripts/backfill-embeddings.ts`
+- **Similarity Threshold:** 0.15 (lowered from 0.7 for text-embedding-3-small)
+- **Backfill Script:** `DOTENV_CONFIG_PATH=.env.local npx tsx -r dotenv/config scripts/backfill-embeddings.ts`
+- **Status:** ✅ Working in production (sample data embedded)
 
 Search API supports `mode` parameter:
 ```
@@ -397,4 +440,4 @@ New models:
 
 ---
 
-*Last updated: January 30, 2026 (pgvector setup complete, embedding backfill pending Phase 8)*
+*Last updated: January 30, 2026 (pgvector working, semantic search live, sample embeddings generated)*
