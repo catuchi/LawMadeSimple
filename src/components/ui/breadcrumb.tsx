@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ChevronRight, Home } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Home } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export interface BreadcrumbItem {
@@ -13,9 +13,24 @@ interface BreadcrumbProps {
 }
 
 export function Breadcrumb({ items, className }: BreadcrumbProps) {
+  // Find the last item with an href for the mobile back link
+  const backItem = [...items].reverse().find((item) => item.href);
+  const backHref = backItem?.href || '/';
+  const backLabel = backItem?.label || 'Home';
+
   return (
     <nav aria-label="Breadcrumb" className={cn('flex items-center', className)}>
-      <ol className="flex flex-wrap items-center gap-1.5 text-sm">
+      {/* Mobile: Simple back link */}
+      <Link
+        href={backHref}
+        className="flex items-center gap-1 text-sm text-[var(--color-neutral-500)] transition-colors hover:text-[var(--color-primary-500)] sm:hidden"
+      >
+        <ChevronLeft className="size-4" aria-hidden="true" />
+        <span className="max-w-[150px] truncate">{backLabel}</span>
+      </Link>
+
+      {/* Desktop: Full breadcrumb trail */}
+      <ol className="hidden flex-wrap items-center gap-1.5 text-sm sm:flex">
         {/* Home link */}
         <li className="flex items-center">
           <Link

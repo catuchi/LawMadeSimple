@@ -156,7 +156,7 @@ export default function SavedItemsPage() {
     <div className="flex min-h-screen flex-col">
       <Header />
 
-      <main id="main-content" className="flex-1">
+      <main id="main-content" className="animate-page-enter flex-1">
         {/* Page Header */}
         <section className="border-b border-[var(--color-neutral-200)] bg-white px-4 py-6 md:px-8 md:py-8">
           <div className="mx-auto max-w-4xl">

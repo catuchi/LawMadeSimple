@@ -5,7 +5,8 @@ import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { Badge } from '@/components/ui/badge';
-import type { LawListItem, ApiSuccessResponse } from '@/types/api';
+import { prisma } from '@/lib/db';
+import type { LawCategory } from '@prisma/client';
 
 export const metadata: Metadata = {
   title: 'Browse Nigerian Laws | LawMadeSimple',
@@ -52,19 +53,33 @@ const categoryInfo: Record<string, { label: string; iconEmoji: string; descripti
   },
 };
 
+interface LawListItem {
+  id: string;
+  title: string;
+  shortTitle: string;
+  slug: string;
+  category: LawCategory;
+  description: string | null;
+  _count: { sections: number };
+}
+
 async function getLaws(): Promise<LawListItem[]> {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
-    const response = await fetch(`${baseUrl}/api/v1/laws?active=true`, {
-      next: { revalidate: 3600 }, // Cache for 1 hour
+    // Direct Prisma query instead of HTTP fetch (avoids build timeout)
+    const laws = await prisma.law.findMany({
+      where: { isActive: true },
+      select: {
+        id: true,
+        title: true,
+        shortTitle: true,
+        slug: true,
+        category: true,
+        description: true,
+        _count: { select: { sections: true } },
+      },
+      orderBy: [{ category: 'asc' }, { title: 'asc' }],
     });
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch laws: ${response.status}`);
-    }
-
-    const json: ApiSuccessResponse<LawListItem[]> = await response.json();
-    return json.data;
+    return laws;
   } catch (error) {
     console.error('Error fetching laws:', error);
     return [];
@@ -91,7 +106,7 @@ export default async function LawsPage() {
     <div className="flex min-h-screen flex-col">
       <Header />
 
-      <main id="main-content" className="flex-1">
+      <main id="main-content" className="animate-page-enter flex-1">
         {/* Page Header */}
         <section className="border-b border-[var(--color-neutral-200)] bg-white px-4 py-6 md:px-8 md:py-8">
           <div className="mx-auto max-w-6xl">
@@ -177,7 +192,8 @@ export default async function LawsPage() {
                               <div className="flex items-center gap-1">
                                 <FileText className="size-3.5" />
                                 <span>
-                                  {law.sectionCount} section{law.sectionCount !== 1 ? 's' : ''}
+                                  {law._count.sections} section
+                                  {law._count.sections !== 1 ? 's' : ''}
                                 </span>
                               </div>
                               <Badge variant="default" className="text-[10px]">

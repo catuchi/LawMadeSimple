@@ -25,10 +25,10 @@ export function Footer() {
   return (
     <footer className="border-t border-[var(--color-neutral-200)] bg-[var(--color-neutral-50)]">
       <div className="mx-auto max-w-7xl px-4 py-12 md:px-8">
-        {/* Top Section */}
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
-          {/* Brand */}
-          <div className="lg:col-span-1">
+        {/* Top Section - responsive grid: 1 col mobile, 2 cols sm, 4 cols lg */}
+        <div className="grid gap-6 sm:grid-cols-2 sm:gap-8 lg:grid-cols-4">
+          {/* Brand - spans full width on sm screens */}
+          <div className="sm:col-span-2 lg:col-span-1">
             <Link href="/" className="flex items-center gap-2">
               <Scale className="text-primary size-6" />
               <span className="font-heading text-primary text-lg font-semibold">LawMadeSimple</span>

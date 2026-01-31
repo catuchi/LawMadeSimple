@@ -61,7 +61,7 @@ export default function Home() {
     <div className="flex min-h-screen flex-col">
       <Header />
 
-      <main id="main-content" className="flex-1">
+      <main id="main-content" className="animate-page-enter flex-1">
         {/* Hero Section */}
         <section className="bg-gradient-to-b from-[var(--color-primary-50)] to-white px-4 pt-16 pb-12 md:pt-24 md:pb-16">
           <div className="mx-auto max-w-4xl text-center">
@@ -83,24 +83,26 @@ export default function Home() {
         </section>
 
         {/* Scenario Pills Section */}
-        <section className="border-b border-[var(--color-neutral-200)] bg-white px-4 py-8">
-          <div className="mx-auto max-w-5xl">
+        <section className="border-b border-[var(--color-neutral-200)] bg-white py-8">
+          <div className="mx-auto max-w-5xl px-4">
             <h2 className="mb-6 text-center text-sm font-medium tracking-wide text-[var(--color-neutral-500)] uppercase">
               I&apos;m dealing with...
             </h2>
 
             {/* Pills - horizontal scroll on mobile, wrap on desktop */}
-            <div className="relative flex justify-center">
-              {/* Fade gradient hint - mobile only */}
-              <div className="pointer-events-none absolute top-0 right-0 z-10 h-full w-12 bg-gradient-to-l from-white to-transparent md:hidden" />
+            <div className="relative">
+              {/* Fade gradient hints - mobile only */}
+              <div className="pointer-events-none absolute top-0 left-0 z-10 h-full w-6 bg-gradient-to-r from-white to-transparent md:hidden" />
+              <div className="pointer-events-none absolute top-0 right-0 z-10 h-full w-6 bg-gradient-to-l from-white to-transparent md:hidden" />
 
-              <div className="flex gap-3 overflow-x-auto pb-2 md:flex-wrap md:justify-center md:overflow-x-visible md:pb-0">
+              <div className="scrollbar-none -mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-2 md:mx-0 md:snap-none md:flex-wrap md:justify-center md:overflow-x-visible md:px-0 md:pb-0">
                 {scenarioPills.map((pill) => (
                   <ScenarioPill
                     key={pill.href}
                     label={pill.label}
                     href={pill.href}
                     iconEmoji={pill.iconEmoji}
+                    className="snap-start"
                   />
                 ))}
               </div>
