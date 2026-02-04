@@ -25,25 +25,21 @@ interface PageProps {
 }
 
 async function getLawData(lawSlug: string): Promise<LawDetail | null> {
-  try {
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
-    const response = await fetch(`${baseUrl}/api/v1/laws/${lawSlug}`, {
-      next: { revalidate: 3600 }, // Cache for 1 hour
-    });
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+  const response = await fetch(`${baseUrl}/api/v1/laws/${lawSlug}`, {
+    next: { revalidate: 3600 }, // Cache for 1 hour
+  });
 
-    if (!response.ok) {
-      if (response.status === 404) {
-        return null;
-      }
-      throw new Error(`Failed to fetch law: ${response.status}`);
+  if (!response.ok) {
+    if (response.status === 404) {
+      return null; // Let notFound() handle this
     }
-
-    const json: ApiSuccessResponse<LawDetail> = await response.json();
-    return json.data;
-  } catch (error) {
-    console.error('Error fetching law:', error);
-    return null;
+    // Throw error to be caught by error.tsx boundary
+    throw new Error(`Failed to fetch law: ${response.status}`);
   }
+
+  const json: ApiSuccessResponse<LawDetail> = await response.json();
+  return json.data;
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {

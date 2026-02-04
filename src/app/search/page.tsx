@@ -130,14 +130,14 @@ function SearchResultsContent() {
                     )}
                   </div>
 
-                  {/* Type Filters */}
+                  {/* Type Filters - larger touch targets on mobile */}
                   <div className="flex flex-wrap gap-2">
                     {typeFilters.map((filter) => (
                       <button
                         key={filter.value}
                         onClick={() => handleTypeChange(filter.value)}
                         className={cn(
-                          'rounded-full px-3 py-1.5 text-sm font-medium transition-colors',
+                          'rounded-full px-4 py-2 text-sm font-medium transition-colors sm:px-3 sm:py-1.5',
                           type === filter.value
                             ? 'bg-[var(--color-primary-500)] text-white'
                             : 'bg-white text-[var(--color-neutral-600)] hover:bg-[var(--color-neutral-100)]'

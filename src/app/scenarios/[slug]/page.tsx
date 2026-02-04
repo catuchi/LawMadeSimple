@@ -113,62 +113,58 @@ export async function generateStaticParams() {
 }
 
 async function getScenarioData(slug: string): Promise<ScenarioDetail | null> {
-  try {
-    // Query database directly instead of fetching from API
-    // This works during build time (static generation) without needing a running server
-    const scenario = await prisma.scenario.findUnique({
-      where: { slug },
-      select: {
-        id: true,
-        slug: true,
-        title: true,
-        description: true,
-        category: true,
-        sections: {
-          select: {
-            relevanceNote: true,
-            relevanceOrder: true,
-            section: {
-              select: {
-                id: true,
-                slug: true,
-                title: true,
-                law: {
-                  select: { slug: true },
-                },
+  // Query database directly instead of fetching from API
+  // This works during build time (static generation) without needing a running server
+  // Errors thrown here are caught by error.tsx boundary
+  const scenario = await prisma.scenario.findUnique({
+    where: { slug },
+    select: {
+      id: true,
+      slug: true,
+      title: true,
+      description: true,
+      category: true,
+      sections: {
+        select: {
+          relevanceNote: true,
+          relevanceOrder: true,
+          section: {
+            select: {
+              id: true,
+              slug: true,
+              title: true,
+              law: {
+                select: { slug: true },
               },
             },
           },
-          orderBy: { relevanceOrder: 'asc' },
         },
+        orderBy: { relevanceOrder: 'asc' },
       },
-    });
+    },
+  });
 
-    if (!scenario) {
-      return null;
-    }
-
-    // Transform related sections
-    const relatedSections: RelatedSectionItem[] = scenario.sections.map((ss) => ({
-      id: ss.section.id,
-      lawSlug: ss.section.law.slug,
-      sectionSlug: ss.section.slug,
-      title: ss.section.title,
-      relevanceNote: ss.relevanceNote,
-    }));
-
-    return {
-      id: scenario.id,
-      slug: scenario.slug,
-      title: scenario.title,
-      description: scenario.description,
-      category: scenario.category,
-      relatedSections,
-    };
-  } catch (error) {
-    console.error('Error fetching scenario:', error);
-    return null;
+  if (!scenario) {
+    return null; // Let the page handle this with placeholder content
   }
+
+  // Transform related sections
+  const relatedSections: RelatedSectionItem[] = scenario.sections.map((ss) => ({
+    id: ss.section.id,
+    lawSlug: ss.section.law.slug,
+    sectionSlug: ss.section.slug,
+    title: ss.section.title,
+    relevanceNote: ss.relevanceNote,
+  }));
+
+  return {
+    id: scenario.id,
+    slug: scenario.slug,
+    title: scenario.title,
+    description: scenario.description,
+    category: scenario.category,
+    relatedSections,
+  };
 }
 
 export default async function ScenarioDetailPage({ params }: PageProps) {

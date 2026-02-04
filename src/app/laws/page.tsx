@@ -64,26 +64,22 @@ interface LawListItem {
 }
 
 async function getLaws(): Promise<LawListItem[]> {
-  try {
-    // Direct Prisma query instead of HTTP fetch (avoids build timeout)
-    const laws = await prisma.law.findMany({
-      where: { isActive: true },
-      select: {
-        id: true,
-        title: true,
-        shortTitle: true,
-        slug: true,
-        category: true,
-        description: true,
-        _count: { select: { sections: true } },
-      },
-      orderBy: [{ category: 'asc' }, { title: 'asc' }],
-    });
-    return laws;
-  } catch (error) {
-    console.error('Error fetching laws:', error);
-    return [];
-  }
+  // Direct Prisma query instead of HTTP fetch (avoids build timeout)
+  // Errors thrown here are caught by error.tsx boundary
+  const laws = await prisma.law.findMany({
+    where: { isActive: true },
+    select: {
+      id: true,
+      title: true,
+      shortTitle: true,
+      slug: true,
+      category: true,
+      description: true,
+      _count: { select: { sections: true } },
+    },
+    orderBy: [{ category: 'asc' }, { title: 'asc' }],
+  });
+  return laws;
 }
 
 export default async function LawsPage() {
