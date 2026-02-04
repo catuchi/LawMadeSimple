@@ -1,18 +1,21 @@
 // GET /api/v1/admin/embeddings - Embedding system status and health check
-// Auth: Required (authenticated user only for now)
+// Auth: Admin only (email allowlist via ADMIN_EMAILS env var)
 
 import { success, unauthorized, handleError } from '@/lib/api';
-import { getCurrentUser } from '@/lib/api/auth';
+import { requireAdmin, AuthError } from '@/lib/api/auth';
 import { getEmbeddingStats, validateEmbeddingConfig } from '@/services/embedding/embedding.service';
 import { EMBEDDING_CONFIG } from '@/constants/embeddings';
 
 export async function GET() {
   try {
-    // Require authentication (for now, any authenticated user can access)
-    // TODO: Add proper admin role checking when roles are implemented
-    const { userId } = await getCurrentUser();
-    if (!userId) {
-      return unauthorized('Authentication required to access embedding status');
+    // Require admin access (checks ADMIN_EMAILS env var)
+    try {
+      await requireAdmin();
+    } catch (error) {
+      if (error instanceof AuthError) {
+        return unauthorized(error.message);
+      }
+      throw error;
     }
 
     // Get embedding configuration validity

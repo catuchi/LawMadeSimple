@@ -84,3 +84,36 @@ export class AuthError extends Error {
     this.name = 'AuthError';
   }
 }
+
+/**
+ * Check if a user email is in the admin allowlist.
+ * Admin emails are configured via ADMIN_EMAILS environment variable (comma-separated).
+ */
+export function isAdminEmail(email: string | null | undefined): boolean {
+  if (!email) return false;
+
+  const adminEmails = process.env.ADMIN_EMAILS?.split(',').map((e) => e.trim().toLowerCase()) || [];
+  return adminEmails.includes(email.toLowerCase());
+}
+
+/**
+ * Check if the current user is an admin.
+ */
+export async function isAdmin(): Promise<boolean> {
+  const { user } = await getCurrentUser();
+  return isAdminEmail(user?.email);
+}
+
+/**
+ * Require admin access for an endpoint.
+ * Throws if user is not authenticated or not an admin.
+ */
+export async function requireAdmin(): Promise<{ user: User; userId: string }> {
+  const { user, userId } = await requireAuth();
+
+  if (!isAdminEmail(user.email)) {
+    throw new AuthError('Admin access required');
+  }
+
+  return { user, userId };
+}

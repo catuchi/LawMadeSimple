@@ -139,16 +139,16 @@ Set `OPENAI_API_KEY` in both `.env.local` and Vercel environment variables.
 
 ## Current Phase
 
-**Phase 7: Integration & Polish** — Up Next
+**Phase 7: Integration & Polish** — Near Complete (6/8 issues done)
 
 ### Progress (aligned with plan.md)
 - ✅ Phase 1: Project Foundation — Complete
 - ✅ Phase 2: Database & Backend — Complete
-- ✅ Phase 3: Core API Endpoints — Complete (13 API routes)
+- ✅ Phase 3: Core API Endpoints — Complete (14 API routes)
 - ✅ Phase 4: AI Integration — Complete
 - ✅ Phase 5: Frontend Foundation — Complete (design system + components)
 - ✅ **Phase 6: Frontend Pages — Complete** (all pages built)
-- ⚠️ Phase 7: Integration & Polish — Partial (auth state done)
+- ⚠️ Phase 7: Integration & Polish — 6/8 issues resolved (see `.claude/phase7-issues-plan.md`)
 - ⏳ Phase 8: Content & Data — Pending
 - ⏳ Phase 9-12: Testing, Security, Docs, Launch — Pending
 
@@ -184,9 +184,10 @@ Set `OPENAI_API_KEY` in both `.env.local` and Vercel environment variables.
 
 | Issue | Impact | When to Fix |
 |-------|--------|-------------|
-| Race condition on explanation cache | Concurrent requests for same uncached content = duplicate AI calls | When traffic increases; add "generation in progress" flag or distributed lock |
+| ~~Race condition on explanation cache~~ | ~~Concurrent requests = duplicate AI calls~~ | ✅ **FIXED** via Redis distributed lock (`src/lib/redis.ts`) |
 | No data seeded | Pages show "Coming Soon" placeholders | Phase 8: seed law content |
-| Supabase built-in email limit | 2 emails/hour max (confirmations, magic links, password resets) | Before production launch: set up custom SMTP (Resend, SendGrid, or Postmark) |
+| **🔴 Supabase email limit** | **2 emails/hour** (signup, magic link, password reset) | **BEFORE LAUNCH:** Register domain + set up Resend SMTP. Full guide: `.claude/phase7-issues-plan.md` → Issue 1.1 |
+| ~~Next.js middleware deprecation~~ | ~~Build warning~~ | ✅ **FIXED** Migrated to `src/proxy.ts` (Jan 31, 2026) |
 
 ### Next Session: Pending Tasks
 
