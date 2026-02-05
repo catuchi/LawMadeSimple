@@ -2,7 +2,7 @@
 
 > **Project:** LawMadeSimple
 > **Created:** February 5, 2026
-> **Status:** IN PROGRESS - Phase 8c COMPLETE, Phase 8d next
+> **Status:** IN PROGRESS - Phase 8d COMPLETE, Phase 8e next
 > **Last Updated:** February 5, 2026
 
 ---
@@ -79,16 +79,41 @@
 - no-written-contract (NEW - 4 mappings including Labour Act Sections 7, 9, 11)
 - excessive-working-hours (NEW - 3 mappings including Labour Act Section 13)
 
-**Seed Results (After Phase 8c):**
+### ✅ Phase 8d: Lagos Tenancy Law Expansion — COMPLETE
+
+**Files Updated:**
+- `prisma/data/laws/lagos-tenancy.ts` - Expanded from 1 to 13 key sections
+- `prisma/data/scenarios/tenant-rights.ts` - Updated from 5 to 7 scenarios with comprehensive Lagos Tenancy Law mappings
+
+**Lagos Tenancy Law Sections Added (13 sections):**
+| Category | Sections | Topics |
+|----------|----------|--------|
+| Rent Limits & Receipts | 4, 5 | Advance rent limits (max 1 year), receipt requirements |
+| Tenant Rights | 6 | Exclusive possession, privacy, peaceful enjoyment, 24/7 access |
+| Obligations | 7, 8 | Tenant duties (interior maintenance), landlord duties (exterior repairs) |
+| Deposits | 10 | Service charges, security deposit refund rules |
+| Notice Periods | 13, 15, 16, 17 | Length of notice (1 week to 6 months), abandoned premises, service |
+| Rent Increases | 37 | 6-month notice requirement, court assessment of fair rent |
+| Offences | 44 | Unlawful eviction penalties (N250,000 fine or 6 months imprisonment) |
+
+**Tenant Rights Scenarios Updated (7 scenarios):**
+- landlord-eviction-notice (5 mappings: Lagos Tenancy Sections 13, 16, 44, 17 + Constitution)
+- landlord-illegal-lockout (5 mappings: Lagos Tenancy Sections 44, 6, 8 + Constitution)
+- rent-increase-dispute (4 mappings: Lagos Tenancy Sections 37, 4, 6 + Constitution)
+- deposit-not-returned (5 mappings: Lagos Tenancy Sections 10, 5, 6 + Constitution)
+- landlord-not-making-repairs (4 mappings: Lagos Tenancy Sections 8, 7, 6 + Constitution)
+- utilities-cut-off (NEW - 4 mappings: Lagos Tenancy Sections 44, 8, 6 + Constitution)
+- excessive-advance-rent (NEW - 3 mappings: Lagos Tenancy Sections 4, 5 + Constitution)
+
+**Seed Results (After Phase 8d):**
 - 4 laws seeded
-- 53 sections seeded (13 Constitution + 22 Criminal Code + 17 Labour + 1 Lagos)
-- 31 scenarios seeded
-- 108 scenario-section mappings created
-- All embeddings generated (53 sections + 31 scenarios)
+- 65 sections seeded (13 Constitution + 22 Criminal Code + 17 Labour + 13 Lagos Tenancy)
+- 33 scenarios seeded
+- 129 scenario-section mappings created
+- All embeddings generated (65 sections + 33 scenarios)
 
 ### ⏳ Pending Phases
 
-- **Phase 8d:** Lagos Tenancy content (10-15 sections, update tenant scenarios)
 - **Phase 8e:** Update homepage links to `/scenarios?category=X`
 - **Phase 8f:** Final testing and verification
 
@@ -96,14 +121,12 @@
 
 ## How to Resume
 
-Tell Claude: **"Continue Phase 8 from checkpoint 8d - read docs/phase-8-plan.md for context"**
+Tell Claude: **"Continue Phase 8 from checkpoint 8e - read docs/phase-8-plan.md for context"**
 
-### Next Steps (Phase 8d - Lagos Tenancy Law):
-1. Research Lagos Tenancy Law 2011 sections relevant to tenant scenarios
-2. Add 10-15 sections to `prisma/data/laws/lagos-tenancy.ts`
-3. Update `prisma/data/scenarios/tenant-rights.ts` with Lagos Tenancy Law mappings
-4. Run `npm run db:seed` to update database
-5. Run embedding backfill
+### Next Steps (Phase 8e - Homepage & Category Links):
+1. Update homepage topic cards to link to `/scenarios?category=X`
+2. Add category filter support to `src/app/scenarios/page.tsx`
+3. Verify all category links work correctly
 
 ---
 
@@ -119,12 +142,12 @@ prisma/
 │   │   ├── constitution.ts      # ✅ 13 sections (fundamental rights)
 │   │   ├── criminal-code.ts     # ✅ 22 sections (expanded in 8b)
 │   │   ├── labour-act.ts        # ✅ 17 sections (expanded in 8c)
-│   │   └── lagos-tenancy.ts     # 🔄 Placeholder (1 section)
+│   │   └── lagos-tenancy.ts     # ✅ 13 sections (expanded in 8d)
 │   └── scenarios/
 │       ├── index.ts             # ✅ Exports all scenarios
 │       ├── constitutional-rights.ts  # ✅ 6 scenarios
 │       ├── police-encounters.ts      # ✅ 6 scenarios (updated mappings)
-│       ├── tenant-rights.ts          # ✅ 5 scenarios
+│       ├── tenant-rights.ts          # ✅ 7 scenarios (expanded in 8d)
 │       ├── employment.ts             # ✅ 8 scenarios (expanded in 8c)
 │       └── crime-victims.ts          # ✅ 6 scenarios (NEW in 8b)
 └── helpers/
@@ -142,15 +165,15 @@ prisma/
 | Constitution 1999 | ✅ Ready | 13 | Sections 33-44, 46 (Fundamental Rights) |
 | Criminal Code | ✅ Expanded | 22 | Assault, theft, robbery, defamation, etc. |
 | Labour Act | ✅ Expanded | 17 | Contracts, wages, termination, maternity, etc. |
-| Lagos Tenancy Law | 🔄 Placeholder | 1 | Needs 10-15 sections in Phase 8d |
+| Lagos Tenancy Law | ✅ Expanded | 13 | Rent limits, tenant rights, eviction, offences |
 
-### Scenarios Seeded (31 total)
+### Scenarios Seeded (33 total)
 
 | Category | Count | Examples |
 |----------|-------|----------|
 | Constitutional Rights | 6 | Freedom of expression, religious discrimination, privacy |
 | Police Encounters | 6 | Arrest without warrant, detention, brutality, bribery |
-| Tenant Rights | 5 | Eviction, lockout, rent increase, deposit disputes |
+| Tenant Rights | 7 | Eviction, lockout, rent increase, deposit, utilities cut-off |
 | Employment | 8 | Wrongful termination, unpaid wages, maternity, excessive hours |
 | Crime Victims | 6 | Assault, theft, robbery, defamation, break-in, blackmail |
 

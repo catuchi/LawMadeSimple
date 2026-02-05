@@ -139,7 +139,7 @@ Set `OPENAI_API_KEY` in both `.env.local` and Vercel environment variables.
 
 ## Current Phase
 
-**Phase 8: Content & Data** — 🔄 IN PROGRESS (Phase 8c COMPLETE)
+**Phase 8: Content & Data** — 🔄 IN PROGRESS (Phase 8d COMPLETE)
 
 ### Progress (aligned with plan.md)
 - ✅ Phase 1: Project Foundation — Complete
@@ -156,7 +156,7 @@ Set `OPENAI_API_KEY` in both `.env.local` and Vercel environment variables.
 
 **📋 Full plan:** `docs/phase-8-plan.md`
 
-**To resume:** Tell Claude: "Continue Phase 8 from checkpoint 8d - read docs/phase-8-plan.md for context"
+**To resume:** Tell Claude: "Continue Phase 8 from checkpoint 8e - read docs/phase-8-plan.md for context"
 
 **Phase 8a — COMPLETE:**
 - [x] `prisma/data/types.ts` — TypeScript interfaces for seed data
@@ -181,8 +181,14 @@ Set `OPENAI_API_KEY` in both `.env.local` and Vercel environment variables.
 - [x] Database seeded: 4 laws, 53 sections, 31 scenarios, 108 mappings
 - [x] Embeddings generated: 53 sections + 31 scenarios
 
-**Next steps (Phase 8d-8f):**
-- [ ] Phase 8d: Expand Lagos Tenancy (10-15 sections)
+**Phase 8d — COMPLETE:**
+- [x] `prisma/data/laws/lagos-tenancy.ts` — Expanded to 13 sections (rent limits, tenant rights, eviction, offences)
+- [x] `prisma/data/scenarios/tenant-rights.ts` — Updated from 5 to 7 scenarios with Lagos Tenancy mappings
+- [x] NEW scenarios: `utilities-cut-off`, `excessive-advance-rent`
+- [x] Database seeded: 4 laws, 65 sections, 33 scenarios, 129 mappings
+- [x] Embeddings generated: 65 sections + 33 scenarios
+
+**Next steps (Phase 8e-8f):**
 - [ ] Phase 8e: Update homepage links to category pages
 - [ ] Phase 8f: Final testing and verification
 
@@ -219,7 +225,7 @@ Set `OPENAI_API_KEY` in both `.env.local` and Vercel environment variables.
 | Issue | Impact | When to Fix |
 |-------|--------|-------------|
 | ~~Race condition on explanation cache~~ | ~~Concurrent requests = duplicate AI calls~~ | ✅ **FIXED** via Redis distributed lock (`src/lib/redis.ts`) |
-| No data seeded | Pages show "Coming Soon" placeholders | Phase 8: seed law content |
+| ~~No data seeded~~ | ~~Pages show "Coming Soon" placeholders~~ | ✅ **FIXED** Phase 8: 4 laws, 65 sections, 33 scenarios seeded |
 | ~~Supabase email limit~~ | ~~2 emails/hour~~ | ✅ **FIXED** Domain registered + Resend SMTP configured (Feb 5, 2026) |
 | ~~Next.js middleware deprecation~~ | ~~Build warning~~ | ✅ **FIXED** Migrated to `src/proxy.ts` (Jan 31, 2026) |
 
