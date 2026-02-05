@@ -31,9 +31,9 @@ export function Header() {
           <Image
             src="/logo.svg"
             alt="LawMadeSimple logo"
-            width={28}
-            height={28}
-            className="size-7"
+            width={32}
+            height={32}
+            className="size-8"
           />
           <span className="font-heading text-primary text-lg font-semibold md:text-xl">
             LawMadeSimple

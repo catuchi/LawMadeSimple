@@ -34,9 +34,9 @@ export function Footer() {
               <Image
                 src="/logo.svg"
                 alt="LawMadeSimple logo"
-                width={24}
-                height={24}
-                className="size-6"
+                width={28}
+                height={28}
+                className="size-7"
               />
               <span className="font-heading text-primary text-lg font-semibold">LawMadeSimple</span>
             </Link>

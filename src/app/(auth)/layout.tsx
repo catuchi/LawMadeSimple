@@ -10,9 +10,9 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
             <Image
               src="/logo.svg"
               alt="LawMadeSimple logo"
-              width={28}
-              height={28}
-              className="size-7"
+              width={32}
+              height={32}
+              className="size-8"
             />
             <span className="text-primary font-serif text-xl font-bold">LawMadeSimple</span>
           </Link>
