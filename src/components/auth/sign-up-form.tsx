@@ -4,6 +4,7 @@ import { useActionState } from 'react';
 import Link from 'next/link';
 import { signUp } from '@/services/auth/auth.actions';
 import { OAuthButtons } from './oauth-buttons';
+import { PasswordInput } from '@/components/ui/password-input';
 import type { AuthFormState } from '@/types/auth';
 import { PASSWORD_REQUIREMENTS } from '@/constants/auth';
 
@@ -32,7 +33,7 @@ export function SignUpForm() {
       <form action={formAction} className="space-y-4">
         {state.error && (
           <div
-            className="border-error/20 bg-error-light text-error-dark rounded-lg border p-3 text-sm"
+            className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700"
             role="alert"
             aria-live="polite"
           >
@@ -42,12 +43,12 @@ export function SignUpForm() {
 
         {state.success && (
           <div
-            className="border-success/20 bg-success-light text-success-dark rounded-lg border p-3 text-sm"
+            className="rounded-lg border border-green-200 bg-green-50 p-3 text-sm text-green-700"
             role="alert"
             aria-live="polite"
           >
             <p>{state.success}</p>
-            <p className="mt-2">
+            <p className="mt-2 text-green-600">
               Didn&apos;t receive it?{' '}
               <Link href="/resend-confirmation" className="font-medium underline">
                 Resend confirmation email
@@ -73,7 +74,7 @@ export function SignUpForm() {
             placeholder="you@example.com"
           />
           {state.fieldErrors?.email && (
-            <p id="email-error" className="text-error text-sm" role="alert">
+            <p id="email-error" className="text-sm text-red-600" role="alert">
               {state.fieldErrors.email}
             </p>
           )}
@@ -83,24 +84,23 @@ export function SignUpForm() {
           <label htmlFor="password" className="block text-sm font-medium">
             Password
           </label>
-          <input
+          <PasswordInput
             id="password"
             name="password"
-            type="password"
             autoComplete="new-password"
             required
             disabled={isPending || !!state.success}
             aria-invalid={!!state.fieldErrors?.password}
             aria-describedby="password-hint password-error"
-            className="border-border placeholder:text-foreground-muted focus:border-primary focus:ring-ring/20 block w-full rounded-lg border bg-white px-4 py-3 text-sm focus:ring-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
             placeholder="••••••••"
           />
-          <p id="password-hint" className="text-foreground-muted text-xs">
-            {PASSWORD_REQUIREMENTS.MIN_LENGTH}+ characters with uppercase, lowercase, and a number
-          </p>
-          {state.fieldErrors?.password && (
-            <p id="password-error" className="text-error text-sm" role="alert">
+          {state.fieldErrors?.password ? (
+            <p id="password-error" className="text-sm text-red-600" role="alert">
               {state.fieldErrors.password}
+            </p>
+          ) : (
+            <p id="password-hint" className="text-foreground-muted text-xs">
+              {PASSWORD_REQUIREMENTS.MIN_LENGTH}+ characters with uppercase, lowercase, and a number
             </p>
           )}
         </div>
@@ -128,7 +128,7 @@ export function SignUpForm() {
             </label>
           </div>
           {state.fieldErrors?.tos && (
-            <p id="tos-error" className="text-error text-sm" role="alert">
+            <p id="tos-error" className="text-sm text-red-600" role="alert">
               {state.fieldErrors.tos}
             </p>
           )}

@@ -1,7 +1,8 @@
 'use client';
 
-import { useActionState, useState, useRef, useCallback } from 'react';
+import { useActionState, useState, useRef, useCallback, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import {
   signIn,
   sendSignInOtp,
@@ -9,6 +10,8 @@ import {
   sendMagicLink,
 } from '@/services/auth/auth.actions';
 import { OAuthButtons } from './oauth-buttons';
+import { PasswordInput } from '@/components/ui/password-input';
+import { useAuth } from '@/hooks/use-auth';
 import { AUTH_ERRORS } from '@/constants/auth';
 import type { AuthFormState } from '@/types/auth';
 
@@ -26,6 +29,8 @@ function isInfoMessage(message: string): boolean {
 }
 
 export function SignInForm({ redirectTo }: SignInFormProps) {
+  const router = useRouter();
+  const { refreshSession } = useAuth();
   const [passwordState, passwordAction, isPasswordPending] = useActionState(signIn, initialState);
   const [otpSendState, otpSendAction, isOtpSendPending] = useActionState(
     sendSignInOtp,
@@ -39,6 +44,27 @@ export function SignInForm({ redirectTo }: SignInFormProps) {
     sendMagicLink,
     initialState
   );
+
+  // Handle redirect after successful authentication (password or OTP)
+  useEffect(() => {
+    if (passwordState.success && passwordState.redirectTo) {
+      const destination = passwordState.redirectTo;
+      // Refresh auth state then navigate
+      refreshSession().then(() => {
+        router.push(destination);
+      });
+    }
+  }, [passwordState.success, passwordState.redirectTo, refreshSession, router]);
+
+  useEffect(() => {
+    if (otpVerifyState.success && otpVerifyState.redirectTo) {
+      const destination = otpVerifyState.redirectTo;
+      // Refresh auth state then navigate
+      refreshSession().then(() => {
+        router.push(destination);
+      });
+    }
+  }, [otpVerifyState.success, otpVerifyState.redirectTo, refreshSession, router]);
 
   // Mode: 'password', 'code', or 'magic'
   const [mode, setMode] = useState<'password' | 'code' | 'magic'>('password');
@@ -151,7 +177,7 @@ export function SignInForm({ redirectTo }: SignInFormProps) {
 
           {passwordState.error && (
             <div
-              className="border-error/20 bg-error-light text-error-dark rounded-lg border p-3 text-sm"
+              className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700"
               role="alert"
               aria-live="polite"
             >
@@ -178,7 +204,7 @@ export function SignInForm({ redirectTo }: SignInFormProps) {
               placeholder="you@example.com"
             />
             {passwordState.fieldErrors?.email && (
-              <p id="email-error" className="text-error text-sm" role="alert">
+              <p id="email-error" className="text-sm text-red-600" role="alert">
                 {passwordState.fieldErrors.email}
               </p>
             )}
@@ -193,20 +219,18 @@ export function SignInForm({ redirectTo }: SignInFormProps) {
                 Forgot password?
               </Link>
             </div>
-            <input
+            <PasswordInput
               id="password"
               name="password"
-              type="password"
               autoComplete="current-password"
               required
               disabled={isPending}
               aria-invalid={!!passwordState.fieldErrors?.password}
               aria-describedby={passwordState.fieldErrors?.password ? 'password-error' : undefined}
-              className="border-border placeholder:text-foreground-muted focus:border-primary focus:ring-ring/20 block w-full rounded-lg border bg-white px-4 py-3 text-sm focus:ring-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
               placeholder="••••••••"
             />
             {passwordState.fieldErrors?.password && (
-              <p id="password-error" className="text-error text-sm" role="alert">
+              <p id="password-error" className="text-sm text-red-600" role="alert">
                 {passwordState.fieldErrors.password}
               </p>
             )}

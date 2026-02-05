@@ -26,7 +26,7 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
 
       {error && (
         <div
-          className="border-error/20 bg-error-light text-error-dark mb-6 rounded-lg border p-3 text-sm"
+          className="mb-6 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700"
           role="alert"
         >
           <p>{error}</p>

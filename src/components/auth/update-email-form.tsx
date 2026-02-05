@@ -18,7 +18,7 @@ export function UpdateEmailForm({ currentEmail }: UpdateEmailFormProps) {
       <form action={formAction} className="space-y-4">
         {state.error && (
           <div
-            className="border-error/20 bg-error-light text-error-dark rounded-lg border p-3 text-sm"
+            className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700"
             role="alert"
             aria-live="polite"
           >
@@ -28,7 +28,7 @@ export function UpdateEmailForm({ currentEmail }: UpdateEmailFormProps) {
 
         {state.success && (
           <div
-            className="border-success/20 bg-success-light text-success-dark rounded-lg border p-3 text-sm"
+            className="rounded-lg border border-green-200 bg-green-50 p-3 text-sm text-green-700"
             role="alert"
             aria-live="polite"
           >
@@ -60,12 +60,12 @@ export function UpdateEmailForm({ currentEmail }: UpdateEmailFormProps) {
             placeholder="newemail@example.com"
           />
           {state.fieldErrors?.email && (
-            <p id="email-error" className="text-error text-sm" role="alert">
+            <p id="email-error" className="text-sm text-red-600" role="alert">
               {state.fieldErrors.email}
             </p>
           )}
           <p className="text-foreground-muted text-xs">
-            You will receive confirmation emails at both your old and new email addresses.
+            A confirmation link will be sent to your new email address.
           </p>
         </div>
 

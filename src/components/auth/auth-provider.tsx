@@ -1,9 +1,11 @@
 'use client';
 
 import { createContext, useCallback, useEffect, useMemo, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import type { User, Session } from '@supabase/supabase-js';
 import { createClient } from '@/lib/supabase/client';
 import type { AuthContextValue } from '@/types/auth';
+import { DEFAULT_REDIRECT } from '@/constants/auth';
 
 export const AuthContext = createContext<AuthContextValue | null>(null);
 
@@ -15,6 +17,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const router = useRouter();
 
   const supabase = useMemo(() => createClient(), []);
 
@@ -67,15 +70,30 @@ export function AuthProvider({ children }: AuthProviderProps) {
   // Sign out function
   const signOut = useCallback(async () => {
     await supabase.auth.signOut();
-  }, [supabase]);
+    router.push(DEFAULT_REDIRECT.AFTER_SIGN_OUT);
+  }, [supabase, router]);
 
-  // Refresh session function
+  // Refresh/revalidate auth state by reading cookies (use after server-side auth)
   const refreshSession = useCallback(async () => {
-    const {
-      data: { session: newSession },
-    } = await supabase.auth.refreshSession();
-    setSession(newSession);
-    setUser(newSession?.user ?? null);
+    try {
+      // getUser() validates with the server and reads cookies set by server actions
+      const {
+        data: { user: validatedUser },
+      } = await supabase.auth.getUser();
+
+      if (validatedUser) {
+        const {
+          data: { session: currentSession },
+        } = await supabase.auth.getSession();
+        setSession(currentSession);
+        setUser(validatedUser);
+      } else {
+        setSession(null);
+        setUser(null);
+      }
+    } catch (error) {
+      console.error('Error refreshing auth state:', error);
+    }
   }, [supabase]);
 
   const value = useMemo<AuthContextValue>(

@@ -189,6 +189,19 @@ Set `OPENAI_API_KEY` in both `.env.local` and Vercel environment variables.
 | **🔴 Supabase email limit** | **2 emails/hour** (signup, magic link, password reset) | **BEFORE LAUNCH:** Register domain + set up Resend SMTP. Full guide: `.claude/phase7-issues-plan.md` → Issue 1.1 |
 | ~~Next.js middleware deprecation~~ | ~~Build warning~~ | ✅ **FIXED** Migrated to `src/proxy.ts` (Jan 31, 2026) |
 
+### Post-MVP Improvements
+
+| Feature | Description | Notes |
+|---------|-------------|-------|
+| Real-time form validation | Clear field errors as user types valid input | Consider `react-hook-form` to avoid duplicating validation logic (server + client). Currently errors clear on next submit, which is acceptable. |
+| Terms/Privacy pages | Create `/terms` and `/privacy` pages | Currently return 404. Need actual legal content or placeholders. |
+| Display name in settings | Optional name field for personalization | OAuth users already have names; email/password users don't. Low priority — "Welcome back" without name is fine. |
+| Preferred law categories | User selects interests for recommendations | Requires recommendation system. Wait until content is seeded and usage patterns emerge. |
+| State/Location preference | For state-specific laws (e.g., Lagos Tenancy) | Only 1 state-specific law in MVP. Could prompt contextually instead of storing preference. |
+| Notification preferences | Email alerts for bookmarked law amendments, weekly digest | Requires proper email infrastructure (Resend) and amendment tracking system. |
+| Download my data (NDPR) | Full data export for compliance | For MVP, "Contact us" link is sufficient. Build full export when data model stabilizes. |
+| Search history management | View and clear search history | Only implement if we start storing search history per user. |
+
 ### Next Session: Pending Tasks
 
 **Completed (Jan 30, 2026):**

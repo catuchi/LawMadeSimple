@@ -16,9 +16,11 @@ function isValidOtpType(type: string | null): type is OtpType {
 /**
  * Email confirmation handler.
  * Handles the redirect from email confirmation links.
+ * Supports both PKCE flow (code param) and legacy flow (token_hash param).
  */
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = request.nextUrl;
+  const code = searchParams.get('code');
   const tokenHash = searchParams.get('token_hash');
   const type = searchParams.get('type');
   const next = getSafeRedirectPath(searchParams.get('next'), DEFAULT_REDIRECT.AFTER_SIGN_IN);
@@ -32,27 +34,31 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(redirectUrl);
   }
 
-  // Verify we have the required parameters
-  if (!tokenHash) {
+  const supabase = await createClient();
+  let data;
+  let verifyError;
+
+  // PKCE flow: exchange code for session
+  if (code) {
+    const result = await supabase.auth.exchangeCodeForSession(code);
+    data = result.data;
+    verifyError = result.error;
+  }
+  // Legacy flow: verify OTP token
+  else if (tokenHash && isValidOtpType(type)) {
+    const result = await supabase.auth.verifyOtp({
+      type,
+      token_hash: tokenHash,
+    });
+    data = result.data;
+    verifyError = result.error;
+  }
+  // No valid parameters
+  else {
     const redirectUrl = new URL('/sign-in', origin);
     redirectUrl.searchParams.set('error', AUTH_ERRORS.UNKNOWN_ERROR);
     return NextResponse.redirect(redirectUrl);
   }
-
-  // Validate OTP type
-  if (!isValidOtpType(type)) {
-    const redirectUrl = new URL('/sign-in', origin);
-    redirectUrl.searchParams.set('error', 'Invalid confirmation type');
-    return NextResponse.redirect(redirectUrl);
-  }
-
-  const supabase = await createClient();
-
-  // Verify the OTP token
-  const { data, error: verifyError } = await supabase.auth.verifyOtp({
-    type,
-    token_hash: tokenHash,
-  });
 
   if (verifyError) {
     console.error('Email verification error:', verifyError);

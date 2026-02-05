@@ -65,6 +65,7 @@ export const AUTH_ERRORS = {
   INVALID_OTP: 'Invalid code. Please check and try again.',
   OTP_EXPIRED: 'Code has expired. Please request a new one.',
   ACCOUNT_DELETED: 'This account has been deleted and cannot be used.',
+  INCORRECT_PASSWORD: 'Current password is incorrect.',
 } as const;
 
 // Auth success messages
@@ -73,11 +74,13 @@ export const AUTH_SUCCESS = {
   SIGN_IN: 'Welcome back!',
   SIGN_OUT: 'You have been signed out.',
   PASSWORD_RESET: 'Your password has been reset successfully.',
+  PASSWORD_CHANGED: 'Your password has been changed successfully.',
   EMAIL_CONFIRMED: 'Your email has been confirmed.',
   MAGIC_LINK_SENT: 'Magic link sent! Check your email.',
   PASSWORD_RESET_SENT: 'Password reset email sent! Check your inbox.',
   CONFIRMATION_RESENT: 'Confirmation email resent! Check your inbox.',
-  EMAIL_CHANGE_SENT: 'Email change request sent! Check both your old and new email addresses.',
+  EMAIL_CHANGE_SENT:
+    'Email change request sent! Check your new email inbox for the confirmation link.',
   ACCOUNT_DELETED: 'Your account has been deleted.',
   OTP_SENT: 'Code sent! Check your email for a 6-digit code.',
 } as const;

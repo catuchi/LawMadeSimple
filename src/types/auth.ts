@@ -10,11 +10,15 @@ export type AuthProvider = 'email' | 'google' | 'apple' | 'facebook' | 'magic_li
 export interface AuthFormState {
   error?: string;
   success?: string;
+  redirectTo?: string;
   fieldErrors?: {
     email?: string;
     password?: string;
     name?: string;
     tos?: string;
+    currentPassword?: string;
+    newPassword?: string;
+    confirmPassword?: string;
   };
 }
 

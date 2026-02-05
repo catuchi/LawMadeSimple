@@ -181,6 +181,20 @@
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
 
+  /* Semantic Colors */
+  --color-success: #22c55e;
+  --color-success-light: #dcfce7;
+  --color-success-dark: #15803d;
+  --color-error: #ef4444;
+  --color-error-light: #fee2e2;
+  --color-error-dark: #b91c1c;
+  --color-warning: #f59e0b;
+  --color-warning-light: #fef3c7;
+  --color-warning-dark: #b45309;
+  --color-info: #1a5f7a;
+  --color-info-light: #e6f3f5;
+  --color-info-dark: #103b4c;
+
   /* Fonts */
   --font-sans: var(--font-inter);
   --font-serif: var(--font-lora);

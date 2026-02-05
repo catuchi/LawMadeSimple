@@ -5,6 +5,8 @@ import { useAuth } from '@/hooks/use-auth';
 import { createClient } from '@/lib/supabase/client';
 import { UpdateEmailForm } from '@/components/auth/update-email-form';
 import { DeleteAccountForm } from '@/components/auth/delete-account-form';
+import { ChangePasswordForm } from '@/components/auth/change-password-form';
+import { UsageStatus } from '@/components/subscription/usage-status';
 import type { UserIdentity, Provider } from '@supabase/supabase-js';
 
 // OAuth providers that can be linked
@@ -115,6 +117,12 @@ export default function SettingsPage() {
         </div>
       </section>
 
+      {/* Subscription & Usage */}
+      <section className="mb-8">
+        <h2 className="text-foreground mb-4 text-lg font-semibold">Subscription & Usage</h2>
+        <UsageStatus />
+      </section>
+
       {/* Connected Accounts */}
       <section className="mb-8">
         <h2 className="text-foreground mb-4 text-lg font-semibold">Connected Accounts</h2>
@@ -124,7 +132,7 @@ export default function SettingsPage() {
         </p>
 
         {error && (
-          <div className="border-error/20 bg-error-light text-error-dark mb-4 rounded-lg border p-3 text-sm">
+          <div className="mb-4 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
             {error}
           </div>
         )}
@@ -201,6 +209,16 @@ export default function SettingsPage() {
           <UpdateEmailForm currentEmail={user.email} />
         </div>
       </section>
+
+      {/* Change Password - only show for email/password users */}
+      {connectedProviders.has('email') && (
+        <section className="mb-8">
+          <h2 className="text-foreground mb-4 text-lg font-semibold">Change Password</h2>
+          <div className="border-border rounded-lg border bg-white p-4">
+            <ChangePasswordForm />
+          </div>
+        </section>
+      )}
 
       {/* Sign Out */}
       <section className="border-border mb-8 border-t pt-8">

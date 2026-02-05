@@ -195,9 +195,9 @@ export async function signIn(
     }
   }
 
-  // Redirect to the intended destination or home (validated for security)
+  // Return success with redirect destination (client handles navigation)
   const destination = getSafeRedirectPath(redirectTo, DEFAULT_REDIRECT.AFTER_SIGN_IN);
-  redirect(destination);
+  return { success: AUTH_SUCCESS.SIGN_IN, redirectTo: destination };
 }
 
 /**
@@ -322,6 +322,71 @@ export async function resetPassword(
   }
 
   return { success: AUTH_SUCCESS.PASSWORD_RESET };
+}
+
+/**
+ * Change password for authenticated user (requires current password verification)
+ */
+export async function changePassword(
+  _prevState: AuthFormState,
+  formData: FormData
+): Promise<AuthFormState> {
+  const currentPassword = formData.get('currentPassword') as string;
+  const newPassword = formData.get('newPassword') as string;
+  const confirmPassword = formData.get('confirmPassword') as string;
+
+  // Validate inputs
+  const fieldErrors: AuthFormState['fieldErrors'] = {};
+
+  if (!currentPassword) {
+    fieldErrors.currentPassword = AUTH_ERRORS.REQUIRED_FIELD;
+  }
+
+  if (!newPassword) {
+    fieldErrors.newPassword = AUTH_ERRORS.REQUIRED_FIELD;
+  } else if (!isValidPassword(newPassword)) {
+    fieldErrors.newPassword = AUTH_ERRORS.WEAK_PASSWORD;
+  }
+
+  if (newPassword !== confirmPassword) {
+    fieldErrors.confirmPassword = AUTH_ERRORS.PASSWORDS_DONT_MATCH;
+  }
+
+  if (Object.keys(fieldErrors).length > 0) {
+    return { fieldErrors };
+  }
+
+  const supabase = await createClient();
+
+  // Get current user
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user?.email) {
+    return { error: AUTH_ERRORS.NOT_AUTHENTICATED };
+  }
+
+  // Verify current password by attempting to sign in
+  const { error: signInError } = await supabase.auth.signInWithPassword({
+    email: user.email,
+    password: currentPassword,
+  });
+
+  if (signInError) {
+    return { error: AUTH_ERRORS.INCORRECT_PASSWORD };
+  }
+
+  // Update to new password
+  const { error: updateError } = await supabase.auth.updateUser({
+    password: newPassword,
+  });
+
+  if (updateError) {
+    return { error: updateError.message };
+  }
+
+  return { success: AUTH_SUCCESS.PASSWORD_CHANGED };
 }
 
 /**
@@ -492,9 +557,9 @@ export async function verifySignInOtp(
     }
   }
 
-  // Redirect to the intended destination or home
+  // Return success with redirect destination (client handles navigation)
   const destination = getSafeRedirectPath(redirectTo, DEFAULT_REDIRECT.AFTER_SIGN_IN);
-  redirect(destination);
+  return { success: AUTH_SUCCESS.SIGN_IN, redirectTo: destination };
 }
 
 /**
