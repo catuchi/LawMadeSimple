@@ -2,7 +2,7 @@
 
 > **Project:** LawMadeSimple
 > **Created:** February 5, 2026
-> **Status:** IN PROGRESS - Phase 8b COMPLETE, Phase 8c next
+> **Status:** IN PROGRESS - Phase 8c COMPLETE, Phase 8d next
 > **Last Updated:** February 5, 2026
 
 ---
@@ -53,16 +53,41 @@
 - someone-broke-into-my-house
 - threatened-or-blackmailed
 
-**Seed Results (After Phase 8b):**
+### ✅ Phase 8c: Labour Act Expansion — COMPLETE
+
+**Files Updated:**
+- `prisma/data/laws/labour-act.ts` - Expanded from 1 to 17 key sections
+- `prisma/data/scenarios/employment.ts` - Updated from 6 to 8 scenarios with Labour Act mappings
+
+**Labour Act Sections Added (17 sections):**
+| Category | Sections | Topics |
+|----------|----------|--------|
+| Wages & Payment | 1, 5 | Legal tender, permitted deductions |
+| Contracts | 7, 9, 10 | Written particulars, general provisions, transfer |
+| Termination | 11, 12, 17, 20 | Notice periods, common employment, duty to provide work, redundancy |
+| Hours & Leave | 13, 16, 18, 19 | Working hours, sick leave, annual holidays, leave pay calculation |
+| Women's Protections | 54, 55 | Maternity protection, night work restrictions |
+| Young Persons | 59, 60 | General protections, school hours restrictions |
+
+**Employment Scenarios Updated (8 scenarios):**
+- wrongful-termination (6 mappings including Labour Act Sections 7, 11, 17, 20)
+- unpaid-wages (6 mappings including Labour Act Sections 1, 5, 9, 17)
+- workplace-harassment (5 mappings including Labour Act Sections 9, 12)
+- denied-annual-leave (4 mappings including Labour Act Sections 18, 19)
+- workplace-injury (6 mappings including Labour Act Sections 9, 12, 16)
+- maternity-rights (4 mappings including Labour Act Sections 54, 55)
+- no-written-contract (NEW - 4 mappings including Labour Act Sections 7, 9, 11)
+- excessive-working-hours (NEW - 3 mappings including Labour Act Section 13)
+
+**Seed Results (After Phase 8c):**
 - 4 laws seeded
-- 37 sections seeded (13 Constitution + 18 Criminal Code + 1 Labour + 1 Lagos + placeholders)
-- 29 scenarios seeded
-- 82 scenario-section mappings created
-- All embeddings generated (37 sections + 29 scenarios)
+- 53 sections seeded (13 Constitution + 22 Criminal Code + 17 Labour + 1 Lagos)
+- 31 scenarios seeded
+- 108 scenario-section mappings created
+- All embeddings generated (53 sections + 31 scenarios)
 
 ### ⏳ Pending Phases
 
-- **Phase 8c:** Labour Act content (15-20 sections, update employment scenarios)
 - **Phase 8d:** Lagos Tenancy content (10-15 sections, update tenant scenarios)
 - **Phase 8e:** Update homepage links to `/scenarios?category=X`
 - **Phase 8f:** Final testing and verification
@@ -71,12 +96,12 @@
 
 ## How to Resume
 
-Tell Claude: **"Continue Phase 8 from checkpoint 8c - read docs/phase-8-plan.md for context"**
+Tell Claude: **"Continue Phase 8 from checkpoint 8d - read docs/phase-8-plan.md for context"**
 
-### Next Steps (Phase 8c - Labour Act):
-1. Research Labour Act sections relevant to employment scenarios
-2. Add 15-20 sections to `prisma/data/laws/labour-act.ts`
-3. Update `prisma/data/scenarios/employment.ts` with Labour Act mappings
+### Next Steps (Phase 8d - Lagos Tenancy Law):
+1. Research Lagos Tenancy Law 2011 sections relevant to tenant scenarios
+2. Add 10-15 sections to `prisma/data/laws/lagos-tenancy.ts`
+3. Update `prisma/data/scenarios/tenant-rights.ts` with Lagos Tenancy Law mappings
 4. Run `npm run db:seed` to update database
 5. Run embedding backfill
 
@@ -92,15 +117,15 @@ prisma/
 │   ├── laws/
 │   │   ├── index.ts             # ✅ Exports all laws
 │   │   ├── constitution.ts      # ✅ 13 sections (fundamental rights)
-│   │   ├── criminal-code.ts     # ✅ 18 sections (expanded in 8b)
-│   │   ├── labour-act.ts        # 🔄 Placeholder (1 section)
+│   │   ├── criminal-code.ts     # ✅ 22 sections (expanded in 8b)
+│   │   ├── labour-act.ts        # ✅ 17 sections (expanded in 8c)
 │   │   └── lagos-tenancy.ts     # 🔄 Placeholder (1 section)
 │   └── scenarios/
 │       ├── index.ts             # ✅ Exports all scenarios
 │       ├── constitutional-rights.ts  # ✅ 6 scenarios
 │       ├── police-encounters.ts      # ✅ 6 scenarios (updated mappings)
 │       ├── tenant-rights.ts          # ✅ 5 scenarios
-│       ├── employment.ts             # ✅ 6 scenarios
+│       ├── employment.ts             # ✅ 8 scenarios (expanded in 8c)
 │       └── crime-victims.ts          # ✅ 6 scenarios (NEW in 8b)
 └── helpers/
     └── seed-utils.ts            # ✅ Upsert helpers
@@ -115,18 +140,18 @@ prisma/
 | Law | Status | Sections | Notes |
 |-----|--------|----------|-------|
 | Constitution 1999 | ✅ Ready | 13 | Sections 33-44, 46 (Fundamental Rights) |
-| Criminal Code | ✅ Expanded | 18 | Assault, theft, robbery, defamation, etc. |
-| Labour Act | 🔄 Placeholder | 1 | Needs 15-20 sections in Phase 8c |
+| Criminal Code | ✅ Expanded | 22 | Assault, theft, robbery, defamation, etc. |
+| Labour Act | ✅ Expanded | 17 | Contracts, wages, termination, maternity, etc. |
 | Lagos Tenancy Law | 🔄 Placeholder | 1 | Needs 10-15 sections in Phase 8d |
 
-### Scenarios Seeded (29 total)
+### Scenarios Seeded (31 total)
 
 | Category | Count | Examples |
 |----------|-------|----------|
 | Constitutional Rights | 6 | Freedom of expression, religious discrimination, privacy |
 | Police Encounters | 6 | Arrest without warrant, detention, brutality, bribery |
 | Tenant Rights | 5 | Eviction, lockout, rent increase, deposit disputes |
-| Employment | 6 | Wrongful termination, unpaid wages, harassment, maternity |
+| Employment | 8 | Wrongful termination, unpaid wages, maternity, excessive hours |
 | Crime Victims | 6 | Assault, theft, robbery, defamation, break-in, blackmail |
 
 ---
