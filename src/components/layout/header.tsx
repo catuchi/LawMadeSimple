@@ -1,8 +1,9 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { Scale, Menu } from 'lucide-react';
+import { Menu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { MobileMenu } from './mobile-menu';
 import { useAuth } from '@/hooks/use-auth';
@@ -27,7 +28,13 @@ export function Header() {
       <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 md:h-16 md:px-8">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2">
-          <Scale className="text-primary size-7" />
+          <Image
+            src="/logo.svg"
+            alt="LawMadeSimple logo"
+            width={28}
+            height={28}
+            className="size-7"
+          />
           <span className="font-heading text-primary text-lg font-semibold md:text-xl">
             LawMadeSimple
           </span>

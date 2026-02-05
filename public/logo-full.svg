@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 120" fill="none">
+  <!-- LawMadeSimple Full Lockup - Logo + Wordmark -->
+
+  <!-- Logo Mark (scaled to 80px height, positioned at left) -->
+  <g transform="translate(20, 20) scale(0.156)">
+    <!-- Vertical stroke of L -->
+    <rect x="139" y="109" width="72" height="295" fill="#1A5F7A"/>
+    <!-- Horizontal stroke of L -->
+    <rect x="139" y="332" width="218" height="72" fill="#1A5F7A"/>
+    <!-- Gold corner accent -->
+    <polygon points="211,332 296,332 211,247" fill="#F4B942"/>
+  </g>
+
+  <!-- Wordmark - "LawMadeSimple" in Lora serif -->
+  <text x="116" y="72"
+        font-family="Lora, Georgia, 'Times New Roman', serif"
+        font-size="42"
+        font-weight="400"
+        fill="#1A5F7A">LawMadeSimple</text>
+</svg>

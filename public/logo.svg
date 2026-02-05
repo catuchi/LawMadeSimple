@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <!-- LawMadeSimple Logo Mark - "The Opening" -->
+  <!-- Deep Teal L shape with gold corner accent -->
+
+  <!-- Vertical stroke of L (spine) -->
+  <rect x="139" y="109" width="72" height="295" fill="#1A5F7A"/>
+
+  <!-- Horizontal stroke of L (base) -->
+  <rect x="139" y="332" width="218" height="72" fill="#1A5F7A"/>
+
+  <!-- Gold corner accent (the opening - where understanding emerges) -->
+  <polygon points="211,332 296,332 211,247" fill="#F4B942"/>
+</svg>

@@ -1,7 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { Scale, X, Bookmark, Settings, LogOut } from 'lucide-react';
+import Image from 'next/image';
+import { X, Bookmark, Settings, LogOut } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { UserAvatar, getUserDisplayData } from '@/components/auth/user-avatar';
@@ -49,7 +50,13 @@ export function MobileMenu({
         {/* Header */}
         <SheetHeader className="flex h-14 flex-row items-center justify-between border-b border-[var(--color-neutral-200)] px-4">
           <SheetTitle className="flex items-center gap-2">
-            <Scale className="text-primary size-6" />
+            <Image
+              src="/logo.svg"
+              alt="LawMadeSimple logo"
+              width={24}
+              height={24}
+              className="size-6"
+            />
             <span className="font-heading text-primary text-lg font-semibold">LawMadeSimple</span>
           </SheetTitle>
           <button

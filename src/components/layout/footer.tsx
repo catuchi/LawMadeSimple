@@ -1,5 +1,6 @@
 import Link from 'next/link';
-import { Scale, AlertCircle } from 'lucide-react';
+import Image from 'next/image';
+import { AlertCircle } from 'lucide-react';
 
 const quickLinks = [
   { label: 'Home', href: '/' },
@@ -30,7 +31,13 @@ export function Footer() {
           {/* Brand - spans full width on sm screens */}
           <div className="sm:col-span-2 lg:col-span-1">
             <Link href="/" className="flex items-center gap-2">
-              <Scale className="text-primary size-6" />
+              <Image
+                src="/logo.svg"
+                alt="LawMadeSimple logo"
+                width={24}
+                height={24}
+                className="size-6"
+              />
               <span className="font-heading text-primary text-lg font-semibold">LawMadeSimple</span>
             </Link>
             <p className="mt-3 text-sm text-[var(--color-neutral-600)]">

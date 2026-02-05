@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -6,6 +7,13 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
       <header className="border-border border-b bg-white">
         <div className="mx-auto flex h-16 max-w-7xl items-center px-4 sm:px-6 lg:px-8">
           <Link href="/" className="flex items-center gap-2">
+            <Image
+              src="/logo.svg"
+              alt="LawMadeSimple logo"
+              width={28}
+              height={28}
+              className="size-7"
+            />
             <span className="text-primary font-serif text-xl font-bold">LawMadeSimple</span>
           </Link>
         </div>
