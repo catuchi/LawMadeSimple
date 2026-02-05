@@ -11,19 +11,23 @@ import { policeEncountersScenarios } from './police-encounters';
 import { tenantRightsScenarios } from './tenant-rights';
 import { employmentScenarios } from './employment';
 
-// Phase 8B: Expansion Scenarios (Post-Launch)
+// Phase 8B: Criminal Code Scenarios
+import { crimeVictimsScenarios } from './crime-victims';
+
+// Phase 8C+: Expansion Scenarios (Post-Launch)
 // import { businessScenarios } from './business';
 // import { taxScenarios } from './tax';
 // import { ipProtectionScenarios } from './ip-protection';
 
 /**
- * All scenarios for Phase 8A
+ * All scenarios for Phase 8A + 8B
  */
 export const phase8AScenarios: ScenarioWithMappings[] = [
   ...constitutionalRightsScenarios,
   ...policeEncountersScenarios,
   ...tenantRightsScenarios,
   ...employmentScenarios,
+  ...crimeVictimsScenarios,
 ];
 
 /**
@@ -37,4 +41,5 @@ export {
   policeEncountersScenarios,
   tenantRightsScenarios,
   employmentScenarios,
+  crimeVictimsScenarios,
 };

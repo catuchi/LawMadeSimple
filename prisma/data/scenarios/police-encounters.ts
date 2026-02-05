@@ -42,6 +42,13 @@ export const policeEncountersScenarios: ScenarioWithMappings[] = [
         relevanceNote:
           'Section 34 protects you from torture or inhuman treatment while in police custody.',
       },
+      {
+        lawSlug: 'criminal-code-act',
+        sectionSlug: 'section-366',
+        relevanceOrder: 4,
+        relevanceNote:
+          'Section 366 makes wrongful confinement a criminal offence. Police who detain you illegally can be prosecuted under this section.',
+      },
     ],
   },
   {
@@ -70,6 +77,13 @@ export const policeEncountersScenarios: ScenarioWithMappings[] = [
         relevanceNote:
           'Section 46 allows you to apply to the High Court for enforcement of your fundamental rights if unlawfully detained.',
       },
+      {
+        lawSlug: 'criminal-code-act',
+        sectionSlug: 'section-366',
+        relevanceOrder: 3,
+        relevanceNote:
+          'Wrongful confinement is a criminal offence under Section 366. Keeping you beyond the legal limit without valid reason could constitute this offence.',
+      },
     ],
   },
   {
@@ -92,9 +106,16 @@ export const policeEncountersScenarios: ScenarioWithMappings[] = [
           'Extortion violates your dignity. Section 34 protects you from degrading treatment.',
       },
       {
+        lawSlug: 'criminal-code-act',
+        sectionSlug: 'section-406',
+        relevanceOrder: 2,
+        relevanceNote:
+          'Section 406 criminalizes extortion by threats. Police threatening arrest or prosecution to extract money commit this offence, punishable by up to 14 years.',
+      },
+      {
         lawSlug: 'constitution-1999',
         sectionSlug: 'section-46',
-        relevanceOrder: 2,
+        relevanceOrder: 3,
         relevanceNote: 'You can seek legal redress for violations of your fundamental rights.',
       },
     ],
@@ -124,6 +145,13 @@ export const policeEncountersScenarios: ScenarioWithMappings[] = [
         relevanceOrder: 2,
         relevanceNote:
           'If arrested during an illegal search, Section 35 protects your liberty rights.',
+      },
+      {
+        lawSlug: 'criminal-code-act',
+        sectionSlug: 'section-342',
+        relevanceOrder: 3,
+        relevanceNote:
+          'Criminal trespass under Section 342 applies when someone enters property without lawful authority. An unlawful police search could potentially constitute this offence.',
       },
     ],
   },
@@ -187,9 +215,30 @@ export const policeEncountersScenarios: ScenarioWithMappings[] = [
         relevanceNote: 'In severe cases, Section 33 protects your fundamental right to life.',
       },
       {
+        lawSlug: 'criminal-code-act',
+        sectionSlug: 'section-351',
+        relevanceOrder: 3,
+        relevanceNote:
+          'Common assault under Section 351 is a criminal offence. Police who beat suspects commit assault.',
+      },
+      {
+        lawSlug: 'criminal-code-act',
+        sectionSlug: 'section-352',
+        relevanceOrder: 4,
+        relevanceNote:
+          'If the beating causes injury, Section 352 applies - assault occasioning actual bodily harm is a felony punishable by 5 years.',
+      },
+      {
+        lawSlug: 'criminal-code-act',
+        sectionSlug: 'section-360',
+        relevanceOrder: 5,
+        relevanceNote:
+          'Grievous harm under Section 360 applies when injuries are serious - punishable by 7 years imprisonment.',
+      },
+      {
         lawSlug: 'constitution-1999',
         sectionSlug: 'section-46',
-        relevanceOrder: 3,
+        relevanceOrder: 6,
         relevanceNote:
           'You can apply to the High Court for compensation and public apology from the appropriate authority.',
       },

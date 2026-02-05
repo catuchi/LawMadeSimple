@@ -139,7 +139,7 @@ Set `OPENAI_API_KEY` in both `.env.local` and Vercel environment variables.
 
 ## Current Phase
 
-**Phase 8: Content & Data** — 🔄 IN PROGRESS (Phase 8a COMPLETE)
+**Phase 8: Content & Data** — 🔄 IN PROGRESS (Phase 8b COMPLETE)
 
 ### Progress (aligned with plan.md)
 - ✅ Phase 1: Project Foundation — Complete
@@ -156,7 +156,7 @@ Set `OPENAI_API_KEY` in both `.env.local` and Vercel environment variables.
 
 **📋 Full plan:** `docs/phase-8-plan.md`
 
-**To resume:** Tell Claude: "Continue Phase 8 from checkpoint 8b - read docs/phase-8-plan.md for context"
+**To resume:** Tell Claude: "Continue Phase 8 from checkpoint 8c - read docs/phase-8-plan.md for context"
 
 **Phase 8a — COMPLETE:**
 - [x] `prisma/data/types.ts` — TypeScript interfaces for seed data
@@ -167,8 +167,14 @@ Set `OPENAI_API_KEY` in both `.env.local` and Vercel environment variables.
 - [x] Database seeded: 4 laws, 16 sections, 23 scenarios, 51 mappings
 - [x] Embeddings generated: 16 sections + 23 scenarios
 
-**Next steps (Phase 8b-8g):**
-- [ ] Phase 8b: Expand Criminal Code (15-20 sections)
+**Phase 8b — COMPLETE:**
+- [x] `prisma/data/laws/criminal-code.ts` — Expanded to 18 sections (assault, theft, robbery, defamation, etc.)
+- [x] `prisma/data/scenarios/police-encounters.ts` — Updated with Criminal Code mappings
+- [x] `prisma/data/scenarios/crime-victims.ts` — NEW: 6 crime victim scenarios
+- [x] Database seeded: 4 laws, 37 sections, 29 scenarios, 82 mappings
+- [x] Embeddings generated: 37 sections + 29 scenarios
+
+**Next steps (Phase 8c-8f):**
 - [ ] Phase 8c: Expand Labour Act (15-20 sections)
 - [ ] Phase 8d: Expand Lagos Tenancy (10-15 sections)
 - [ ] Phase 8e: Update homepage links to category pages
