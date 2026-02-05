@@ -135,6 +135,7 @@ model Scenario {
   slug        String      @unique
   title       String
   description String?
+  iconEmoji   String      @default("📋") @map("icon_emoji")
   keywords    String[]
   category    LawCategory
   isFeatured  Boolean     @default(false) @map("is_featured")

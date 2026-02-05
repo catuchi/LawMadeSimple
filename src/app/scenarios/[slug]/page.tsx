@@ -9,110 +9,64 @@ import { LawCard } from '@/components/features/law-card';
 import { Badge } from '@/components/ui/badge';
 import { DisclaimerBadge } from '@/components/ui/disclaimer-badge';
 import { prisma } from '@/lib/db';
-import type { ScenarioDetail, RelatedSectionItem } from '@/types/api';
+import type { RelatedSectionItem } from '@/types/api';
 
-// Scenario metadata for static generation and SEO
-const scenarioMeta: Record<
-  string,
-  { title: string; description: string; iconEmoji: string; category: string }
-> = {
-  'landlord-tenant': {
-    title: 'Landlord & Tenant Issues',
-    description:
-      'Understanding your rights as a tenant or landlord under Nigerian law. Learn about rent increases, eviction procedures, security deposits, and property maintenance obligations.',
-    iconEmoji: '🏠',
-    category: 'property',
-  },
-  'police-encounters': {
-    title: 'Police Encounters',
-    description:
-      'Know your rights when dealing with Nigerian police. Learn what to do during stops, arrests, and detentions, and understand the legal protections available to you.',
-    iconEmoji: '👮',
-    category: 'criminal',
-  },
-  employment: {
-    title: 'Employment Rights',
-    description:
-      'Your rights as an employee in Nigeria. Understand termination procedures, leave entitlements, workplace safety, and protections against unfair dismissal.',
-    iconEmoji: '💼',
-    category: 'labour',
-  },
-  business: {
-    title: 'Starting a Business',
-    description:
-      'A guide to legally registering and running a business in Nigeria under CAMA 2020. Learn about company types, registration requirements, and compliance obligations.',
-    iconEmoji: '🏢',
-    category: 'business',
-  },
-  tax: {
-    title: 'Tax Questions',
-    description:
-      'Understanding your tax obligations in Nigeria. Learn about personal income tax, corporate tax, VAT, and how to stay compliant with Nigerian tax laws.',
-    iconEmoji: '💰',
-    category: 'tax',
-  },
-  'constitutional-rights': {
-    title: 'Constitutional Rights',
-    description:
-      'Your fundamental rights as a Nigerian citizen under the 1999 Constitution. Learn about freedom of speech, movement, religion, and other protected rights.',
-    iconEmoji: '📜',
-    category: 'constitution',
-  },
-  copyright: {
-    title: 'Copyright & IP Protection',
-    description:
-      'Protect your creative works under the Nigerian Copyright Act 2022. Learn about registering copyrights for music, art, writing, software, and digital content.',
-    iconEmoji: '©️',
-    category: 'intellectual_property',
-  },
-  trademarks: {
-    title: 'Trademarks & Branding',
-    description:
-      'Protect your business name, logo, and brand identity. Learn about trademark registration, infringement, and enforcement in Nigeria.',
-    iconEmoji: '™️',
-    category: 'intellectual_property',
-  },
-};
+// Extended related section with law name from DB
+interface RelatedSectionWithLaw extends RelatedSectionItem {
+  lawName: string;
+}
 
-// Map law slugs to display names
-const lawDisplayNames: Record<string, string> = {
-  'constitution-1999': 'Constitution of Nigeria',
-  'criminal-code-act': 'Criminal Code Act',
-  'cama-2020': 'CAMA 2020',
-  'labour-act': 'Labour Act',
-  'lagos-tenancy-law-2011': 'Lagos Tenancy Law 2011',
-  'firs-act': 'FIRS Act',
-  'copyright-act-2022': 'Copyright Act 2022',
-  'trademarks-act': 'Trademarks Act',
-  'patents-designs-act': 'Patents & Designs Act',
-};
+// Extended scenario detail type with all fields needed for the page
+interface ScenarioPageData {
+  id: string;
+  slug: string;
+  title: string;
+  description: string | null;
+  iconEmoji: string;
+  category: string;
+  relatedSections: RelatedSectionWithLaw[];
+}
 
 interface PageProps {
   params: Promise<{ slug: string }>;
 }
 
+// Fetch basic scenario metadata for SEO (lightweight query)
+async function getScenarioMeta(slug: string) {
+  return prisma.scenario.findUnique({
+    where: { slug },
+    select: {
+      title: true,
+      description: true,
+    },
+  });
+}
+
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  const meta = scenarioMeta[slug];
+  const scenario = await getScenarioMeta(slug);
 
-  if (!meta) {
+  if (!scenario) {
     return {
       title: 'Scenario Not Found | LawMadeSimple',
     };
   }
 
   return {
-    title: `${meta.title} | LawMadeSimple`,
-    description: meta.description,
+    title: `${scenario.title} | LawMadeSimple`,
+    description: scenario.description || undefined,
   };
 }
 
-// Generate static paths for known scenarios
+// Generate static paths from database
 export async function generateStaticParams() {
-  return Object.keys(scenarioMeta).map((slug) => ({ slug }));
+  const scenarios = await prisma.scenario.findMany({
+    select: { slug: true },
+  });
+  return scenarios.map((s) => ({ slug: s.slug }));
 }
 
-async function getScenarioData(slug: string): Promise<ScenarioDetail | null> {
+async function getScenarioData(slug: string): Promise<ScenarioPageData | null> {
   // Query database directly instead of fetching from API
   // This works during build time (static generation) without needing a running server
   // Errors thrown here are caught by error.tsx boundary
@@ -123,6 +77,7 @@ async function getScenarioData(slug: string): Promise<ScenarioDetail | null> {
       slug: true,
       title: true,
       description: true,
+      iconEmoji: true,
       category: true,
       sections: {
         select: {
@@ -134,7 +89,10 @@ async function getScenarioData(slug: string): Promise<ScenarioDetail | null> {
               slug: true,
               title: true,
               law: {
-                select: { slug: true },
+                select: {
+                  slug: true,
+                  shortTitle: true,
+                },
               },
             },
           },
@@ -145,16 +103,17 @@ async function getScenarioData(slug: string): Promise<ScenarioDetail | null> {
   });
 
   if (!scenario) {
-    return null; // Let the page handle this with placeholder content
+    return null;
   }
 
-  // Transform related sections
-  const relatedSections: RelatedSectionItem[] = scenario.sections.map((ss) => ({
+  // Transform related sections (include law display name from DB)
+  const relatedSections: RelatedSectionWithLaw[] = scenario.sections.map((ss) => ({
     id: ss.section.id,
     lawSlug: ss.section.law.slug,
     sectionSlug: ss.section.slug,
     title: ss.section.title,
     relevanceNote: ss.relevanceNote,
+    lawName: ss.section.law.shortTitle,
   }));
 
   return {
@@ -162,24 +121,40 @@ async function getScenarioData(slug: string): Promise<ScenarioDetail | null> {
     slug: scenario.slug,
     title: scenario.title,
     description: scenario.description,
+    iconEmoji: scenario.iconEmoji,
     category: scenario.category,
     relatedSections,
   };
 }
 
+// Fetch related scenarios for the sidebar (excluding current)
+async function getRelatedScenarios(currentSlug: string, limit = 4) {
+  return prisma.scenario.findMany({
+    where: { slug: { not: currentSlug } },
+    select: {
+      slug: true,
+      title: true,
+      iconEmoji: true,
+    },
+    take: limit,
+  });
+}
+
 export default async function ScenarioDetailPage({ params }: PageProps) {
   const { slug } = await params;
-  const meta = scenarioMeta[slug];
 
-  if (!meta) {
+  // Fetch scenario data from database
+  const scenario = await getScenarioData(slug);
+
+  if (!scenario) {
     notFound();
   }
 
-  // Fetch scenario data from API
-  const scenario = await getScenarioData(slug);
+  // Fetch related scenarios for sidebar
+  const relatedScenarios = await getRelatedScenarios(slug);
 
-  // If API returns data, use it; otherwise show placeholder content
-  const hasApiData = scenario && scenario.relatedSections.length > 0;
+  // Check if we have related sections
+  const hasRelatedSections = scenario.relatedSections.length > 0;
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -199,7 +174,7 @@ export default async function ScenarioDetailPage({ params }: PageProps) {
                 Back to Scenarios
               </Link>
               <Breadcrumb
-                items={[{ label: 'Scenarios', href: '/scenarios' }, { label: meta.title }]}
+                items={[{ label: 'Scenarios', href: '/scenarios' }, { label: scenario.title }]}
                 className="hidden sm:flex"
               />
             </div>
@@ -207,19 +182,21 @@ export default async function ScenarioDetailPage({ params }: PageProps) {
             {/* Title and Description */}
             <div className="flex items-start gap-4">
               <span className="text-4xl" aria-hidden="true">
-                {meta.iconEmoji}
+                {scenario.iconEmoji}
               </span>
               <div>
                 <h1 className="font-heading text-2xl font-bold text-[var(--color-neutral-800)] md:text-3xl">
-                  {meta.title}
+                  {scenario.title}
                 </h1>
-                <p className="mt-2 text-[var(--color-neutral-600)]">{meta.description}</p>
+                {scenario.description && (
+                  <p className="mt-2 text-[var(--color-neutral-600)]">{scenario.description}</p>
+                )}
               </div>
             </div>
 
             {/* Category Badge */}
             <div className="mt-4">
-              <Badge variant="primary">{meta.category.replace('_', ' ')}</Badge>
+              <Badge variant="primary">{scenario.category.replace('_', ' ')}</Badge>
             </div>
           </div>
         </section>
@@ -234,7 +211,7 @@ export default async function ScenarioDetailPage({ params }: PageProps) {
         {/* Related Sections */}
         <section className="bg-[var(--background-secondary)] px-4 py-8 md:px-8 md:py-12">
           <div className="mx-auto max-w-4xl">
-            {hasApiData ? (
+            {hasRelatedSections ? (
               <>
                 <h2 className="mb-6 text-lg font-medium text-[var(--color-neutral-700)]">
                   {scenario.relatedSections.length} relevant law
@@ -247,18 +224,18 @@ export default async function ScenarioDetailPage({ params }: PageProps) {
                       key={section.id}
                       title={section.title}
                       preview={section.relevanceNote || undefined}
-                      lawName={lawDisplayNames[section.lawSlug] || section.lawSlug}
+                      lawName={section.lawName}
                       href={`/explain/${section.lawSlug}/${section.sectionSlug}`}
-                      badges={[{ label: meta.category.replace('_', ' '), variant: 'primary' }]}
+                      badges={[{ label: scenario.category.replace('_', ' '), variant: 'primary' }]}
                     />
                   ))}
                 </div>
               </>
             ) : (
-              /* Placeholder when no API data */
+              /* Placeholder when no related sections */
               <div className="rounded-xl border border-[var(--color-neutral-200)] bg-white p-8 text-center">
                 <div className="mx-auto mb-4 flex size-16 items-center justify-center rounded-full bg-[var(--color-primary-50)]">
-                  <span className="text-3xl">{meta.iconEmoji}</span>
+                  <span className="text-3xl">{scenario.iconEmoji}</span>
                 </div>
                 <h2 className="font-heading text-xl font-semibold text-[var(--color-neutral-800)]">
                   Content Coming Soon
@@ -287,26 +264,23 @@ export default async function ScenarioDetailPage({ params }: PageProps) {
         </section>
 
         {/* Related Scenarios */}
-        {hasApiData && (
+        {relatedScenarios.length > 0 && (
           <section className="border-t border-[var(--color-neutral-200)] bg-white px-4 py-8 md:px-8 md:py-12">
             <div className="mx-auto max-w-4xl">
               <h2 className="font-heading mb-6 text-xl font-semibold text-[var(--color-neutral-800)]">
                 Related Scenarios
               </h2>
               <div className="flex flex-wrap gap-3">
-                {Object.entries(scenarioMeta)
-                  .filter(([s]) => s !== slug)
-                  .slice(0, 4)
-                  .map(([s, m]) => (
-                    <Link
-                      key={s}
-                      href={`/scenarios/${s}`}
-                      className="flex items-center gap-2 rounded-full border border-[var(--color-neutral-200)] bg-white px-4 py-2 text-sm font-medium text-[var(--color-neutral-700)] transition-colors hover:border-[var(--color-primary-300)] hover:bg-[var(--color-primary-50)]"
-                    >
-                      <span aria-hidden="true">{m.iconEmoji}</span>
-                      {m.title}
-                    </Link>
-                  ))}
+                {relatedScenarios.map((s) => (
+                  <Link
+                    key={s.slug}
+                    href={`/scenarios/${s.slug}`}
+                    className="flex items-center gap-2 rounded-full border border-[var(--color-neutral-200)] bg-white px-4 py-2 text-sm font-medium text-[var(--color-neutral-700)] transition-colors hover:border-[var(--color-primary-300)] hover:bg-[var(--color-primary-50)]"
+                  >
+                    <span aria-hidden="true">{s.iconEmoji}</span>
+                    {s.title}
+                  </Link>
+                ))}
               </div>
             </div>
           </section>
