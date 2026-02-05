@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
+import ReactMarkdown from 'react-markdown';
 import {
   ArrowLeft,
   Share2,
@@ -418,9 +419,43 @@ export default function ExplanationPage() {
                     <AccordionContent className="text-[var(--color-neutral-600)]">
                       {explanationText ? (
                         <div className="prose prose-sm max-w-none">
-                          <p className="leading-relaxed whitespace-pre-wrap">{explanationText}</p>
+                          <ReactMarkdown
+                            allowedElements={[
+                              'p',
+                              'strong',
+                              'em',
+                              'h3',
+                              'h4',
+                              'ul',
+                              'ol',
+                              'li',
+                              'br',
+                            ]}
+                            unwrapDisallowed={true}
+                            components={{
+                              h3: ({ children }) => (
+                                <h3 className="mt-4 mb-2 text-base font-semibold first:mt-0">
+                                  {children}
+                                </h3>
+                              ),
+                              h4: ({ children }) => (
+                                <h4 className="mt-3 mb-1 text-sm font-semibold first:mt-0">
+                                  {children}
+                                </h4>
+                              ),
+                              ul: ({ children }) => (
+                                <ul className="my-2 ml-4 list-disc space-y-1">{children}</ul>
+                              ),
+                              ol: ({ children }) => (
+                                <ol className="my-2 ml-4 list-decimal space-y-1">{children}</ol>
+                              ),
+                              li: ({ children }) => <li className="leading-relaxed">{children}</li>,
+                            }}
+                          >
+                            {explanationText}
+                          </ReactMarkdown>
                           {isGenerating && (
-                            <span className="inline-block size-2 animate-pulse rounded-full bg-[var(--color-primary-500)]" />
+                            <span className="ml-1 inline-block size-2 animate-pulse rounded-full bg-[var(--color-primary-500)]" />
                           )}
                         </div>
                       ) : (
