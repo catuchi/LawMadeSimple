@@ -156,3 +156,40 @@ export async function isUserDeleted(userId: string): Promise<boolean> {
     return false;
   }
 }
+
+/**
+ * Updates user's display name in Prisma.
+ */
+export async function updateUserName(userId: string, name: string | null) {
+  try {
+    const user = await prisma.user.update({
+      where: { id: userId },
+      data: { name },
+    });
+    return { success: true, user };
+  } catch (error) {
+    console.error('Failed to update user name:', error);
+    return { success: false, error };
+  }
+}
+
+/**
+ * Gets user profile data from Prisma (name, email, avatarUrl).
+ */
+export async function getUserProfile(userId: string) {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        avatarUrl: true,
+      },
+    });
+    return user;
+  } catch (error) {
+    console.error('Failed to get user profile:', error);
+    return null;
+  }
+}

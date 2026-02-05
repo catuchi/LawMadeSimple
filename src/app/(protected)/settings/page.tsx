@@ -4,9 +4,11 @@ import { useState } from 'react';
 import { useAuth } from '@/hooks/use-auth';
 import { createClient } from '@/lib/supabase/client';
 import { UpdateEmailForm } from '@/components/auth/update-email-form';
+import { UpdateNameForm } from '@/components/auth/update-name-form';
 import { DeleteAccountForm } from '@/components/auth/delete-account-form';
 import { ChangePasswordForm } from '@/components/auth/change-password-form';
 import { UsageStatus } from '@/components/subscription/usage-status';
+import { UserAvatar, getUserDisplayData } from '@/components/auth/user-avatar';
 import type { UserIdentity, Provider } from '@supabase/supabase-js';
 
 // OAuth providers that can be linked
@@ -43,6 +45,9 @@ export default function SettingsPage() {
   // Get connected identities
   const identities = user.identities || [];
   const connectedProviders = new Set(identities.map((i) => i.provider));
+
+  // Get user display data (name, avatar)
+  const userDisplayData = getUserDisplayData(user);
 
   // Available OAuth providers to link (not already connected)
   const availableProviders = Object.keys(OAUTH_PROVIDERS).filter((p) => !connectedProviders.has(p));
@@ -106,14 +111,23 @@ export default function SettingsPage() {
     <div className="mx-auto max-w-2xl px-4 py-8">
       <h1 className="text-foreground mb-8 text-2xl font-bold">Account Settings</h1>
 
-      {/* Account Info */}
+      {/* Profile */}
       <section className="mb-8">
-        <h2 className="text-foreground mb-4 text-lg font-semibold">Account</h2>
+        <h2 className="text-foreground mb-4 text-lg font-semibold">Profile</h2>
         <div className="border-border rounded-lg border bg-white p-4">
-          <div className="space-y-2">
-            <p className="text-foreground-muted text-sm">Email</p>
-            <p className="text-foreground font-medium">{user.email}</p>
+          <div className="mb-6 flex items-center gap-4">
+            <UserAvatar
+              name={userDisplayData.name}
+              email={userDisplayData.email}
+              avatarUrl={userDisplayData.avatarUrl}
+              size="lg"
+            />
+            <div>
+              <p className="text-foreground font-medium">{userDisplayData.name || 'No name set'}</p>
+              <p className="text-foreground-muted text-sm">{user.email}</p>
+            </div>
           </div>
+          <UpdateNameForm currentName={userDisplayData.name} />
         </div>
       </section>
 

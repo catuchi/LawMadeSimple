@@ -83,6 +83,7 @@ export const AUTH_SUCCESS = {
     'Email change request sent! Check your new email inbox for the confirmation link.',
   ACCOUNT_DELETED: 'Your account has been deleted.',
   OTP_SENT: 'Code sent! Check your email for a 6-digit code.',
+  NAME_UPDATED: 'Your name has been updated.',
 } as const;
 
 // Password requirements

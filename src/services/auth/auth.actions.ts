@@ -685,3 +685,53 @@ export async function deleteAccount(
 
   return { success: AUTH_SUCCESS.ACCOUNT_DELETED };
 }
+
+/**
+ * Update user's display name (updates both Supabase and Prisma)
+ */
+export async function updateUserName(
+  _prevState: AuthFormState,
+  formData: FormData
+): Promise<AuthFormState> {
+  const name = (formData.get('name') as string)?.trim() || null;
+
+  // Basic validation - name is optional but if provided, should be reasonable
+  if (name && name.length > 100) {
+    return { fieldErrors: { name: 'Name must be 100 characters or less' } };
+  }
+
+  const supabase = await createClient();
+
+  // Check if user is authenticated
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { error: AUTH_ERRORS.NOT_AUTHENTICATED };
+  }
+
+  // Update Supabase user_metadata (so header reflects the change)
+  const { error: supabaseError } = await supabase.auth.updateUser({
+    data: {
+      full_name: name,
+      name: name,
+    },
+  });
+
+  if (supabaseError) {
+    console.error('Failed to update Supabase user metadata:', supabaseError);
+    return { error: 'Failed to update name. Please try again.' };
+  }
+
+  // Update Prisma user record
+  const { updateUserName: updatePrismaUserName } = await import('./auth.service');
+  const prismaResult = await updatePrismaUserName(user.id, name);
+
+  if (!prismaResult.success) {
+    console.error('Failed to update Prisma user name');
+    // Don't fail the whole operation - Supabase was updated
+  }
+
+  return { success: AUTH_SUCCESS.NAME_UPDATED };
+}

@@ -6,6 +6,7 @@ import { Scale, Menu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { MobileMenu } from './mobile-menu';
 import { useAuth } from '@/hooks/use-auth';
+import { UserMenu } from '@/components/auth/user-menu';
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
 
@@ -18,7 +19,7 @@ const navItems = [
 
 export function Header() {
   const pathname = usePathname();
-  const { user, isLoading } = useAuth();
+  const { user, isLoading, signOut } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
@@ -52,22 +53,11 @@ export function Header() {
         </nav>
 
         {/* Desktop Auth Buttons */}
-        <div className="hidden items-center gap-2 md:flex">
+        <div className="hidden items-center gap-3 md:flex">
           {isLoading ? (
-            <div className="size-8 animate-pulse rounded-md bg-[var(--color-neutral-100)]" />
+            <div className="size-8 animate-pulse rounded-full bg-[var(--color-neutral-100)]" />
           ) : user ? (
-            <>
-              <Link href="/saved">
-                <Button variant="ghost" size="sm">
-                  Saved
-                </Button>
-              </Link>
-              <Link href="/settings">
-                <Button variant="ghost" size="sm">
-                  Settings
-                </Button>
-              </Link>
-            </>
+            <UserMenu user={user} onSignOut={signOut} />
           ) : (
             <>
               <Link href="/sign-in">
@@ -102,6 +92,7 @@ export function Header() {
         currentPath={pathname}
         user={user}
         isLoading={isLoading}
+        onSignOut={signOut}
       />
     </header>
   );
