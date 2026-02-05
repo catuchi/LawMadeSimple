@@ -66,11 +66,16 @@ function getCacheExpiration(): Date {
 
 /**
  * Fetch section content with law info
+ * Uses explicit select to exclude embedding field (Unsupported pgvector type)
  */
 async function fetchSection(sectionId: string): Promise<ContentData | null> {
   const section = await prisma.section.findUnique({
     where: { id: sectionId },
-    include: {
+    select: {
+      id: true,
+      content: true,
+      title: true,
+      number: true,
       law: {
         select: {
           title: true,
@@ -132,17 +137,24 @@ async function fetchArticle(articleId: string): Promise<ContentData | null> {
 
 /**
  * Fetch scenario content with related sections
+ * Uses explicit select to exclude embedding fields (Unsupported pgvector type)
  */
 async function fetchScenario(
   scenarioId: string
 ): Promise<(ContentData & { relevantSections: string }) | null> {
   const scenario = await prisma.scenario.findUnique({
     where: { id: scenarioId },
-    include: {
+    select: {
+      id: true,
+      title: true,
+      description: true,
       sections: {
-        include: {
+        select: {
+          relevanceOrder: true,
           section: {
-            include: {
+            select: {
+              number: true,
+              title: true,
               law: {
                 select: {
                   title: true,
