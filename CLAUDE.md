@@ -385,7 +385,7 @@ enum LawCategory {
 - **Providers:** Apple OAuth ✅, Google OAuth ✅, Facebook OAuth ✅, Email/Password ✅, Magic Link ✅, OTP (6-digit code) ✅
 - **Auto-rotation:** Apple client secret rotates monthly via GitHub Actions
 - **Routes:** `/sign-in`, `/sign-up`, `/forgot-password`, `/reset-password`, `/dashboard`
-- **Production URL:** `https://law-made-simple.vercel.app`
+- **Production URL:** `https://www.lawmadesimple.ng`
 - **Security Features:**
   - Server-validated sessions (`getUser()` not `getSession()`)
   - Reset password link expiry validation
