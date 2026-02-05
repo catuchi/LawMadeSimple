@@ -139,7 +139,7 @@ Set `OPENAI_API_KEY` in both `.env.local` and Vercel environment variables.
 
 ## Current Phase
 
-**Phase 8: Content & Data** — 🔄 IN PROGRESS (Phase 8a partially complete)
+**Phase 8: Content & Data** — 🔄 IN PROGRESS (Phase 8a COMPLETE)
 
 ### Progress (aligned with plan.md)
 - ✅ Phase 1: Project Foundation — Complete
@@ -156,27 +156,23 @@ Set `OPENAI_API_KEY` in both `.env.local` and Vercel environment variables.
 
 **📋 Full plan:** `docs/phase-8-plan.md`
 
-**To resume:** Tell Claude: "Continue Phase 8 from checkpoint 8a - read docs/phase-8-plan.md for context"
+**To resume:** Tell Claude: "Continue Phase 8 from checkpoint 8b - read docs/phase-8-plan.md for context"
 
-**Completed:**
+**Phase 8a — COMPLETE:**
 - [x] `prisma/data/types.ts` — TypeScript interfaces for seed data
 - [x] `prisma/helpers/seed-utils.ts` — Upsert helpers with logging
-- [x] `prisma/data/laws/index.ts` — Laws data index (empty structure)
-- [x] `prisma/data/scenarios/index.ts` — Scenarios data index (empty structure)
+- [x] `prisma/data/laws/*.ts` — 4 law files (Constitution with 13 sections, 3 placeholders)
+- [x] `prisma/data/scenarios/*.ts` — 4 scenario files (23 scenarios total)
+- [x] `prisma/seed.ts` — Refactored to use modular imports
+- [x] Database seeded: 4 laws, 16 sections, 23 scenarios, 51 mappings
+- [x] Embeddings generated: 16 sections + 23 scenarios
 
-**Next steps (Phase 8a checkpoint):**
-- [ ] Create placeholder law files (constitution.ts, criminal-code.ts, labour-act.ts, lagos-tenancy.ts)
-- [ ] Create placeholder scenario files (constitutional-rights.ts, police-encounters.ts, tenant-rights.ts, employment.ts)
-- [ ] Refactor `prisma/seed.ts` to use modular imports
-- [ ] Verify seed script runs without errors
-
-**Then:**
-- Phase 8b: Constitution content (25-30 sections, 5-6 scenarios)
-- Phase 8c: Criminal Code content (15-20 sections, 4-5 scenarios)
-- Phase 8d: Labour Act content (15-20 sections, 4-5 scenarios)
-- Phase 8e: Lagos Tenancy content (10-15 sections, 3-4 scenarios)
-- Phase 8f: Update homepage links to category pages
-- Phase 8g: Run seed, backfill embeddings, test
+**Next steps (Phase 8b-8g):**
+- [ ] Phase 8b: Expand Criminal Code (15-20 sections)
+- [ ] Phase 8c: Expand Labour Act (15-20 sections)
+- [ ] Phase 8d: Expand Lagos Tenancy (10-15 sections)
+- [ ] Phase 8e: Update homepage links to category pages
+- [ ] Phase 8f: Final testing and verification
 
 ### Phase 6 Summary (Completed Jan 29, 2026)
 

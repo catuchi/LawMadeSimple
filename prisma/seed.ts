@@ -1,8 +1,28 @@
 /* eslint-disable no-console */
+/**
+ * Database Seed Script
+ *
+ * Seeds the database with laws, sections, scenarios, and their mappings.
+ * Uses modular data files from prisma/data/ for maintainability.
+ *
+ * Usage: npm run db:seed
+ */
+
 import { config } from 'dotenv';
-import { PrismaClient, LawCategory } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { Pool } from 'pg';
+
+import { createEmptySeedResult, type ScenarioMappingData } from './data/types';
+import { allLaws } from './data/laws';
+import { allScenarios } from './data/scenarios';
+import {
+  upsertLaw,
+  upsertSections,
+  upsertScenario,
+  createScenarioMappings,
+  logSeedResults,
+} from './helpers/seed-utils';
 
 // Load environment variables from .env.local
 config({ path: '.env.local' });
@@ -19,143 +39,91 @@ const prisma = new PrismaClient({ adapter });
 
 async function main() {
   console.log('Starting database seed...');
+  console.log(`Found ${allLaws.length} laws to seed`);
+  console.log(`Found ${allScenarios.length} scenarios to seed`);
+  console.log('');
 
-  // Seed Constitution of Nigeria (sample sections)
-  const constitution = await prisma.law.upsert({
-    where: { slug: 'constitution-1999' },
-    update: {},
-    create: {
-      slug: 'constitution-1999',
-      title: 'Constitution of the Federal Republic of Nigeria 1999 (as amended)',
-      shortTitle: 'Constitution',
-      description:
-        'The supreme law of Nigeria, establishing the framework for government and protecting fundamental rights.',
-      category: LawCategory.constitution,
-      effectiveDate: new Date('1999-05-29'),
-      sourceUrl: 'https://www.nigeria-law.org/ConstitutionOfTheFederalRepublicOfNigeria.htm',
-      isActive: true,
-    },
-  });
+  const result = createEmptySeedResult();
 
-  console.log(`Created law: ${constitution.title}`);
+  // Maps for linking scenarios to sections
+  const lawSectionMaps = new Map<string, Map<string, string>>();
 
-  // Sample fundamental rights sections
-  const fundamentalRights = [
-    {
-      slug: 'section-33',
-      number: '33',
-      title: 'Right to Life',
-      content:
-        'Every person has a right to life, and no one shall be deprived intentionally of his life, save in execution of the sentence of a court in respect of a criminal offence of which he has been found guilty in Nigeria.',
-      summary: 'Protects the fundamental right to life for all persons.',
-      orderIndex: 33,
-    },
-    {
-      slug: 'section-34',
-      number: '34',
-      title: 'Right to Dignity of Human Person',
-      content:
-        'Every individual is entitled to respect for the dignity of his person, and accordingly: (a) no person shall be subject to torture or to inhuman or degrading treatment; (b) no person shall be held in slavery or servitude; (c) no person shall be required to perform forced or compulsory labour.',
-      summary: 'Guarantees human dignity and prohibits torture, slavery, and forced labour.',
-      orderIndex: 34,
-    },
-    {
-      slug: 'section-35',
-      number: '35',
-      title: 'Right to Personal Liberty',
-      content:
-        'Every person shall be entitled to his personal liberty and no person shall be deprived of such liberty save in the following cases and in accordance with a procedure permitted by law.',
-      summary: 'Protects personal liberty and outlines lawful exceptions.',
-      orderIndex: 35,
-    },
-    {
-      slug: 'section-36',
-      number: '36',
-      title: 'Right to Fair Hearing',
-      content:
-        'In the determination of his civil rights and obligations, including any question or determination by or against any government or authority, a person shall be entitled to a fair hearing within a reasonable time by a court or other tribunal established by law.',
-      summary: 'Ensures the right to fair trial and due process.',
-      orderIndex: 36,
-    },
-    {
-      slug: 'section-37',
-      number: '37',
-      title: 'Right to Private and Family Life',
-      content:
-        'The privacy of citizens, their homes, correspondence, telephone conversations and telegraphic communications is hereby guaranteed and protected.',
-      summary: 'Protects privacy of home, communications, and family life.',
-      orderIndex: 37,
-    },
-  ];
+  // Seed all laws and their sections
+  console.log('=== Seeding Laws ===');
+  for (const { law, sections } of allLaws) {
+    console.log(`Seeding law: ${law.shortTitle}...`);
 
-  for (const section of fundamentalRights) {
-    await prisma.section.upsert({
-      where: {
-        lawId_slug: {
-          lawId: constitution.id,
-          slug: section.slug,
-        },
-      },
-      update: {},
-      create: {
-        ...section,
-        lawId: constitution.id,
-      },
-    });
-    console.log(`Created section: ${section.title}`);
+    const lawRecord = await upsertLaw(prisma, law, result);
+    if (!lawRecord) {
+      console.error(`  Failed to create law: ${law.slug}`);
+      continue;
+    }
+
+    const sectionMap = await upsertSections(prisma, lawRecord.id, sections, result);
+    lawSectionMaps.set(law.slug, sectionMap);
+
+    console.log(`  Created ${sections.length} sections`);
   }
 
-  // Create sample scenario
-  const scenario = await prisma.scenario.upsert({
-    where: { slug: 'police-arrest-without-warrant' },
-    update: {},
-    create: {
-      slug: 'police-arrest-without-warrant',
-      title: 'Police arrested me without a warrant',
-      description:
-        'Understanding your rights when police arrest you without showing a warrant or explaining the reason.',
-      keywords: ['police', 'arrest', 'warrant', 'detention', 'rights'],
-      category: LawCategory.criminal,
-      isFeatured: true,
-    },
-  });
+  // Seed all scenarios
+  console.log('\n=== Seeding Scenarios ===');
+  const scenarioMap = new Map<string, string>();
 
-  console.log(`Created scenario: ${scenario.title}`);
+  for (const { scenario } of allScenarios) {
+    console.log(`Seeding scenario: ${scenario.title}...`);
 
-  // Link scenario to relevant section
-  const section35 = await prisma.section.findFirst({
-    where: { lawId: constitution.id, slug: 'section-35' },
-  });
-
-  if (section35) {
-    await prisma.scenarioSection.upsert({
-      where: {
-        scenarioId_sectionId: {
-          scenarioId: scenario.id,
-          sectionId: section35.id,
-        },
-      },
-      update: {},
-      create: {
-        scenarioId: scenario.id,
-        sectionId: section35.id,
-        relevanceOrder: 1,
-        relevanceNote:
-          'Section 35 protects your right to personal liberty. Police must follow legal procedures when arresting someone.',
-      },
-    });
-    console.log('Linked scenario to Section 35');
+    const scenarioRecord = await upsertScenario(prisma, scenario, result);
+    if (scenarioRecord) {
+      scenarioMap.set(scenario.slug, scenarioRecord.id);
+    }
   }
 
-  console.log('Database seed completed successfully!');
+  // Create scenario-section mappings
+  console.log('\n=== Creating Scenario Mappings ===');
+
+  // Collect all mappings from scenarios
+  const allMappings: ScenarioMappingData[] = [];
+  for (const { scenario, mappings } of allScenarios) {
+    for (const mapping of mappings) {
+      allMappings.push({
+        scenarioSlug: scenario.slug,
+        ...mapping,
+      });
+    }
+  }
+
+  console.log(`Creating ${allMappings.length} scenario-section mappings...`);
+  await createScenarioMappings(prisma, allMappings, scenarioMap, lawSectionMaps, result);
+
+  // Log results
+  logSeedResults(result);
+
+  // Summary
+  const totalErrors =
+    result.laws.errors.length +
+    result.sections.errors.length +
+    result.scenarios.errors.length +
+    result.mappings.errors.length;
+
+  if (totalErrors > 0) {
+    console.log(`⚠️  Seed completed with ${totalErrors} errors.`);
+  } else {
+    console.log('✅ Database seed completed successfully!');
+  }
+
+  console.log('\nNext steps:');
+  console.log('1. Run embedding backfill: npm run db:backfill-embeddings');
+  console.log('2. Verify data in Prisma Studio: npm run db:studio');
 }
 
 main()
   .then(async () => {
     await prisma.$disconnect();
+    await pool.end();
   })
   .catch(async (e) => {
     console.error('Seed failed:', e);
     await prisma.$disconnect();
+    await pool.end();
     process.exit(1);
   });

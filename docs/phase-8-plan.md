@@ -2,119 +2,105 @@
 
 > **Project:** LawMadeSimple
 > **Created:** February 5, 2026
-> **Status:** IN PROGRESS - Phase 8a partially complete
-> **Plan File:** `/Users/chibu/.claude/plans/cozy-splashing-bonbon.md`
+> **Status:** IN PROGRESS - Phase 8a COMPLETE, Phase 8b next
+> **Last Updated:** February 5, 2026
 
 ---
 
-## Current Progress (Last Updated: Feb 5, 2026)
+## Current Progress
 
-### ✅ Completed
+### ✅ Phase 8a: Infrastructure & Foundation — COMPLETE
+
+**Files Created:**
 - `prisma/data/types.ts` - TypeScript interfaces for seed data
 - `prisma/helpers/seed-utils.ts` - Upsert helpers with logging
-- `prisma/data/laws/index.ts` - Laws data index (empty, ready for content)
-- `prisma/data/scenarios/index.ts` - Scenarios data index (empty, ready for content)
+- `prisma/data/laws/index.ts` - Laws data index
+- `prisma/data/laws/constitution.ts` - Constitution law + 13 fundamental rights sections
+- `prisma/data/laws/criminal-code.ts` - Criminal Code placeholder (1 section)
+- `prisma/data/laws/labour-act.ts` - Labour Act placeholder (1 section)
+- `prisma/data/laws/lagos-tenancy.ts` - Lagos Tenancy Law placeholder (1 section)
+- `prisma/data/scenarios/index.ts` - Scenarios data index
+- `prisma/data/scenarios/constitutional-rights.ts` - 6 constitutional rights scenarios
+- `prisma/data/scenarios/police-encounters.ts` - 6 police encounter scenarios
+- `prisma/data/scenarios/tenant-rights.ts` - 5 tenant rights scenarios
+- `prisma/data/scenarios/employment.ts` - 6 employment scenarios
+- `prisma/seed.ts` - Refactored to use modular imports
 
-### 🔄 In Progress
-- **Phase 8a checkpoint:** Infrastructure created, need to:
-  1. Create placeholder law files (constitution.ts, criminal-code.ts, labour-act.ts, lagos-tenancy.ts)
-  2. Create placeholder scenario files (constitutional-rights.ts, police-encounters.ts, tenant-rights.ts, employment.ts)
-  3. Refactor `prisma/seed.ts` to use modular imports
-  4. Verify seed script runs without errors
+**Seed Results:**
+- 4 laws seeded
+- 16 sections seeded (13 Constitution + 3 placeholders)
+- 23 scenarios seeded
+- 51 scenario-section mappings created
+- All embeddings generated (16 sections + 23 scenarios)
 
-### ⏳ Pending
-- Phase 8b: Constitution content (25-30 sections, 5-6 scenarios)
-- Phase 8c: Criminal Code content (15-20 sections, 4-5 scenarios)
-- Phase 8d: Labour Act content (15-20 sections, 4-5 scenarios)
-- Phase 8e: Lagos Tenancy content (10-15 sections, 3-4 scenarios)
-- Phase 8f: Update homepage links to `/scenarios?category=X`
-- Phase 8g: Run seed, backfill embeddings, test
+### ⏳ Pending Phases
+
+- **Phase 8b:** Expand Constitution content (add more sections from Chapter IV)
+- **Phase 8c:** Criminal Code content (15-20 sections, 4-5 scenarios)
+- **Phase 8d:** Labour Act content (15-20 sections, 4-5 scenarios)
+- **Phase 8e:** Lagos Tenancy content (10-15 sections, 3-4 scenarios)
+- **Phase 8f:** Update homepage links to `/scenarios?category=X`
+- **Phase 8g:** Final testing and verification
 
 ---
 
 ## How to Resume
 
-Tell Claude: **"Continue Phase 8 from checkpoint 8a - read docs/phase-8-plan.md for context"**
+Tell Claude: **"Continue Phase 8 from checkpoint 8b - read docs/phase-8-plan.md for context"**
 
-### Next Steps (in order):
-1. Create empty law data files with correct structure
-2. Create empty scenario data files with correct structure
-3. Refactor seed.ts to use the new modular structure
-4. Run `npm run db:seed` to verify infrastructure works
-5. Then proceed to Phase 8b (Constitution content extraction)
+### Next Steps (Phase 8b - Criminal Code):
+1. Extract 15-20 relevant sections from Criminal Code PDF
+2. Add sections to `prisma/data/laws/criminal-code.ts`
+3. Update scenarios in `police-encounters.ts` with Criminal Code mappings
+4. Run `npm run db:seed` to update database
+5. Run embedding backfill
 
 ---
 
-## File Structure Created
+## File Structure (Current)
 
 ```
 prisma/
-├── seed.ts                      # Needs refactoring (currently has sample data)
+├── seed.ts                      # ✅ Modular seed script
 ├── data/
 │   ├── types.ts                 # ✅ TypeScript interfaces
 │   ├── laws/
 │   │   ├── index.ts             # ✅ Exports all laws
-│   │   ├── constitution.ts      # ❌ TODO
-│   │   ├── criminal-code.ts     # ❌ TODO
-│   │   ├── labour-act.ts        # ❌ TODO
-│   │   └── lagos-tenancy.ts     # ❌ TODO
+│   │   ├── constitution.ts      # ✅ 13 sections (fundamental rights)
+│   │   ├── criminal-code.ts     # 🔄 Placeholder (1 section)
+│   │   ├── labour-act.ts        # 🔄 Placeholder (1 section)
+│   │   └── lagos-tenancy.ts     # 🔄 Placeholder (1 section)
 │   └── scenarios/
 │       ├── index.ts             # ✅ Exports all scenarios
-│       ├── constitutional-rights.ts  # ❌ TODO
-│       ├── police-encounters.ts      # ❌ TODO
-│       ├── tenant-rights.ts          # ❌ TODO
-│       └── employment.ts             # ❌ TODO
+│       ├── constitutional-rights.ts  # ✅ 6 scenarios
+│       ├── police-encounters.ts      # ✅ 6 scenarios
+│       ├── tenant-rights.ts          # ✅ 5 scenarios
+│       └── employment.ts             # ✅ 6 scenarios
 └── helpers/
     └── seed-utils.ts            # ✅ Upsert helpers
 ```
 
 ---
 
-## Key Types Reference
+## Content Summary
 
-From `prisma/data/types.ts`:
+### Laws Seeded
 
-```typescript
-interface LawData {
-  slug: string;
-  title: string;
-  shortTitle: string;
-  description: string;
-  category: LawCategory;
-  effectiveDate: Date;
-  sourceUrl: string;
-  isActive?: boolean;
-}
+| Law | Status | Sections | Notes |
+|-----|--------|----------|-------|
+| Constitution 1999 | ✅ Ready | 13 | Sections 33-44, 46 (Fundamental Rights) |
+| Criminal Code | 🔄 Placeholder | 1 | Needs 15-20 sections in Phase 8c |
+| Labour Act | 🔄 Placeholder | 1 | Needs 15-20 sections in Phase 8d |
+| Lagos Tenancy Law | 🔄 Placeholder | 1 | Needs 10-15 sections in Phase 8e |
 
-interface SectionData {
-  slug: string;
-  number: string;
-  title: string;
-  content: string;
-  summary: string;
-  orderIndex: number;
-}
+### Scenarios Seeded (23 total)
 
-interface LawWithSections {
-  law: LawData;
-  sections: SectionData[];
-}
-
-interface ScenarioData {
-  slug: string;
-  title: string;
-  description: string;
-  iconEmoji: string;
-  keywords: string[];
-  category: LawCategory;
-  isFeatured?: boolean;
-}
-
-interface ScenarioWithMappings {
-  scenario: ScenarioData;
-  mappings: { lawSlug: string; sectionSlug: string; relevanceOrder: number; relevanceNote?: string }[];
-}
-```
+| Category | Count | Examples |
+|----------|-------|----------|
+| Constitutional Rights | 6 | Freedom of expression, religious discrimination, privacy |
+| Police Encounters | 6 | Arrest without warrant, detention, brutality, bribery |
+| Tenant Rights | 5 | Eviction, lockout, rent increase, deposit disputes |
+| Employment | 6 | Wrongful termination, unpaid wages, harassment, maternity |
 
 ---
 
@@ -153,12 +139,15 @@ Also need to add category filter support to `src/app/scenarios/page.tsx`.
 # Check TypeScript compilation
 npm run typecheck
 
-# Run seed script (after refactoring)
+# Run seed script
 npm run db:seed
 
 # Check database content
 npm run db:studio
 
-# Backfill embeddings (after seeding)
+# Check embedding status
+DOTENV_CONFIG_PATH=.env.local npx tsx -r dotenv/config scripts/backfill-embeddings.ts --stats
+
+# Run embedding backfill
 DOTENV_CONFIG_PATH=.env.local npx tsx -r dotenv/config scripts/backfill-embeddings.ts
 ```
