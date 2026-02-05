@@ -31,8 +31,8 @@ function createPrismaClient(): PrismaClient {
 
 export const prisma = globalForPrisma.prisma ?? createPrismaClient();
 
-if (process.env.NODE_ENV !== 'production') {
-  globalForPrisma.prisma = prisma;
-}
+// Always store in global to prevent connection exhaustion during builds
+// (Next.js build workers share globalThis but not module scope)
+globalForPrisma.prisma = prisma;
 
 export default prisma;
