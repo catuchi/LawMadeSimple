@@ -139,7 +139,7 @@ Set `OPENAI_API_KEY` in both `.env.local` and Vercel environment variables.
 
 ## Current Phase
 
-**Phase 7: Integration & Polish** — Near Complete (6/8 issues done)
+**Phase 7: Integration & Polish** — ✅ COMPLETE (8/8 issues done)
 
 ### Progress (aligned with plan.md)
 - ✅ Phase 1: Project Foundation — Complete
@@ -148,7 +148,7 @@ Set `OPENAI_API_KEY` in both `.env.local` and Vercel environment variables.
 - ✅ Phase 4: AI Integration — Complete
 - ✅ Phase 5: Frontend Foundation — Complete (design system + components)
 - ✅ **Phase 6: Frontend Pages — Complete** (all pages built)
-- ⚠️ Phase 7: Integration & Polish — 6/8 issues resolved (see `.claude/phase7-issues-plan.md`)
+- ✅ **Phase 7: Integration & Polish — Complete** (8/8 issues resolved)
 - ⏳ Phase 8: Content & Data — Pending
 - ⏳ Phase 9-12: Testing, Security, Docs, Launch — Pending
 
@@ -214,13 +214,14 @@ Set `OPENAI_API_KEY` in both `.env.local` and Vercel environment variables.
 - [x] ~~Run embedding backfill for sample data~~ ✅ (5 sections, 1 scenario)
 - [x] ~~Test semantic search end-to-end~~ ✅
 
-**Phase 7 - Integration & Polish:**
+**Phase 7 - Integration & Polish:** ✅ COMPLETE
 - [x] Polish API integration (typed client wrapper, error handling) ✅
 - [x] Search suggestions with debouncing ✅
 - [x] Semantic search with pgvector + RRF hybrid fusion ✅
-- [ ] Loading/error states polish
-- [ ] Mobile optimization testing
-- [ ] Page transition animations
+- [x] Admin role protection (ADMIN_EMAILS env var) ✅
+- [x] Sentry observability setup (awaiting user DSN config) ✅
+- [x] Phase 7 test coverage (84 tests) ✅
+- [x] Scenario metadata moved to DB ✅
 
 **Phase 8 - Content & Data:**
 - [ ] Seed 9 MVP laws (Constitution, Criminal Code, CAMA, Labour Act, etc.)
@@ -470,4 +471,4 @@ New models:
 
 ---
 
-*Last updated: January 30, 2026 (semantic search hardening: retry logic, timeouts, batch API, admin endpoint, tests)*
+*Last updated: February 5, 2026 (Phase 7 complete - scenario metadata now from DB)*

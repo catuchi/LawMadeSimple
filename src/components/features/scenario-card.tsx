@@ -3,7 +3,7 @@ import { ChevronRight, type LucideIcon } from 'lucide-react';
 
 interface ScenarioCardProps {
   title: string;
-  description: string;
+  description?: string | null;
   href: string;
   icon?: LucideIcon;
   iconEmoji?: string;
@@ -40,7 +40,11 @@ export function ScenarioCard({
           <h3 className="font-heading group-hover:text-primary text-lg font-semibold text-[var(--color-neutral-800)]">
             {title}
           </h3>
-          <p className="mt-1 line-clamp-2 text-sm text-[var(--color-neutral-500)]">{description}</p>
+          {description && (
+            <p className="mt-1 line-clamp-2 text-sm text-[var(--color-neutral-500)]">
+              {description}
+            </p>
+          )}
         </div>
 
         {/* Arrow */}

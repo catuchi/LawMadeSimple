@@ -13,7 +13,14 @@ function createPrismaClient(): PrismaClient {
     throw new Error('DATABASE_URL environment variable is not set');
   }
 
-  const pool = new Pool({ connectionString });
+  // Limit pool size to prevent exhausting Supabase session pooler connections
+  // during Next.js builds (multiple workers × default 10 connections = exhaustion)
+  const pool = new Pool({
+    connectionString,
+    max: 3, // Conservative limit per process
+    idleTimeoutMillis: 30000,
+    connectionTimeoutMillis: 10000,
+  });
   const adapter = new PrismaPg(pool);
 
   return new PrismaClient({

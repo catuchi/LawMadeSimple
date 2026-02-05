@@ -4,6 +4,7 @@ import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { ScenarioCard } from '@/components/features/scenario-card';
+import { prisma } from '@/lib/db';
 
 export const metadata: Metadata = {
   title: 'Legal Scenarios | LawMadeSimple',
@@ -11,75 +12,22 @@ export const metadata: Metadata = {
     'Browse common legal scenarios in Nigeria. Find explanations for landlord-tenant issues, employment rights, business registration, and more.',
 };
 
-// Scenario data - maps to categories in the database
-const scenarioCategories = [
-  {
-    slug: 'landlord-tenant',
-    title: 'Landlord & Tenant Issues',
-    description:
-      'Understand your rights as a tenant or landlord including rent increases, eviction notice periods, and security deposits.',
-    iconEmoji: '🏠',
-    category: 'property',
-  },
-  {
-    slug: 'police-encounters',
-    title: 'Police Encounters',
-    description:
-      'Know what to do when stopped by police, your rights during arrest, and how to protect yourself legally.',
-    iconEmoji: '👮',
-    category: 'criminal',
-  },
-  {
-    slug: 'employment',
-    title: 'Employment Rights',
-    description:
-      'Know your rights at work including termination, leave entitlements, workplace safety, and unfair dismissal.',
-    iconEmoji: '💼',
-    category: 'labour',
-  },
-  {
-    slug: 'business',
-    title: 'Starting a Business',
-    description:
-      'Step-by-step guide to registering your business in Nigeria under CAMA 2020, compliance requirements, and more.',
-    iconEmoji: '🏢',
-    category: 'business',
-  },
-  {
-    slug: 'tax',
-    title: 'Tax Questions',
-    description:
-      'Understand your tax obligations as an individual or business owner under Nigerian tax laws.',
-    iconEmoji: '💰',
-    category: 'tax',
-  },
-  {
-    slug: 'constitutional-rights',
-    title: 'Constitutional Rights',
-    description:
-      'Your fundamental rights as a Nigerian citizen under the 1999 Constitution including freedom of speech, movement, and more.',
-    iconEmoji: '📜',
-    category: 'constitution',
-  },
-  {
-    slug: 'copyright',
-    title: 'Copyright & IP',
-    description:
-      'Protect your creative work under the Copyright Act 2022 - music, art, writing, software, and digital content.',
-    iconEmoji: '©️',
-    category: 'intellectual_property',
-  },
-  {
-    slug: 'trademarks',
-    title: 'Trademarks & Branding',
-    description:
-      'Register and protect your business name, logo, and brand identity under Nigerian trademark law.',
-    iconEmoji: '™️',
-    category: 'intellectual_property',
-  },
-];
+// Fetch all scenarios from database
+async function getScenarios() {
+  return prisma.scenario.findMany({
+    select: {
+      slug: true,
+      title: true,
+      description: true,
+      iconEmoji: true,
+      isFeatured: true,
+    },
+    orderBy: [{ isFeatured: 'desc' }, { title: 'asc' }],
+  });
+}
 
-export default function ScenariosPage() {
+export default async function ScenariosPage() {
+  const scenarios = await getScenarios();
   return (
     <div className="flex min-h-screen flex-col">
       <Header />
@@ -103,17 +51,38 @@ export default function ScenariosPage() {
         {/* Scenarios Grid */}
         <section className="bg-[var(--background-secondary)] px-4 py-8 md:px-8 md:py-12">
           <div className="mx-auto max-w-6xl">
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {scenarioCategories.map((scenario) => (
-                <ScenarioCard
-                  key={scenario.slug}
-                  title={scenario.title}
-                  description={scenario.description}
-                  href={`/scenarios/${scenario.slug}`}
-                  iconEmoji={scenario.iconEmoji}
-                />
-              ))}
-            </div>
+            {scenarios.length > 0 ? (
+              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                {scenarios.map((scenario) => (
+                  <ScenarioCard
+                    key={scenario.slug}
+                    title={scenario.title}
+                    description={scenario.description}
+                    href={`/scenarios/${scenario.slug}`}
+                    iconEmoji={scenario.iconEmoji}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="rounded-xl border border-[var(--color-neutral-200)] bg-white p-8 text-center">
+                <div className="mx-auto mb-4 flex size-16 items-center justify-center rounded-full bg-[var(--color-primary-50)]">
+                  <span className="text-3xl">📋</span>
+                </div>
+                <h2 className="font-heading text-xl font-semibold text-[var(--color-neutral-800)]">
+                  Scenarios Coming Soon
+                </h2>
+                <p className="mx-auto mt-2 max-w-md text-[var(--color-neutral-600)]">
+                  We&apos;re working on adding common legal scenarios. In the meantime, browse our
+                  collection of Nigerian laws.
+                </p>
+                <Link
+                  href="/laws"
+                  className="mt-6 inline-block rounded-lg bg-[var(--color-primary-500)] px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[var(--color-primary-600)]"
+                >
+                  Browse All Laws
+                </Link>
+              </div>
+            )}
           </div>
         </section>
 
