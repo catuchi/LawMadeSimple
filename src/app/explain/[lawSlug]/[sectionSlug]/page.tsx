@@ -44,6 +44,22 @@ const categoryInfo: Record<string, { label: string; iconEmoji: string }> = {
   intellectual_property: { label: 'Intellectual Property', iconEmoji: '©️' },
 };
 
+/**
+ * Remove the "Real-Life Examples" section from explanation text
+ * to avoid duplication with the separate Practical Examples accordion.
+ * Matches various heading formats and removes until the next major heading or end.
+ */
+function stripExamplesSection(text: string): string {
+  // Pattern matches "Real-Life Examples", "Real Life Examples", or "Practical Examples" heading
+  // and everything until the next major heading or end of text
+  return text
+    .replace(
+      /\n*(?:#{1,4}\s*)?(?:Real[- ]Life Examples|Practical Examples):?\s*\n[\s\S]*?(?=\n(?:#{1,4}\s*)?(?:Key Points|Key Takeaways|Important Notice|Important Notes|Why This Matters|This (?:information|explanation))|$)/gi,
+      ''
+    )
+    .trim();
+}
+
 export default function ExplanationPage() {
   const params = useParams<{ lawSlug: string; sectionSlug: string }>();
   const { user } = useAuth();
@@ -303,7 +319,9 @@ export default function ExplanationPage() {
   };
 
   const catInfo = categoryInfo[lawCategory] || { label: lawCategory, iconEmoji: '📄' };
-  const explanationText = explanation?.explanation || streamedText;
+  // Strip duplicate examples section from explanation text (shown separately in Practical Examples accordion)
+  const rawExplanationText = explanation?.explanation || streamedText;
+  const explanationText = rawExplanationText ? stripExamplesSection(rawExplanationText) : '';
 
   if (error && !isLoadingSection) {
     return (
@@ -502,10 +520,26 @@ export default function ExplanationPage() {
                                 {example.title}
                               </h4>
                               <p className="mt-2 text-sm">
-                                <strong>Scenario:</strong> {example.scenario}
+                                <strong>Scenario:</strong>{' '}
+                                <span className="inline">
+                                  <ReactMarkdown
+                                    allowedElements={['strong', 'em']}
+                                    unwrapDisallowed={true}
+                                  >
+                                    {example.scenario}
+                                  </ReactMarkdown>
+                                </span>
                               </p>
                               <p className="mt-1 text-sm">
-                                <strong>Application:</strong> {example.application}
+                                <strong>Application:</strong>{' '}
+                                <span className="inline">
+                                  <ReactMarkdown
+                                    allowedElements={['strong', 'em']}
+                                    unwrapDisallowed={true}
+                                  >
+                                    {example.application}
+                                  </ReactMarkdown>
+                                </span>
                               </p>
                             </div>
                           ))}
