@@ -139,7 +139,7 @@ Set `OPENAI_API_KEY` in both `.env.local` and Vercel environment variables.
 
 ## Current Phase
 
-**Phase 8: Content & Data** — 🔄 IN PROGRESS (Phase 8d COMPLETE)
+**Phase 8: Content & Data** — ✅ COMPLETE
 
 ### Progress (aligned with plan.md)
 - ✅ Phase 1: Project Foundation — Complete
@@ -149,14 +149,12 @@ Set `OPENAI_API_KEY` in both `.env.local` and Vercel environment variables.
 - ✅ Phase 5: Frontend Foundation — Complete (design system + components)
 - ✅ **Phase 6: Frontend Pages — Complete** (all pages built)
 - ✅ **Phase 7: Integration & Polish — Complete** (8/8 issues resolved)
-- 🔄 **Phase 8: Content & Data — IN PROGRESS** (see `docs/phase-8-plan.md`)
+- ✅ **Phase 8: Content & Data — COMPLETE** (4 laws, 65 sections, 33 scenarios)
 - ⏳ Phase 9-12: Testing, Security, Docs, Launch — Pending
 
-### Phase 8 Progress (Started Feb 5, 2026)
+### Phase 8 Summary (Feb 5-6, 2026) — COMPLETE
 
 **📋 Full plan:** `docs/phase-8-plan.md`
-
-**To resume:** Tell Claude: "Continue Phase 8 from checkpoint 8f - read docs/phase-8-plan.md for context"
 
 **Phase 8a — COMPLETE:**
 - [x] `prisma/data/types.ts` — TypeScript interfaces for seed data
@@ -195,8 +193,13 @@ Set `OPENAI_API_KEY` in both `.env.local` and Vercel environment variables.
 - [x] Dynamic breadcrumb, title, and description based on selected category
 - [x] Category-aware empty state messaging
 
-**Next steps (Phase 8f):**
-- [ ] Final testing and verification
+**Phase 8f — COMPLETE:**
+- [x] TypeScript compilation verified
+- [x] Category links tested (property, labour, criminal, constitution)
+- [x] Scenario filtering works correctly (7 + 8 + 12 + 6 = 33 scenarios)
+- [x] Hybrid/semantic/keyword search modes tested
+- [x] All embeddings verified (65/65 sections, 33/33 scenarios)
+- [x] AI explanations endpoint working (cached explanations functional)
 
 ### Phase 6 Summary (Completed Jan 29, 2026)
 
