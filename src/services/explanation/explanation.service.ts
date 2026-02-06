@@ -422,32 +422,58 @@ export function formatExplanationData(
 }
 
 /**
+ * Strip markdown formatting from text for plain text rendering
+ * Converts **bold** and *italic* to plain text
+ */
+function stripMarkdown(text: string): string {
+  return text
+    .replace(/\*\*([^*]+)\*\*/g, '$1') // Remove **bold**
+    .replace(/\*([^*]+)\*/g, '$1') // Remove *italic*
+    .replace(/__([^_]+)__/g, '$1') // Remove __bold__
+    .replace(/_([^_]+)_/g, '$1') // Remove _italic_
+    .trim();
+}
+
+/**
  * Extract examples from explanation text
- * Attempts to parse structured examples from the AI response
+ * Handles multiple AI output formats:
+ * - Format A: `1. **Monthly Tenant**:` (simple numbered bold title)
+ * - Format B: `1. **Example 1 - Monthly Tenant**:` (with Example prefix)
+ * - Format C: `1. **Example 1: The Troubled Landlord**` (colon inside bold)
  */
 export function extractExamples(explanationText: string): ExplanationExample[] {
-  // Simple extraction - looks for "Real-Life Examples" section
   const examples: ExplanationExample[] = [];
 
-  // Try to find example patterns in the text
+  // Pattern: Numbered list with bold titles
+  // "Example X - " or "Example X: " prefix is OPTIONAL
+  // Matches: "1. **Monthly Tenant**:" OR "1. **Example 1 - Monthly Tenant**:"
   const exampleRegex =
-    /(?:Example|Scenario)\s*\d*[:.]\s*([^\n]+)\n([^]*?)(?=(?:Example|Scenario|\*\*|\n\n\d|\n\n-|\n\nKey|$))/gi;
-  let match;
+    /\d+\.\s*\*\*(?:Example\s*\d*\s*[-:]\s*)?([^*]+)\*\*:?\s*\n([\s\S]*?)(?=\n\d+\.\s*\*\*|Key Points|Key Takeaways|Important|Remember|This information|$)/gi;
 
+  let match;
   while ((match = exampleRegex.exec(explanationText)) !== null) {
     const title = match[1].trim();
     const content = match[2].trim();
 
-    if (title && content) {
+    // Try to extract labeled scenario/application first
+    const scenarioMatch = content.match(/\*\*Scenario\*\*:\s*([^\n]+)/i);
+    const applicationMatch = content.match(/\*\*(?:What Happens|Application)\*\*:\s*([^\n]+)/i);
+
+    // If no labeled format, extract all bullet content
+    const bulletLines = content.match(/[•\-\*]\s*[^\n]+/g);
+    const plainContent = bulletLines
+      ? bulletLines.map((line) => line.replace(/^[•\-\*]\s*/, '').trim()).join(' ')
+      : content.split('\n')[0]?.trim() || '-';
+
+    if (title) {
       examples.push({
-        title: title.replace(/^\*\*|\*\*$/g, '').trim(),
-        scenario: content.split('\n')[0] || content,
-        application: content,
+        title,
+        scenario: stripMarkdown(scenarioMatch?.[1]?.trim() || plainContent),
+        application: stripMarkdown(applicationMatch?.[1]?.trim() || plainContent),
       });
     }
   }
 
-  // Limit to 3 examples
   return examples.slice(0, 3);
 }
 

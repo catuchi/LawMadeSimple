@@ -2,7 +2,7 @@
 
 > **Project:** LawMadeSimple
 > **Created:** February 5, 2026
-> **Status:** IN PROGRESS - Phase 8d COMPLETE, Phase 8e next
+> **Status:** IN PROGRESS - Phase 8e COMPLETE, Phase 8f next
 > **Last Updated:** February 5, 2026
 
 ---
@@ -112,21 +112,47 @@
 - 129 scenario-section mappings created
 - All embeddings generated (65 sections + 33 scenarios)
 
+### ✅ Phase 8e: Homepage & Category Links — COMPLETE
+
+**Files Updated:**
+- `src/app/page.tsx` - Updated scenarioPills and popularTopics hrefs to use category query params
+- `src/app/scenarios/page.tsx` - Added category filter support with filter UI pills
+
+**Homepage Link Updates:**
+| Old href | New href |
+|----------|----------|
+| `/scenarios/landlord-tenant` | `/scenarios?category=property` |
+| `/scenarios/police-encounters` | `/scenarios?category=criminal` |
+| `/scenarios/employment` | `/scenarios?category=labour` |
+| `/scenarios/business` | `/scenarios?category=business` |
+| `/scenarios/tax` | `/scenarios?category=tax` |
+| `/scenarios/constitutional-rights` | `/scenarios?category=constitution` |
+| `/scenarios/copyright` | `/scenarios?category=intellectual_property` |
+
+**Scenarios Page Enhancements:**
+- Added `category` query param support for filtering
+- Added category filter pills with emoji icons
+- Dynamic breadcrumb shows selected category
+- Dynamic page title and description based on category
+- Category-aware empty state messaging
+- Validates category param against LawCategory enum
+
 ### ⏳ Pending Phases
 
-- **Phase 8e:** Update homepage links to `/scenarios?category=X`
 - **Phase 8f:** Final testing and verification
 
 ---
 
 ## How to Resume
 
-Tell Claude: **"Continue Phase 8 from checkpoint 8e - read docs/phase-8-plan.md for context"**
+Tell Claude: **"Continue Phase 8 from checkpoint 8f - read docs/phase-8-plan.md for context"**
 
-### Next Steps (Phase 8e - Homepage & Category Links):
-1. Update homepage topic cards to link to `/scenarios?category=X`
-2. Add category filter support to `src/app/scenarios/page.tsx`
-3. Verify all category links work correctly
+### Next Steps (Phase 8f - Final Testing & Verification):
+1. Run dev server and test all category links
+2. Verify scenario filtering works correctly
+3. Test search functionality with seeded content
+4. Verify AI explanations work for seeded sections
+5. Update CLAUDE.md with Phase 8e completion
 
 ---
 
@@ -179,21 +205,24 @@ prisma/
 
 ---
 
-## Homepage Update (Phase 8e)
+## Homepage Update (Phase 8e) — ✅ COMPLETE
 
-Current `src/app/page.tsx` links need updating:
+All homepage links have been updated to use category query params:
 
-| Current href | New href |
+| Updated href | Category |
 |--------------|----------|
-| `/scenarios/landlord-tenant` | `/scenarios?category=property` |
-| `/scenarios/police-encounters` | `/scenarios?category=criminal` |
-| `/scenarios/employment` | `/scenarios?category=labour` |
-| `/scenarios/business` | `/scenarios?category=business` |
-| `/scenarios/tax` | `/scenarios?category=tax` |
-| `/scenarios/constitutional-rights` | `/scenarios?category=constitution` |
-| `/scenarios/copyright` | `/scenarios?category=intellectual_property` |
+| `/scenarios?category=property` | Property & Tenancy |
+| `/scenarios?category=criminal` | Criminal Law |
+| `/scenarios?category=labour` | Employment |
+| `/scenarios?category=business` | Business |
+| `/scenarios?category=tax` | Tax |
+| `/scenarios?category=constitution` | Constitutional Rights |
+| `/scenarios?category=intellectual_property` | Intellectual Property |
 
-Also need to add category filter support to `src/app/scenarios/page.tsx`.
+Category filter support added to `src/app/scenarios/page.tsx` with:
+- Filter pills UI with emoji icons
+- Dynamic breadcrumb, title, and description
+- Category-aware empty state messaging
 
 ---
 

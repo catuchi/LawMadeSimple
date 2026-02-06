@@ -156,7 +156,7 @@ Set `OPENAI_API_KEY` in both `.env.local` and Vercel environment variables.
 
 **📋 Full plan:** `docs/phase-8-plan.md`
 
-**To resume:** Tell Claude: "Continue Phase 8 from checkpoint 8e - read docs/phase-8-plan.md for context"
+**To resume:** Tell Claude: "Continue Phase 8 from checkpoint 8f - read docs/phase-8-plan.md for context"
 
 **Phase 8a — COMPLETE:**
 - [x] `prisma/data/types.ts` — TypeScript interfaces for seed data
@@ -188,9 +188,15 @@ Set `OPENAI_API_KEY` in both `.env.local` and Vercel environment variables.
 - [x] Database seeded: 4 laws, 65 sections, 33 scenarios, 129 mappings
 - [x] Embeddings generated: 65 sections + 33 scenarios
 
-**Next steps (Phase 8e-8f):**
-- [ ] Phase 8e: Update homepage links to category pages
-- [ ] Phase 8f: Final testing and verification
+**Phase 8e — COMPLETE:**
+- [x] `src/app/page.tsx` — Updated scenarioPills and popularTopics hrefs to use category query params
+- [x] `src/app/scenarios/page.tsx` — Added category filter support with filter pills UI
+- [x] Category query param filtering (`/scenarios?category=property`, etc.)
+- [x] Dynamic breadcrumb, title, and description based on selected category
+- [x] Category-aware empty state messaging
+
+**Next steps (Phase 8f):**
+- [ ] Final testing and verification
 
 ### Phase 6 Summary (Completed Jan 29, 2026)
 
@@ -241,6 +247,14 @@ Set `OPENAI_API_KEY` in both `.env.local` and Vercel environment variables.
 | Notification preferences | Email alerts for bookmarked law amendments, weekly digest | Requires proper email infrastructure (Resend) and amendment tracking system. |
 | Download my data (NDPR) | Full data export for compliance | For MVP, "Contact us" link is sufficient. Build full export when data model stabilizes. |
 | Search history management | View and clear search history | Only implement if we start storing search history per user. |
+
+### Post-MVP: Marketing & Growth
+
+| Task | Description | Resources |
+|------|-------------|-----------|
+| **Twitter/X Social Media** | Content queue system ready. Generate educational content, feature announcements, and engagement posts. | `docs/social-media-automation.md` — Full strategy with 3 automation options |
+| | **Quick start:** "Generate tweets from content/input/ideas.json" | `content/` — Brand voice, calendar, queue system |
+| | **Helper:** `npx tsx scripts/social/process-queue.ts stats` | `scripts/social/process-queue.ts` — CLI helper |
 
 ### Next Session: Pending Tasks
 
@@ -511,4 +525,4 @@ New models:
 
 ---
 
-*Last updated: February 5, 2026 (Phase 7 complete - scenario metadata now from DB)*
+*Last updated: February 6, 2026 (Added social media automation - content queue system)*

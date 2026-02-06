@@ -5,12 +5,12 @@ import { ScenarioPill } from '@/components/features/scenario-pill';
 import { ScenarioCard } from '@/components/features/scenario-card';
 
 const scenarioPills = [
-  { label: 'Landlord Issues', href: '/scenarios/landlord-tenant', iconEmoji: '🏠' },
-  { label: 'Police Encounters', href: '/scenarios/police-encounters', iconEmoji: '👮' },
-  { label: 'Employment', href: '/scenarios/employment', iconEmoji: '💼' },
-  { label: 'Starting a Business', href: '/scenarios/business', iconEmoji: '🏢' },
-  { label: 'Tax Questions', href: '/scenarios/tax', iconEmoji: '💰' },
-  { label: 'My Rights', href: '/scenarios/constitutional-rights', iconEmoji: '⚖️' },
+  { label: 'Landlord Issues', href: '/scenarios?category=property', iconEmoji: '🏠' },
+  { label: 'Police Encounters', href: '/scenarios?category=criminal', iconEmoji: '👮' },
+  { label: 'Employment', href: '/scenarios?category=labour', iconEmoji: '💼' },
+  { label: 'Starting a Business', href: '/scenarios?category=business', iconEmoji: '🏢' },
+  { label: 'Tax Questions', href: '/scenarios?category=tax', iconEmoji: '💰' },
+  { label: 'My Rights', href: '/scenarios?category=constitution', iconEmoji: '⚖️' },
 ];
 
 const popularTopics = [
@@ -18,40 +18,40 @@ const popularTopics = [
     title: 'Tenant Rights',
     description:
       'Understand your rights as a tenant including rent increases, eviction notice periods, and security deposits.',
-    href: '/scenarios/landlord-tenant',
+    href: '/scenarios?category=property',
     iconEmoji: '🏠',
   },
   {
     title: 'Know Your Rights',
     description:
       'What to do when stopped by police, your rights during arrest, and how to protect yourself legally.',
-    href: '/scenarios/police-encounters',
+    href: '/scenarios?category=criminal',
     iconEmoji: '👮',
   },
   {
     title: 'Register a Business',
     description: 'Step-by-step guide to registering your business in Nigeria under CAMA 2020.',
-    href: '/scenarios/business',
+    href: '/scenarios?category=business',
     iconEmoji: '🏢',
   },
   {
     title: 'Employment Rights',
     description:
       'Know your rights at work including termination, leave entitlements, and workplace safety.',
-    href: '/scenarios/employment',
+    href: '/scenarios?category=labour',
     iconEmoji: '💼',
   },
   {
     title: 'Copyright Protection',
     description:
       'Protect your creative work under the Copyright Act 2022 - music, art, writing, and more.',
-    href: '/scenarios/copyright',
+    href: '/scenarios?category=intellectual_property',
     iconEmoji: '©️',
   },
   {
     title: 'Constitutional Rights',
     description: 'Your fundamental rights as a Nigerian citizen under the 1999 Constitution.',
-    href: '/scenarios/constitutional-rights',
+    href: '/scenarios?category=constitution',
     iconEmoji: '📜',
   },
 ];
