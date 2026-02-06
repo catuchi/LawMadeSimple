@@ -14,10 +14,10 @@ import { employmentScenarios } from './employment';
 // Phase 8B: Criminal Code Scenarios
 import { crimeVictimsScenarios } from './crime-victims';
 
-// Phase 8C+: Expansion Scenarios (Post-Launch)
-// import { businessScenarios } from './business';
-// import { taxScenarios } from './tax';
-// import { ipProtectionScenarios } from './ip-protection';
+// Phase 8-Exp: Expansion Scenarios
+import { businessScenarios } from './business';
+import { taxScenarios } from './tax';
+import { ipProtectionScenarios } from './ip-protection';
 
 /**
  * All scenarios for Phase 8A + 8B
@@ -31,9 +31,18 @@ export const phase8AScenarios: ScenarioWithMappings[] = [
 ];
 
 /**
+ * Expansion scenarios for Phase 8-Exp
+ */
+export const phase8ExpScenarios: ScenarioWithMappings[] = [
+  ...businessScenarios,
+  ...taxScenarios,
+  ...ipProtectionScenarios,
+];
+
+/**
  * All scenarios (expand as phases complete)
  */
-export const allScenarios: ScenarioWithMappings[] = [...phase8AScenarios];
+export const allScenarios: ScenarioWithMappings[] = [...phase8AScenarios, ...phase8ExpScenarios];
 
 // Re-export individual scenario collections for direct access
 export {
@@ -42,4 +51,7 @@ export {
   tenantRightsScenarios,
   employmentScenarios,
   crimeVictimsScenarios,
+  businessScenarios,
+  taxScenarios,
+  ipProtectionScenarios,
 };

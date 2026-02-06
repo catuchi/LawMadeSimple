@@ -11,12 +11,12 @@ import { criminalCode } from './criminal-code';
 import { labourAct } from './labour-act';
 import { lagosTenancy } from './lagos-tenancy';
 
-// Phase 8B: Expansion Laws (Post-Launch)
-// import { cama2020 } from './cama-2020';
-// import { firsAct } from './firs-act';
-// import { copyrightAct } from './copyright-act';
-// import { trademarksAct } from './trademarks-act';
-// import { patentsAct } from './patents-act';
+// Phase 8-Exp: Expansion Laws
+import { cama2020 } from './cama-2020';
+import { firsAct } from './firs-act';
+import { copyrightAct } from './copyright-act';
+import { trademarksAct } from './trademarks-act';
+import { patentsAct } from './patents-designs-act';
 
 /**
  * All laws for Phase 8A
@@ -24,9 +24,30 @@ import { lagosTenancy } from './lagos-tenancy';
 export const phase8ALaws: LawWithSections[] = [constitution, criminalCode, labourAct, lagosTenancy];
 
 /**
+ * Expansion laws for Phase 8-Exp
+ */
+export const phase8ExpLaws: LawWithSections[] = [
+  cama2020,
+  firsAct,
+  copyrightAct,
+  trademarksAct,
+  patentsAct,
+];
+
+/**
  * All laws (expand as phases complete)
  */
-export const allLaws: LawWithSections[] = [...phase8ALaws];
+export const allLaws: LawWithSections[] = [...phase8ALaws, ...phase8ExpLaws];
 
 // Re-export individual laws for direct access
-export { constitution, criminalCode, labourAct, lagosTenancy };
+export {
+  constitution,
+  criminalCode,
+  labourAct,
+  lagosTenancy,
+  cama2020,
+  firsAct,
+  copyrightAct,
+  trademarksAct,
+  patentsAct,
+};
