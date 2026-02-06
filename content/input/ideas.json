@@ -1,0 +1,77 @@
+{
+  "$schema": "./ideas.schema.json",
+  "_description": "Raw content ideas queue. Add ideas here for future content generation.",
+  "_usage": "Tell Claude: 'Read content/input/ideas.json and generate tweets for the top 3 ideas by urgency'",
+  "ideas": [
+    {
+      "id": "idea-001",
+      "topic": "Can your landlord increase rent mid-tenancy in Lagos?",
+      "type": "educational",
+      "relatedLaw": "Lagos Tenancy Law 2011",
+      "relatedScenario": "excessive-advance-rent",
+      "urgency": "normal",
+      "addedAt": "2026-02-05T10:00:00Z",
+      "notes": "Common question from users. Good evergreen content."
+    },
+    {
+      "id": "idea-002",
+      "topic": "What to do if police ask you to unlock your phone",
+      "type": "educational",
+      "relatedLaw": "Constitution 1999",
+      "relatedScenario": "police-stop-and-search",
+      "urgency": "high",
+      "addedAt": "2026-02-05T10:00:00Z",
+      "notes": "Privacy rights under Section 37. Very relevant to young audience."
+    },
+    {
+      "id": "idea-003",
+      "topic": "Your employer must give you a written contract",
+      "type": "educational",
+      "relatedLaw": "Labour Act",
+      "relatedScenario": "no-written-contract",
+      "urgency": "normal",
+      "addedAt": "2026-02-05T10:00:00Z",
+      "notes": "Many Nigerians work without contracts and don't know their rights."
+    },
+    {
+      "id": "idea-004",
+      "topic": "Maximum working hours under Nigerian law",
+      "type": "educational",
+      "relatedLaw": "Labour Act",
+      "relatedScenario": "excessive-working-hours",
+      "urgency": "normal",
+      "addedAt": "2026-02-05T10:00:00Z",
+      "notes": "Overtime culture is rampant. Workers should know limits."
+    },
+    {
+      "id": "idea-005",
+      "topic": "What happens if you're detained over 48 hours without charge",
+      "type": "educational",
+      "relatedLaw": "Constitution 1999",
+      "relatedScenario": "unlawful-detention",
+      "urgency": "high",
+      "addedAt": "2026-02-05T10:00:00Z",
+      "notes": "Critical rights awareness. Section 35(4)."
+    },
+    {
+      "id": "idea-006",
+      "topic": "Your landlord cannot cut off your electricity or water",
+      "type": "educational",
+      "relatedLaw": "Lagos Tenancy Law 2011",
+      "relatedScenario": "utilities-cut-off",
+      "urgency": "normal",
+      "addedAt": "2026-02-05T10:00:00Z",
+      "notes": "Self-help eviction tactics are common and illegal."
+    }
+  ],
+  "_schemaExample": {
+    "id": "idea-XXX",
+    "topic": "Short description of the content idea",
+    "type": "educational | reactive | feature | engagement",
+    "relatedLaw": "Name of relevant law (optional)",
+    "relatedScenario": "scenario-slug from database (optional)",
+    "urgency": "low | normal | high | urgent",
+    "addedAt": "ISO 8601 timestamp",
+    "notes": "Any additional context for content generation"
+  }
+}

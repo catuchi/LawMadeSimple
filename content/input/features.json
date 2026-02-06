@@ -1,0 +1,110 @@
+{
+  "$schema": "./features.schema.json",
+  "_description": "Feature announcements pipeline. Track upcoming releases and their social content.",
+  "_usage": "Tell Claude: 'Generate announcement content for feature feat-001 using the brand voice guidelines'",
+  "features": [
+    {
+      "id": "feat-001",
+      "name": "Phase 8 Content Expansion",
+      "description": "Major content update: 4 laws expanded with 65 sections and 33 real-world scenarios",
+      "releaseDate": "2026-02-05",
+      "status": "released",
+      "highlights": [
+        "Constitution 1999 - 13 fundamental rights sections",
+        "Criminal Code - 18 sections covering assault, theft, defamation",
+        "Labour Act - 17 sections on employment rights",
+        "Lagos Tenancy Law - 13 sections on tenant protection"
+      ],
+      "targetAudience": ["tenants", "employees", "citizens"],
+      "suggestedFormat": "thread",
+      "announcementStatus": "pending",
+      "link": "https://lawmadesimple.ng/scenarios"
+    },
+    {
+      "id": "feat-002",
+      "name": "Category Filtering on Scenarios",
+      "description": "Users can now filter scenarios by category (property, labour, criminal, etc.)",
+      "releaseDate": "2026-02-05",
+      "status": "released",
+      "highlights": [
+        "Filter by property, labour, criminal, constitution categories",
+        "Dynamic breadcrumbs and descriptions",
+        "Category-aware empty states"
+      ],
+      "targetAudience": ["all"],
+      "suggestedFormat": "single",
+      "announcementStatus": "pending",
+      "link": "https://lawmadesimple.ng/scenarios?category=property"
+    },
+    {
+      "id": "feat-003",
+      "name": "Semantic Search",
+      "description": "AI-powered search that understands natural language queries",
+      "releaseDate": "2026-01-30",
+      "status": "released",
+      "highlights": [
+        "Ask questions in plain English",
+        "Hybrid search combines keyword and AI understanding",
+        "More relevant results"
+      ],
+      "targetAudience": ["all"],
+      "suggestedFormat": "single",
+      "announcementStatus": "posted",
+      "link": "https://lawmadesimple.ng/search"
+    }
+  ],
+  "upcoming": [
+    {
+      "id": "feat-004",
+      "name": "Copyright Act 2022",
+      "description": "Adding the Copyright Act with scenarios for content creators",
+      "estimatedRelease": "2026-02",
+      "status": "in_development",
+      "targetAudience": ["content creators", "musicians", "artists"],
+      "teaserIdeas": [
+        "Coming soon: Protection for Nigerian creatives",
+        "What happens when someone steals your content?"
+      ]
+    },
+    {
+      "id": "feat-005",
+      "name": "CAMA 2020 for SMEs",
+      "description": "Business registration and compliance scenarios",
+      "estimatedRelease": "2026-02",
+      "status": "planned",
+      "targetAudience": ["SME owners", "entrepreneurs", "startups"],
+      "teaserIdeas": [
+        "Starting a business? You need to know this.",
+        "Sole proprietor vs Limited Company: What's right for you?"
+      ]
+    }
+  ],
+  "_templates": {
+    "single": {
+      "structure": "Hook + 2-3 highlights + CTA + hashtags",
+      "example": "NEW on LawMadeSimple: [FEATURE] [emoji]\n\n[Highlight 1]\n[Highlight 2]\n[Highlight 3]\n\nTry it: [link]\n\n#LawMadeSimple"
+    },
+    "thread": {
+      "structure": "Hook tweet + detail tweets + CTA tweet",
+      "example": [
+        "BIG UPDATE: [Feature name] is here! [emoji] Thread [emoji]",
+        "1/ [Detail about highlight 1]",
+        "2/ [Detail about highlight 2]",
+        "3/ [Detail about highlight 3]",
+        "Check it out and let us know what you think: [link]\n\n#LawMadeSimple"
+      ]
+    }
+  },
+  "_featureSchema": {
+    "id": "feat-XXX",
+    "name": "Feature name",
+    "description": "What the feature does",
+    "releaseDate": "YYYY-MM-DD (actual or estimated)",
+    "status": "planned | in_development | released",
+    "highlights": ["Key benefit 1", "Key benefit 2"],
+    "targetAudience": ["persona1", "persona2"],
+    "suggestedFormat": "single | thread",
+    "announcementStatus": "pending | scheduled | posted",
+    "link": "Direct link to feature"
+  }
+}

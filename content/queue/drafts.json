@@ -1,0 +1,47 @@
+{
+  "$schema": "./drafts.schema.json",
+  "_description": "Generated content pending human review. Claude Code writes here, human approves and moves to scheduled.json",
+  "_usage": [
+    "Generate: 'Generate tweets from ideas.json and save to drafts.json'",
+    "Review: Read drafts, edit as needed, then move approved ones to scheduled.json",
+    "Reject: Delete rejected drafts or add feedback for regeneration"
+  ],
+  "drafts": [
+    {
+      "id": "draft-001",
+      "ideaId": "idea-002",
+      "calendarSlot": null,
+      "type": "single",
+      "content": "Police asking to see your phone? You have the RIGHT to refuse.\n\nSection 37 of the Constitution protects your privacy. A search needs:\n\n- A court warrant, OR\n- Your voluntary consent, OR  \n- Lawful arrest with reasonable grounds\n\nBe polite. Know your rights.",
+      "hashtags": ["#KnowYourRights", "#NigerianLaw", "#LawMadeSimple"],
+      "thread": null,
+      "media": null,
+      "generatedAt": "2026-02-05T14:00:00Z",
+      "status": "pending_review",
+      "reviewNotes": null
+    }
+  ],
+  "_draftSchema": {
+    "id": "draft-XXX",
+    "ideaId": "Reference to ideas.json (optional)",
+    "calendarSlot": "Reference to calendar slot (optional)",
+    "type": "single | thread",
+    "content": "For single tweets, the full tweet text",
+    "hashtags": ["Array", "of", "hashtags"],
+    "thread": ["For threads: array of tweet texts", "Tweet 2", "Tweet 3 with CTA"],
+    "media": {
+      "type": "image | screenshot",
+      "path": "content/media/filename.png",
+      "alt": "Alt text for accessibility"
+    },
+    "generatedAt": "ISO 8601 timestamp",
+    "status": "pending_review | needs_revision | approved | rejected",
+    "reviewNotes": "Human feedback for revision (optional)"
+  },
+  "_statusFlow": {
+    "pending_review": "Just generated, awaiting human review",
+    "needs_revision": "Human requested changes, regenerate or edit",
+    "approved": "Ready to move to scheduled.json",
+    "rejected": "Not suitable, archive or delete"
+  }
+}

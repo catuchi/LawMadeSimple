@@ -1,0 +1,38 @@
+{
+  "$schema": "./scheduled.schema.json",
+  "_description": "Approved content ready to post. Human posts manually at scheduled time.",
+  "_usage": [
+    "Approve: Move approved draft from drafts.json here with postTime",
+    "Post: Copy content to Twitter, then move to posted.json with tweetId",
+    "Reschedule: Update postTime if needed"
+  ],
+  "scheduled": [],
+  "_scheduledSchema": {
+    "id": "sched-XXX",
+    "draftId": "Reference to original draft",
+    "type": "single | thread",
+    "content": "Final tweet text (single) or null (thread)",
+    "thread": ["Array of tweets (thread) or null (single)"],
+    "hashtags": ["#Hashtags", "#ToAppend"],
+    "media": {
+      "type": "image",
+      "path": "content/media/filename.png",
+      "alt": "Alt text"
+    },
+    "postTime": "ISO 8601 with timezone (e.g., 2026-02-06T09:00:00+01:00)",
+    "approvedAt": "When human approved",
+    "approvedBy": "manual"
+  },
+  "_example": {
+    "id": "sched-001",
+    "draftId": "draft-001",
+    "type": "single",
+    "content": "Police asking to see your phone? You have the RIGHT to refuse.\n\nSection 37 of the Constitution protects your privacy. A search needs:\n\n- A court warrant, OR\n- Your voluntary consent, OR  \n- Lawful arrest with reasonable grounds\n\nBe polite. Know your rights.",
+    "hashtags": ["#KnowYourRights", "#NigerianLaw", "#LawMadeSimple"],
+    "thread": null,
+    "media": null,
+    "postTime": "2026-02-06T09:00:00+01:00",
+    "approvedAt": "2026-02-05T18:00:00Z",
+    "approvedBy": "manual"
+  }
+}

@@ -1,0 +1,247 @@
+{
+  "$schema": "./calendar.schema.json",
+  "_description": "Monthly content calendar with themed weeks and scheduled slots.",
+  "_usage": "Tell Claude: 'Check content/input/calendar.json for today's scheduled topics and generate content'",
+  "currentMonth": "2026-02",
+  "monthlyTheme": "Know Your Rights Month",
+  "weeks": [
+    {
+      "weekNumber": 1,
+      "startDate": "2026-02-03",
+      "endDate": "2026-02-09",
+      "theme": "Constitutional Rights",
+      "focusLaw": "Constitution 1999",
+      "slots": [
+        {
+          "date": "2026-02-03",
+          "day": "Monday",
+          "time": "09:00",
+          "type": "educational",
+          "topic": "Introduction to your fundamental rights",
+          "status": "posted"
+        },
+        {
+          "date": "2026-02-04",
+          "day": "Tuesday",
+          "time": "09:00",
+          "type": "educational",
+          "topic": "Right to life - Section 33",
+          "status": "posted"
+        },
+        {
+          "date": "2026-02-04",
+          "day": "Tuesday",
+          "time": "18:00",
+          "type": "engagement",
+          "topic": "Poll: Which right do you feel is most violated?",
+          "status": "posted"
+        },
+        {
+          "date": "2026-02-05",
+          "day": "Wednesday",
+          "time": "09:00",
+          "type": "educational",
+          "topic": "Thread: Understanding arrest and detention rights",
+          "status": "scheduled"
+        },
+        {
+          "date": "2026-02-06",
+          "day": "Thursday",
+          "time": "09:00",
+          "type": "feature",
+          "topic": "Announce Phase 8 content expansion",
+          "status": "draft"
+        },
+        {
+          "date": "2026-02-06",
+          "day": "Thursday",
+          "time": "18:00",
+          "type": "engagement",
+          "topic": "Question: Have you ever been stopped by police?",
+          "status": "idea"
+        },
+        {
+          "date": "2026-02-07",
+          "day": "Friday",
+          "time": "09:00",
+          "type": "educational",
+          "topic": "Privacy rights - Section 37",
+          "status": "idea"
+        },
+        {
+          "date": "2026-02-07",
+          "day": "Friday",
+          "time": "13:00",
+          "type": "engagement",
+          "topic": "Friday Fun Fact: Legal edition",
+          "status": "idea"
+        }
+      ]
+    },
+    {
+      "weekNumber": 2,
+      "startDate": "2026-02-10",
+      "endDate": "2026-02-16",
+      "theme": "Tenant Rights",
+      "focusLaw": "Lagos Tenancy Law 2011",
+      "slots": [
+        {
+          "date": "2026-02-10",
+          "day": "Monday",
+          "time": "09:00",
+          "type": "educational",
+          "topic": "Your rights as a tenant in Lagos",
+          "status": "idea"
+        },
+        {
+          "date": "2026-02-11",
+          "day": "Tuesday",
+          "time": "09:00",
+          "type": "educational",
+          "topic": "Rent increases: What landlords can and can't do",
+          "status": "idea"
+        },
+        {
+          "date": "2026-02-11",
+          "day": "Tuesday",
+          "time": "18:00",
+          "type": "engagement",
+          "topic": "Poll: Have you experienced landlord issues?",
+          "status": "idea"
+        },
+        {
+          "date": "2026-02-12",
+          "day": "Wednesday",
+          "time": "09:00",
+          "type": "educational",
+          "topic": "Thread: The eviction process explained",
+          "status": "idea"
+        },
+        {
+          "date": "2026-02-13",
+          "day": "Thursday",
+          "time": "09:00",
+          "type": "educational",
+          "topic": "Illegal eviction tactics and your recourse",
+          "status": "idea"
+        },
+        {
+          "date": "2026-02-14",
+          "day": "Friday",
+          "time": "09:00",
+          "type": "educational",
+          "topic": "Receipt requirements for rent payments",
+          "status": "idea"
+        }
+      ]
+    },
+    {
+      "weekNumber": 3,
+      "startDate": "2026-02-17",
+      "endDate": "2026-02-23",
+      "theme": "Employee Rights",
+      "focusLaw": "Labour Act",
+      "slots": [
+        {
+          "date": "2026-02-17",
+          "day": "Monday",
+          "time": "09:00",
+          "type": "educational",
+          "topic": "Your right to a written employment contract",
+          "status": "idea"
+        },
+        {
+          "date": "2026-02-18",
+          "day": "Tuesday",
+          "time": "09:00",
+          "type": "educational",
+          "topic": "Maximum working hours and overtime",
+          "status": "idea"
+        },
+        {
+          "date": "2026-02-19",
+          "day": "Wednesday",
+          "time": "09:00",
+          "type": "educational",
+          "topic": "Thread: Wrongful termination explained",
+          "status": "idea"
+        },
+        {
+          "date": "2026-02-20",
+          "day": "Thursday",
+          "time": "09:00",
+          "type": "educational",
+          "topic": "Maternity leave rights",
+          "status": "idea"
+        },
+        {
+          "date": "2026-02-21",
+          "day": "Friday",
+          "time": "09:00",
+          "type": "educational",
+          "topic": "Minimum wage and wage protection",
+          "status": "idea"
+        }
+      ]
+    },
+    {
+      "weekNumber": 4,
+      "startDate": "2026-02-24",
+      "endDate": "2026-02-28",
+      "theme": "Criminal Law Basics",
+      "focusLaw": "Criminal Code Act",
+      "slots": [
+        {
+          "date": "2026-02-24",
+          "day": "Monday",
+          "time": "09:00",
+          "type": "educational",
+          "topic": "Understanding assault under Nigerian law",
+          "status": "idea"
+        },
+        {
+          "date": "2026-02-25",
+          "day": "Tuesday",
+          "time": "09:00",
+          "type": "educational",
+          "topic": "Theft vs robbery: Legal differences",
+          "status": "idea"
+        },
+        {
+          "date": "2026-02-26",
+          "day": "Wednesday",
+          "time": "09:00",
+          "type": "educational",
+          "topic": "Thread: Your rights if accused of a crime",
+          "status": "idea"
+        },
+        {
+          "date": "2026-02-27",
+          "day": "Thursday",
+          "time": "09:00",
+          "type": "educational",
+          "topic": "Defamation: What it is and what it isn't",
+          "status": "idea"
+        },
+        {
+          "date": "2026-02-28",
+          "day": "Friday",
+          "time": "09:00",
+          "type": "educational",
+          "topic": "Month wrap-up: Rights recap",
+          "status": "idea"
+        }
+      ]
+    }
+  ],
+  "_slotSchema": {
+    "date": "YYYY-MM-DD",
+    "day": "Day name",
+    "time": "HH:MM in WAT (West Africa Time)",
+    "type": "educational | reactive | feature | engagement",
+    "topic": "Brief topic description",
+    "status": "idea | draft | scheduled | posted",
+    "ideaId": "Optional reference to ideas.json",
+    "draftId": "Optional reference to drafts.json"
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "$schema": "./posted.schema.json",
+  "_description": "Archive of posted content with engagement metrics. Move here after posting to Twitter.",
+  "_usage": [
+    "Archive: Move from scheduled.json after posting, add tweetId",
+    "Metrics: Update metrics periodically (24h, 7d after posting)",
+    "Analysis: Review what content performs best"
+  ],
+  "posted": [],
+  "_postedSchema": {
+    "id": "post-XXX",
+    "scheduledId": "Reference to scheduled item",
+    "tweetId": "Twitter tweet ID (from URL or API)",
+    "tweetUrl": "Full URL to tweet",
+    "type": "single | thread",
+    "content": "Final content posted",
+    "hashtags": ["#Used", "#Hashtags"],
+    "postedAt": "Actual post time (ISO 8601)",
+    "metrics": {
+      "likes": 0,
+      "retweets": 0,
+      "replies": 0,
+      "quotes": 0,
+      "impressions": 0,
+      "profileVisits": 0,
+      "linkClicks": 0,
+      "recordedAt": "When metrics were last updated"
+    },
+    "notes": "Any observations about performance"
+  },
+  "_example": {
+    "id": "post-001",
+    "scheduledId": "sched-001",
+    "tweetId": "1234567890123456789",
+    "tweetUrl": "https://twitter.com/LawMadeSimple/status/1234567890123456789",
+    "type": "single",
+    "content": "Police asking to see your phone? You have the RIGHT to refuse...",
+    "hashtags": ["#KnowYourRights", "#NigerianLaw", "#LawMadeSimple"],
+    "postedAt": "2026-02-06T09:02:00+01:00",
+    "metrics": {
+      "likes": 45,
+      "retweets": 12,
+      "replies": 8,
+      "quotes": 2,
+      "impressions": 2400,
+      "profileVisits": 34,
+      "linkClicks": 15,
+      "recordedAt": "2026-02-07T09:00:00Z"
+    },
+    "notes": "Strong engagement, privacy content resonates"
+  },
+  "_metricsSchedule": {
+    "24h": "Record initial engagement",
+    "7d": "Record final engagement for analysis",
+    "monthly": "Compile top performers for strategy review"
+  }
+}
