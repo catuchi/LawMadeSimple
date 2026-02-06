@@ -96,7 +96,8 @@ function escapeString(str: string): string {
  * Convert slug to camelCase variable name
  */
 function slugToCamelCase(slug: string): string {
-  return slug.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase());
+  // Also handle digits after hyphens (e.g., "act-2025" -> "act2025")
+  return slug.replace(/-([a-z0-9])/g, (_, char) => char.toUpperCase());
 }
 
 /**

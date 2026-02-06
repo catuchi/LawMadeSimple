@@ -1,13 +1,12 @@
 /**
  * PDF Parser Utility
  *
- * Wrapper around pdf-parse for extracting text from PDF files.
+ * Wrapper around pdfjs-dist for extracting text from PDF files.
  */
 
 import fs from 'fs';
 import path from 'path';
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const pdfParse = require('pdf-parse');
+import * as pdfjsLib from 'pdfjs-dist/legacy/build/pdf.mjs';
 
 /**
  * Result from parsing a PDF
@@ -55,20 +54,38 @@ export async function parsePDF(pdfPath: string): Promise<ParsedPDF> {
   const filename = path.basename(pdfPath);
 
   try {
-    // Parse PDF
-    const data = await pdfParse(dataBuffer);
+    // Load PDF document
+    const uint8Array = new Uint8Array(dataBuffer);
+    const loadingTask = pdfjsLib.getDocument({
+      data: uint8Array,
+      useSystemFonts: true,
+    });
+    const pdfDoc = await loadingTask.promise;
+
+    // Extract text from all pages
+    const textParts: string[] = [];
+    for (let i = 1; i <= pdfDoc.numPages; i++) {
+      const page = await pdfDoc.getPage(i);
+      const textContent = await page.getTextContent();
+      const pageText = textContent.items.map((item) => ('str' in item ? item.str : '')).join(' ');
+      textParts.push(pageText);
+    }
+
+    // Get metadata
+    const metadata = await pdfDoc.getMetadata();
+    const info = metadata?.info as Record<string, string | undefined> | undefined;
 
     return {
-      text: data.text,
-      numPages: data.numpages,
+      text: textParts.join('\n\n'),
+      numPages: pdfDoc.numPages,
       info: {
-        title: data.info?.Title,
-        author: data.info?.Author,
-        subject: data.info?.Subject,
-        creator: data.info?.Creator,
-        producer: data.info?.Producer,
-        creationDate: data.info?.CreationDate ? new Date(data.info.CreationDate) : undefined,
-        modDate: data.info?.ModDate ? new Date(data.info.ModDate) : undefined,
+        title: info?.Title,
+        author: info?.Author,
+        subject: info?.Subject,
+        creator: info?.Creator,
+        producer: info?.Producer,
+        creationDate: info?.CreationDate ? new Date(info.CreationDate) : undefined,
+        modDate: info?.ModDate ? new Date(info.ModDate) : undefined,
       },
       fileSize: stats.size,
       filename,

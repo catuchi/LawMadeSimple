@@ -18,6 +18,9 @@ import { copyrightAct } from './copyright-act';
 import { trademarksAct } from './trademarks-act';
 import { patentsAct } from './patents-designs-act';
 
+// PDF Pipeline Extracted Laws
+import { nigeriaTaxAct2025 } from './nigeria-tax-act-2025';
+
 /**
  * All laws for Phase 8A
  */
@@ -35,9 +38,14 @@ export const phase8ExpLaws: LawWithSections[] = [
 ];
 
 /**
+ * PDF Pipeline Extracted Laws
+ */
+export const pdfExtractedLaws: LawWithSections[] = [nigeriaTaxAct2025];
+
+/**
  * All laws (expand as phases complete)
  */
-export const allLaws: LawWithSections[] = [...phase8ALaws, ...phase8ExpLaws];
+export const allLaws: LawWithSections[] = [...phase8ALaws, ...phase8ExpLaws, ...pdfExtractedLaws];
 
 // Re-export individual laws for direct access
 export {
@@ -50,4 +58,5 @@ export {
   copyrightAct,
   trademarksAct,
   patentsAct,
+  nigeriaTaxAct2025,
 };
