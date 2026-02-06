@@ -23,6 +23,7 @@ interface CliArgs {
   filename?: string;
   all: boolean;
   preview: boolean;
+  force: boolean;
 }
 
 /**
@@ -34,6 +35,7 @@ function parseArgs(): CliArgs {
   const result: CliArgs = {
     all: false,
     preview: false,
+    force: false,
   };
 
   for (let i = 0; i < args.length; i++) {
@@ -43,6 +45,8 @@ function parseArgs(): CliArgs {
       result.all = true;
     } else if (arg === '--preview') {
       result.preview = true;
+    } else if (arg === '--force') {
+      result.force = true;
     } else if (!arg.startsWith('-')) {
       result.filename = arg;
     }
@@ -59,17 +63,20 @@ function showUsage(): void {
 TypeScript Generator CLI
 
 Usage:
-  npm run pdf:generate -- <slug>.json       Generate TypeScript from JSON
-  npm run pdf:generate -- --all             Generate for all extracted JSONs
-  npm run pdf:generate -- --preview <file>  Preview without writing file
+  npm run pdf:generate -- <slug>.json         Generate TypeScript from JSON
+  npm run pdf:generate -- --all               Generate for all extracted JSONs
+  npm run pdf:generate -- --preview <file>    Preview without writing file
+  npm run pdf:generate -- <file> --force      Force overwrite with backup
 
 Options:
   --all        Process all JSONs in extracted directory
   --preview    Show generated code without writing
+  --force      Overwrite existing file (creates timestamped backup first)
 
 Examples:
   npm run pdf:generate -- cama-2020.json
   npm run pdf:generate -- --preview constitution-1999.json
+  npm run pdf:generate -- constitution-1999.json --force
 `);
 }
 
@@ -209,20 +216,59 @@ function listExtractedJsons(): string[] {
 }
 
 /**
- * Check if TypeScript file already exists
+ * Find existing TypeScript file that might be the same law
+ * Uses slug matching to detect similar files (e.g., constitution-1999 → constitution)
  */
-function checkExistingTs(slug: string): string | null {
-  const tsPath = path.join(PATHS.laws, `${slug}.ts`);
-  if (fs.existsSync(tsPath)) {
-    return tsPath;
+function findMatchingExistingTs(slug: string): string | null {
+  // Direct match
+  const directPath = path.join(PATHS.laws, `${slug}.ts`);
+  if (fs.existsSync(directPath)) {
+    return directPath;
   }
+
+  // Fuzzy match: constitution-1999 → constitution (remove year suffix)
+  const baseName = slug.replace(/-\d{4}$/, '');
+  if (baseName !== slug) {
+    const basePath = path.join(PATHS.laws, `${baseName}.ts`);
+    if (fs.existsSync(basePath)) {
+      return basePath;
+    }
+  }
+
+  // Check all files for similar slugs
+  if (!fs.existsSync(PATHS.laws)) {
+    return null;
+  }
+
+  const files = fs.readdirSync(PATHS.laws).filter((f) => f.endsWith('.ts') && f !== 'index.ts');
+  for (const file of files) {
+    const fileSlug = file.replace('.ts', '');
+    // Check if either contains the other
+    if (fileSlug.includes(baseName) || baseName.includes(fileSlug)) {
+      return path.join(PATHS.laws, file);
+    }
+  }
+
   return null;
+}
+
+/**
+ * Create timestamped backup of a file
+ */
+function createTimestampedBackup(filePath: string): string {
+  const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+  const backupPath = filePath.replace('.ts', `.${timestamp}.bak.ts`);
+  fs.copyFileSync(filePath, backupPath);
+  return backupPath;
 }
 
 /**
  * Generate TypeScript from a single JSON file
  */
-async function generateFromJson(jsonPath: string, options: { preview: boolean }): Promise<boolean> {
+async function generateFromJson(
+  jsonPath: string,
+  options: { preview: boolean; force: boolean }
+): Promise<boolean> {
   const filename = path.basename(jsonPath);
   const slug = filename.replace('.json', '');
 
@@ -242,21 +288,33 @@ async function generateFromJson(jsonPath: string, options: { preview: boolean })
     console.log('\n   WARNING: Manual review recommended before using');
   }
 
-  // Check for existing file
-  const existingTs = checkExistingTs(slug);
+  // Check for existing file using slug matching
+  const existingTs = findMatchingExistingTs(slug);
   if (existingTs && !options.preview) {
-    console.log(`\n   NOTICE: TypeScript file already exists at ${existingTs}`);
-    console.log('   Use npm run pdf:diff to compare changes');
-    console.log('   Skipping generation (use --preview to see what would be generated)');
-    return false;
+    const existingSlug = path.basename(existingTs, '.ts');
+
+    if (!options.force) {
+      console.log(`\n⚠️  SKIPPING: Found existing file that may be the same law`);
+      console.log(`   Extracted slug: ${slug}`);
+      console.log(`   Existing file:  ${existingTs}`);
+      console.log(`\n   To compare:  npm run pdf:diff -- ${existingSlug}`);
+      console.log(`   To update:   npm run pdf:generate -- ${slug}.json --force`);
+      return false;
+    }
+
+    // Create timestamped backup before overwriting
+    console.log(`\n2. Creating backup before overwrite...`);
+    const backupPath = createTimestampedBackup(existingTs);
+    console.log(`   📦 Backup created: ${backupPath}`);
   }
 
   // Generate TypeScript
-  console.log('\n2. Generating TypeScript...');
+  const stepNum = existingTs && options.force ? 3 : 2;
+  console.log(`\n${stepNum}. Generating TypeScript...`);
   const tsContent = generateTypeScript(data);
 
   if (options.preview) {
-    console.log('\n3. PREVIEW (not writing file):');
+    console.log(`\n${stepNum + 1}. PREVIEW (not writing file):`);
     console.log('-'.repeat(60));
     console.log(tsContent);
     console.log('-'.repeat(60));
@@ -265,12 +323,12 @@ async function generateFromJson(jsonPath: string, options: { preview: boolean })
 
   // Write file
   const outputPath = path.join(PATHS.laws, `${slug}.ts`);
-  console.log(`\n3. Writing to: ${outputPath}`);
+  console.log(`\n${stepNum + 1}. Writing to: ${outputPath}`);
 
   fs.writeFileSync(outputPath, tsContent);
   console.log('   Done!');
 
-  console.log('\n4. Next steps:');
+  console.log(`\n${stepNum + 2}. Next steps:`);
   console.log(`   a. Review the generated file: ${outputPath}`);
   console.log('   b. Add import to prisma/data/laws/index.ts');
   console.log('   c. Run: npm run db:seed');
@@ -325,11 +383,19 @@ async function main(): Promise<void> {
 
   // Process each JSON
   let successCount = 0;
+  let skippedCount = 0;
 
   for (const jsonPath of jsonPaths) {
     try {
-      const success = await generateFromJson(jsonPath, { preview: args.preview });
-      if (success) successCount++;
+      const success = await generateFromJson(jsonPath, {
+        preview: args.preview,
+        force: args.force,
+      });
+      if (success) {
+        successCount++;
+      } else {
+        skippedCount++;
+      }
     } catch (error) {
       console.error(`\nError processing ${path.basename(jsonPath)}:`);
       console.error(error instanceof Error ? error.message : error);
@@ -337,12 +403,16 @@ async function main(): Promise<void> {
   }
 
   // Summary
-  if (jsonPaths.length > 1) {
+  if (jsonPaths.length > 1 || skippedCount > 0) {
     console.log('\n' + '='.repeat(60));
     console.log('SUMMARY');
     console.log('='.repeat(60));
     console.log(`\nProcessed: ${jsonPaths.length} JSON file(s)`);
     console.log(`Generated: ${successCount} TypeScript file(s)`);
+    if (skippedCount > 0) {
+      console.log(`Skipped:   ${skippedCount} (existing files found)`);
+      console.log(`\nUse --force to overwrite existing files (creates backups)`);
+    }
   }
 }
 

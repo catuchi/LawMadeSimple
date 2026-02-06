@@ -23,10 +23,21 @@ export async function upsertLaw(
   result: SeedResult
 ): Promise<{ id: string; slug: string } | null> {
   try {
-    const record = await prisma.law.upsert({
+    // Check if law already exists
+    const existing = await prisma.law.findUnique({
       where: { slug: law.slug },
-      update: {}, // Don't update existing records
-      create: {
+      select: { id: true, slug: true },
+    });
+
+    if (existing) {
+      console.log(`   ⏭️  Law exists, skipping: ${law.slug}`);
+      result.laws.skipped++;
+      return existing;
+    }
+
+    // Create new law
+    const record = await prisma.law.create({
+      data: {
         slug: law.slug,
         title: law.title,
         shortTitle: law.shortTitle,
@@ -61,15 +72,26 @@ export async function upsertSections(
 
   for (const section of sections) {
     try {
-      const record = await prisma.section.upsert({
+      // Check if section already exists
+      const existing = await prisma.section.findUnique({
         where: {
           lawId_slug: {
             lawId,
             slug: section.slug,
           },
         },
-        update: {}, // Don't update existing records
-        create: {
+        select: { id: true, slug: true },
+      });
+
+      if (existing) {
+        sectionMap.set(existing.slug, existing.id);
+        result.sections.skipped++;
+        continue;
+      }
+
+      // Create new section
+      const record = await prisma.section.create({
+        data: {
           lawId,
           slug: section.slug,
           number: section.number,
@@ -102,10 +124,21 @@ export async function upsertScenario(
   result: SeedResult
 ): Promise<{ id: string; slug: string } | null> {
   try {
-    const record = await prisma.scenario.upsert({
+    // Check if scenario already exists
+    const existing = await prisma.scenario.findUnique({
       where: { slug: scenario.slug },
-      update: {}, // Don't update existing records
-      create: {
+      select: { id: true, slug: true },
+    });
+
+    if (existing) {
+      console.log(`   ⏭️  Scenario exists, skipping: ${scenario.slug}`);
+      result.scenarios.skipped++;
+      return existing;
+    }
+
+    // Create new scenario
+    const record = await prisma.scenario.create({
+      data: {
         slug: scenario.slug,
         title: scenario.title,
         description: scenario.description,
@@ -162,15 +195,25 @@ export async function createScenarioMappings(
         continue;
       }
 
-      await prisma.scenarioSection.upsert({
+      // Check if mapping already exists
+      const existing = await prisma.scenarioSection.findUnique({
         where: {
           scenarioId_sectionId: {
             scenarioId,
             sectionId,
           },
         },
-        update: {}, // Don't update existing records
-        create: {
+        select: { scenarioId: true },
+      });
+
+      if (existing) {
+        result.mappings.skipped++;
+        continue;
+      }
+
+      // Create new mapping
+      await prisma.scenarioSection.create({
+        data: {
           scenarioId,
           sectionId,
           relevanceOrder: mapping.relevanceOrder,
@@ -195,10 +238,18 @@ export function logSeedResults(result: SeedResult): void {
   console.log('SEED RESULTS');
   console.log('========================================');
 
-  console.log(`\nLaws:      ${result.laws.created} created`);
-  console.log(`Sections:  ${result.sections.created} created`);
-  console.log(`Scenarios: ${result.scenarios.created} created`);
-  console.log(`Mappings:  ${result.mappings.created} created`);
+  console.log(`\nLaws:      ${result.laws.created} created, ${result.laws.skipped} skipped`);
+  console.log(`Sections:  ${result.sections.created} created, ${result.sections.skipped} skipped`);
+  console.log(
+    `Scenarios: ${result.scenarios.created} created, ${result.scenarios.skipped} skipped`
+  );
+  console.log(`Mappings:  ${result.mappings.created} created, ${result.mappings.skipped} skipped`);
+
+  const totalSkipped =
+    result.laws.skipped +
+    result.sections.skipped +
+    result.scenarios.skipped +
+    result.mappings.skipped;
 
   const allErrors = [
     ...result.laws.errors,
@@ -210,6 +261,8 @@ export function logSeedResults(result: SeedResult): void {
   if (allErrors.length > 0) {
     console.log('\n⚠️  ERRORS:');
     allErrors.forEach((error) => console.log(`   - ${error}`));
+  } else if (totalSkipped > 0) {
+    console.log('\n✅ Seed completed! (Some records already existed)');
   } else {
     console.log('\n✅ All records seeded successfully!');
   }

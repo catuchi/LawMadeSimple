@@ -78,10 +78,10 @@ export interface ScenarioWithMappings {
  * Seed result tracking for logging
  */
 export interface SeedResult {
-  laws: { created: number; updated: number; errors: string[] };
-  sections: { created: number; updated: number; errors: string[] };
-  scenarios: { created: number; updated: number; errors: string[] };
-  mappings: { created: number; updated: number; errors: string[] };
+  laws: { created: number; skipped: number; errors: string[] };
+  sections: { created: number; skipped: number; errors: string[] };
+  scenarios: { created: number; skipped: number; errors: string[] };
+  mappings: { created: number; skipped: number; errors: string[] };
 }
 
 /**
@@ -89,9 +89,9 @@ export interface SeedResult {
  */
 export function createEmptySeedResult(): SeedResult {
   return {
-    laws: { created: 0, updated: 0, errors: [] },
-    sections: { created: 0, updated: 0, errors: [] },
-    scenarios: { created: 0, updated: 0, errors: [] },
-    mappings: { created: 0, updated: 0, errors: [] },
+    laws: { created: 0, skipped: 0, errors: [] },
+    sections: { created: 0, skipped: 0, errors: [] },
+    scenarios: { created: 0, skipped: 0, errors: [] },
+    mappings: { created: 0, skipped: 0, errors: [] },
   };
 }

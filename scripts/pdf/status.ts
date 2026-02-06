@@ -156,6 +156,41 @@ function formatRow(status: LawStatus): string {
 }
 
 /**
+ * Find potential slug conflicts between JSON and TypeScript files
+ */
+function findPotentialConflicts(
+  statuses: LawStatus[]
+): { jsonSlug: string; tsSlug: string; tsPath: string }[] {
+  const conflicts: { jsonSlug: string; tsSlug: string; tsPath: string }[] = [];
+
+  const tsFiles = statuses.filter((s) => s.hasTs);
+  const jsonFiles = statuses.filter((s) => s.hasJson && !s.hasTs); // JSON without direct TS match
+
+  for (const json of jsonFiles) {
+    // Remove year suffix for fuzzy matching
+    const jsonBaseName = json.slug.replace(/-\d{4}$/, '');
+
+    for (const ts of tsFiles) {
+      // Skip if it's an exact match (already handled normally)
+      if (ts.slug === json.slug) continue;
+
+      const tsBaseName = ts.slug.replace(/-\d{4}$/, '');
+
+      // Check if either contains the other
+      if (tsBaseName.includes(jsonBaseName) || jsonBaseName.includes(tsBaseName)) {
+        conflicts.push({
+          jsonSlug: json.slug,
+          tsSlug: ts.slug,
+          tsPath: path.join(PATHS.laws, `${ts.slug}.ts`),
+        });
+      }
+    }
+  }
+
+  return conflicts;
+}
+
+/**
  * Main entry point
  */
 async function main(): Promise<void> {
@@ -211,9 +246,25 @@ async function main(): Promise<void> {
     console.log('Legend: * = may need update (section count mismatch)');
   }
 
+  // Check for potential conflicts (JSON might match different TS file)
+  const conflicts = findPotentialConflicts(statuses);
+  if (conflicts.length > 0) {
+    console.log('\n' + '='.repeat(70));
+    console.log('⚠️  POTENTIAL CONFLICTS');
+    console.log('='.repeat(70));
+    console.log('\nThese JSONs may be the same law as existing TypeScript files:');
+    for (const conflict of conflicts) {
+      console.log(`\n  ${conflict.jsonSlug}.json  →  ${conflict.tsSlug}.ts`);
+      console.log(`    Compare: npm run pdf:diff -- ${conflict.jsonSlug}`);
+      console.log(`    Force:   npm run pdf:generate -- ${conflict.jsonSlug}.json --force`);
+    }
+  }
+
   // Pending work
   const pendingPdfs = statuses.filter((s) => s.hasPdf && !s.hasJson);
-  const pendingJsons = statuses.filter((s) => s.hasJson && !s.hasTs);
+  const pendingJsons = statuses.filter(
+    (s) => s.hasJson && !s.hasTs && !conflicts.some((c) => c.jsonSlug === s.slug)
+  );
   const needsUpdate = statuses.filter((s) => s.needsUpdate);
 
   if (pendingPdfs.length > 0 || pendingJsons.length > 0 || needsUpdate.length > 0) {
