@@ -87,6 +87,14 @@ npm run db:generate  # Generate Prisma client
 npm run db:push      # Push schema to database
 npm run db:seed      # Seed sample data
 npm run db:studio    # Open Prisma Studio (GUI)
+
+# PDF Extraction Pipeline
+npm run pdf:extract -- <file.pdf>     # Extract PDF to JSON
+npm run pdf:extract -- --all          # Process all PDFs in raw/pdfs/
+npm run pdf:generate -- <file.json>   # Generate TypeScript from JSON
+npm run pdf:status                    # Show extraction status
+npm run pdf:diff -- <law-slug>        # Diff JSON vs existing TypeScript
+npm run pdf:suggest-scenarios -- <law-slug>  # AI-suggest scenarios
 ```
 
 ## Development Guidelines
@@ -280,11 +288,11 @@ Set `OPENAI_API_KEY` in both `.env.local` and Vercel environment variables.
 - [x] Phase 7 test coverage (84 tests) ✅
 - [x] Scenario metadata moved to DB ✅
 
-**Phase 8 - Content & Data:**
-- [ ] Seed 9 MVP laws (Constitution, Criminal Code, CAMA, Labour Act, etc.)
-- [ ] Create scenarios and map to sections
-- [ ] **🔴 IMPORTANT: Run embedding backfill after seeding** (see below)
-- [ ] Generate initial AI explanations for key sections
+**Phase 8 - Content & Data:** ✅ COMPLETE
+- [x] Seed MVP laws (4 laws: Constitution, Criminal Code, Labour Act, Lagos Tenancy)
+- [x] Create scenarios and map to sections (33 scenarios, 129 mappings)
+- [x] Run embedding backfill (65 sections + 33 scenarios embedded)
+- [x] AI explanations endpoint working (cached explanations functional)
 
 ---
 
@@ -482,6 +490,67 @@ The search API now returns additional metadata in the `extra` field:
 - `scripts/backfill-embeddings.ts` — Batch embedding script
 - `prisma/migrations/001_pgvector_setup.sql` — Database migration (run in Supabase SQL Editor)
 - `prisma/migrations/002_pgvector_indexes.sql` — Backfill optimization indexes (run in Supabase SQL Editor)
+
+### PDF Extraction Pipeline
+
+Automated pipeline to extract Nigerian law content from PDFs into structured data.
+
+**Architecture:**
+```
+[PDFs]                    [JSON]                    [TypeScript]              [Database]
+prisma/data/raw/pdfs/  →  prisma/data/raw/extracted/  →  prisma/data/laws/*.ts  →  Supabase
+```
+
+**Directory Structure:**
+```
+prisma/data/raw/
+├── schema.ts             # JSON schema types
+├── pdfs/                 # Source PDFs (gitignored)
+├── extracted/            # AI-extracted JSON files
+└── scenarios/            # AI-suggested scenarios
+
+scripts/pdf/
+├── config.ts             # Extraction config
+├── extract.ts            # Main extraction CLI
+├── generate-ts.ts        # JSON → TypeScript generator
+├── diff.ts               # Compare JSON vs existing TS
+├── status.ts             # Pipeline status reporter
+├── suggest-scenarios.ts  # AI scenario generator
+└── utils/
+    ├── pdf-parser.ts     # pdf-parse wrapper
+    ├── ai-extractor.ts   # OpenAI extraction logic
+    ├── chunker.ts        # Text chunking for large PDFs
+    └── merger.ts         # Multi-chunk result merging
+```
+
+**Workflow:**
+```bash
+# 1. Download PDF from openlawsnig.org.ng
+# 2. Place in prisma/data/raw/pdfs/
+
+# 3. Extract PDF to JSON
+npm run pdf:extract -- constitution-1999.pdf
+
+# 4. Review extracted JSON, check quality.confidence
+
+# 5. Generate TypeScript
+npm run pdf:generate -- constitution-1999.json
+
+# 6. Update prisma/data/laws/index.ts with import
+
+# 7. Seed database
+npm run db:seed
+
+# 8. Generate embeddings
+DOTENV_CONFIG_PATH=.env.local npx tsx -r dotenv/config scripts/backfill-embeddings.ts
+```
+
+**Quality Thresholds:**
+- Confidence ≥ 0.7: Ready for use
+- Confidence 0.5-0.7: Review recommended
+- Confidence < 0.5: Manual review required
+
+**Cost:** ~$0.05-0.10 per PDF (GPT-4o-mini)
 
 ### Design System
 - **Colors:** Warm Trust (Teal #1A5F7A + Gold #F4B942)
