@@ -1448,11 +1448,23 @@
   "quality": {
     "confidence": 1,
     "warnings": [],
-    "manualReviewRequired": false,
+    "manualReviewRequired": true,
     "issues": {
       "possibleBoundaryErrors": [],
       "lowConfidenceSections": [],
       "unparseablePages": []
+    },
+    "verification": {
+      "sectionCount": {
+        "pdfCount": 203,
+        "extractedCount": 158,
+        "status": "mismatch"
+      },
+      "anchorsVerified": 102,
+      "anchorsPartial": 51,
+      "anchorsNotFound": 5,
+      "notFoundSections": ["31", "40", "42", "115", "120"],
+      "overallStatus": "fail"
     }
   }
 }

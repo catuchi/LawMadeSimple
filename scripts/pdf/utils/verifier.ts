@@ -107,17 +107,33 @@ const BOILERPLATE_PHRASES = [
 /**
  * Normalize text for comparison
  * - Lowercase
- * - Collapse whitespace
+ * - Remove spaces inside words (PDF line-break artifacts like "ind ividual")
+ * - Remove spaces before punctuation (PDF artifacts like "Act .")
+ * - Normalize spaces around hyphens (PDF artifacts like "non - resident")
+ * - Collapse remaining whitespace
  * - Normalize quotes and dashes
  * - Trim
  */
 function normalize(text: string): string {
-  return text
-    .toLowerCase()
-    .replace(/[\u2018\u2019\u201c\u201d]/g, '"') // Smart quotes to standard
-    .replace(/[\u2013\u2014]/g, '-') // En/em dashes to hyphen
-    .replace(/\s+/g, ' ') // Collapse whitespace
-    .trim();
+  return (
+    text
+      .toLowerCase()
+      .replace(/[\u2018\u2019\u201c\u201d]/g, '"') // Smart quotes to standard
+      .replace(/[\u2013\u2014]/g, '-') // En/em dashes to hyphen
+      // Normalize spaces around hyphens: "non - resident" -> "non-resident"
+      .replace(/\s*-\s*/g, '-')
+      // Remove spaces inside words (PDF line-break artifacts)
+      // Match: lowercase letter + space(s) + lowercase letter
+      .replace(/([a-z])\s+([a-z])/g, '$1$2')
+      // Run twice to catch overlapping patterns like "a b c" -> "abc"
+      .replace(/([a-z])\s+([a-z])/g, '$1$2')
+      // Remove spaces before punctuation: "Act ." -> "Act."
+      .replace(/\s+([.,;:!?)])/g, '$1')
+      // Remove spaces after opening punctuation: "( 1)" -> "(1)"
+      .replace(/([[(])\s+/g, '$1')
+      .replace(/\s+/g, ' ') // Collapse remaining whitespace
+      .trim()
+  );
 }
 
 /**
@@ -267,27 +283,45 @@ export function searchAnchor(anchor: string, pdfText: string): AnchorResult {
 /**
  * Count unique sections in PDF text using regex
  *
- * Matches patterns like:
- * - "Section 1"
- * - "Section 33(1)(a)"
- * - "SECTION 45"
- * - "section 100"
+ * Uses multiple strategies:
+ * 1. Look for Table of Contents entries like "1.   Objective" (number + period + 2+ spaces + capital)
+ * 2. Look for body headings like "27. (1) The total profits"
+ * 3. Fall back to "Section X" cross-references if needed
  *
  * Also handles "Article" and "Clause" patterns for different law types.
  */
 export function countSectionsInPdf(pdfText: string): number {
-  // Match section patterns
-  const sectionPattern = /\b(?:section|article|clause)\s+\d+(?:\([a-z0-9]+\))*\b/gi;
-  const matches = pdfText.match(sectionPattern) || [];
-
-  // Deduplicate by normalized section number
   const unique = new Set<string>();
-  for (const match of matches) {
-    // Extract just the number portion for deduplication
-    // "Section 33(1)(a)" -> "33"
-    const numMatch = match.match(/\d+/);
-    if (numMatch) {
-      unique.add(numMatch[0]);
+
+  // Strategy 1: Match TOC entries with double-space after period
+  // Pattern: "NUMBER.   Title" (number, period, 2+ spaces, capital letter)
+  // Works for inline TOC like "1.   Objective  2.   Application"
+  const tocPattern = /\b(\d+)\.\s{2,}[A-Z]/g;
+  const tocMatches = [...pdfText.matchAll(tocPattern)];
+  for (const match of tocMatches) {
+    if (match[1]) {
+      unique.add(match[1]);
+    }
+  }
+
+  // Strategy 2: Match body headings at line start
+  // Pattern: line start + "NUMBER. (1)" or "NUMBER. The..."
+  const bodyPattern = /(?:^|\n)\s*(\d+)\.\s+\([0-9]+\)/gm;
+  const bodyMatches = [...pdfText.matchAll(bodyPattern)];
+  for (const match of bodyMatches) {
+    if (match[1]) {
+      unique.add(match[1]);
+    }
+  }
+
+  // Strategy 3: If we found very few, also count cross-references
+  if (unique.size < 50) {
+    const sectionPattern = /\bsection\s+(\d+)\b/gi;
+    const refMatches = [...pdfText.matchAll(sectionPattern)];
+    for (const match of refMatches) {
+      if (match[1]) {
+        unique.add(match[1]);
+      }
     }
   }
 

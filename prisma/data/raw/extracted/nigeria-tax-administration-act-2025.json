@@ -1025,11 +1025,23 @@
   "quality": {
     "confidence": 1,
     "warnings": [],
-    "manualReviewRequired": false,
+    "manualReviewRequired": true,
     "issues": {
       "possibleBoundaryErrors": [],
       "lowConfidenceSections": [],
       "unparseablePages": []
+    },
+    "verification": {
+      "sectionCount": {
+        "pdfCount": 149,
+        "extractedCount": 111,
+        "status": "mismatch"
+      },
+      "anchorsVerified": 55,
+      "anchorsPartial": 54,
+      "anchorsNotFound": 2,
+      "notFoundSections": ["93", "106"],
+      "overallStatus": "fail"
     }
   }
 }
