@@ -17,6 +17,7 @@ import { parsePDF, listPDFs, formatFileSize } from './utils/pdf-parser';
 import { chunkText, getChunkStats } from './utils/chunker';
 import { extractFromAllChunks, validateApiKey } from './utils/ai-extractor';
 import { mergeChunkResults, validateMergedResult } from './utils/merger';
+import { verifyExtraction, toVerificationData, formatVerificationReport } from './utils/verifier';
 import type { ExtractedLaw } from '../../prisma/data/raw/schema';
 import { LawCategory } from '@prisma/client';
 
@@ -185,8 +186,28 @@ async function extractPDF(
     validation.errors.forEach((e) => console.log(`   - ${e}`));
   }
 
+  // Verify extraction against PDF text
+  console.log('\n5. Verifying extraction...');
+
+  // Save raw PDF text for verification and future re-verification
+  const rawTextPath = path.join(PATHS.extracted, `${slug}.raw.txt`);
+  fs.writeFileSync(rawTextPath, parsed.text);
+
+  const verification = verifyExtraction(merged.sections, parsed.text);
+
+  // Add verification data to quality report
+  merged.quality.verification = toVerificationData(verification);
+
+  // Flag if verification failed
+  if (verification.overallStatus === 'fail') {
+    merged.quality.manualReviewRequired = true;
+  }
+
+  // Show verification results
+  console.log(formatVerificationReport(verification, options.verbose));
+
   // Show summary
-  console.log('\n5. Extraction Summary:');
+  console.log('\n6. Extraction Summary:');
   console.log(`   Title: ${merged.law.title}`);
   console.log(`   Sections: ${merged.sections.length}`);
   console.log(`   Confidence: ${(merged.quality.confidence * 100).toFixed(0)}%`);
@@ -202,7 +223,7 @@ async function extractPDF(
 
   // Save JSON
   const outputPath = path.join(PATHS.extracted, `${slug}.json`);
-  console.log(`\n6. Saving to: ${outputPath}`);
+  console.log(`\n7. Saving to: ${outputPath}`);
 
   fs.mkdirSync(path.dirname(outputPath), { recursive: true });
   fs.writeFileSync(outputPath, JSON.stringify(merged, null, 2));

@@ -25,7 +25,8 @@
     "pdf:generate": "tsx scripts/pdf/generate-ts.ts",
     "pdf:diff": "tsx scripts/pdf/diff.ts",
     "pdf:status": "tsx scripts/pdf/status.ts",
-    "pdf:suggest-scenarios": "DOTENV_CONFIG_PATH=.env.local tsx -r dotenv/config scripts/pdf/suggest-scenarios.ts"
+    "pdf:suggest-scenarios": "DOTENV_CONFIG_PATH=.env.local tsx -r dotenv/config scripts/pdf/suggest-scenarios.ts",
+    "pdf:verify": "tsx scripts/pdf/verify.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

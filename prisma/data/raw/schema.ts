@@ -107,6 +107,36 @@ export interface ExtractedSection {
 }
 
 /**
+ * Verification data from anchor and section count validation
+ */
+export interface VerificationResult {
+  /** Section count comparison */
+  sectionCount: {
+    /** Sections detected in PDF via regex */
+    pdfCount: number;
+    /** Sections in extracted JSON */
+    extractedCount: number;
+    /** Whether counts match within tolerance */
+    status: 'match' | 'mismatch';
+  };
+
+  /** Number of sections with all anchors verified */
+  anchorsVerified: number;
+
+  /** Number of sections with partial anchor matches */
+  anchorsPartial: number;
+
+  /** Number of sections where no anchors were found */
+  anchorsNotFound: number;
+
+  /** Section numbers that couldn't be verified */
+  notFoundSections: string[];
+
+  /** Overall verification status */
+  overallStatus: 'pass' | 'review' | 'fail';
+}
+
+/**
  * Quality assessment of the extraction
  */
 export interface ExtractionQuality {
@@ -130,6 +160,9 @@ export interface ExtractionQuality {
     /** Pages that couldn't be parsed */
     unparseablePages: number[];
   };
+
+  /** Verification results from anchor and section count validation */
+  verification?: VerificationResult;
 }
 
 /**
