@@ -1,10 +1,11 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures';
 
 test.describe('Search', () => {
-  test('shows results for valid query', async ({ page }) => {
-    await page.goto('/search?q=arrest');
+  // Use longer timeout for database-dependent pages
+  test.setTimeout(60000);
 
-    // Wait for results to load
+  test('shows results for valid query', async ({ page }) => {
+    await page.goto('/search?q=arrest', { timeout: 30000 });
     await page.waitForLoadState('networkidle');
 
     // Check main content is visible (results or empty state)
@@ -23,7 +24,8 @@ test.describe('Search', () => {
   });
 
   test('search input is pre-filled with query', async ({ page }) => {
-    await page.goto('/search?q=police');
+    await page.goto('/search?q=police', { timeout: 30000 });
+    await page.waitForLoadState('networkidle');
 
     // Search input uses type="search" with combobox role (use first() for mobile with multiple inputs)
     const searchInput = page.locator('input[type="search"]').first();
@@ -31,7 +33,8 @@ test.describe('Search', () => {
   });
 
   test('can filter by type', async ({ page }) => {
-    await page.goto('/search?q=rights');
+    await page.goto('/search?q=rights', { timeout: 30000 });
+    await page.waitForLoadState('networkidle');
 
     // Look for filter buttons/tabs
     const sectionFilter = page.getByRole('button', { name: /section/i });
@@ -50,8 +53,7 @@ test.describe('Search', () => {
   });
 
   test('shows search mode indicator', async ({ page }) => {
-    await page.goto('/search?q=tenant+rights');
-
+    await page.goto('/search?q=tenant+rights', { timeout: 30000 });
     await page.waitForLoadState('networkidle');
 
     // Mode indicator is optional, just verify page works
@@ -59,7 +61,8 @@ test.describe('Search', () => {
   });
 
   test('handles empty query gracefully', async ({ page }) => {
-    await page.goto('/search');
+    await page.goto('/search', { timeout: 30000 });
+    await page.waitForLoadState('networkidle');
 
     // Should show prompt or empty state
     const emptyState = page.getByText(/search nigerian laws|describe your/i);
@@ -74,16 +77,18 @@ test.describe('Search', () => {
   });
 
   test('can perform new search from results page', async ({ page }) => {
-    await page.goto('/search?q=arrest');
-
-    // Wait for page to load
+    await page.goto('/search?q=arrest', { timeout: 30000 });
     await page.waitForLoadState('networkidle');
 
-    const searchInput = page.locator('input[type="search"]');
+    const searchInput = page.locator('input[type="search"]').first();
     await searchInput.clear();
     await searchInput.fill('eviction');
+
+    // Wait for suggestions to potentially load
+    await page.waitForTimeout(500);
+
     await searchInput.press('Enter');
 
-    await expect(page).toHaveURL(/\/search\?q=eviction/);
+    await expect(page).toHaveURL(/\/search\?q=eviction/, { timeout: 10000 });
   });
 });

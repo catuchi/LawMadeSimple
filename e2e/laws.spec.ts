@@ -1,8 +1,13 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures';
 
+// Increase timeout for dynamic pages that need database access
 test.describe('Laws', () => {
+  // Use longer timeout for database-dependent pages
+  test.setTimeout(60000);
+
   test('laws index page loads', async ({ page }) => {
-    await page.goto('/laws');
+    await page.goto('/laws', { timeout: 30000 });
+    await page.waitForLoadState('networkidle');
 
     // Check page has loaded
     await expect(page).toHaveURL('/laws');
@@ -13,7 +18,8 @@ test.describe('Laws', () => {
   });
 
   test('displays law categories', async ({ page }) => {
-    await page.goto('/laws');
+    await page.goto('/laws', { timeout: 30000 });
+    await page.waitForLoadState('networkidle');
 
     // Look for law cards or category groupings
     const lawLinks = page.getByRole('link');
@@ -25,7 +31,8 @@ test.describe('Laws', () => {
 
   test('law detail page shows sections', async ({ page }) => {
     // Navigate to a known law
-    await page.goto('/laws/constitution-1999');
+    await page.goto('/laws/constitution-1999', { timeout: 30000 });
+    await page.waitForLoadState('networkidle');
 
     // Check page loaded
     await expect(page).toHaveURL('/laws/constitution-1999');
@@ -43,7 +50,8 @@ test.describe('Laws', () => {
   });
 
   test('can navigate from law to section explanation', async ({ page }) => {
-    await page.goto('/laws/constitution-1999');
+    await page.goto('/laws/constitution-1999', { timeout: 30000 });
+    await page.waitForLoadState('networkidle');
 
     // Find section links
     const sectionLinks = page.locator('a[href*="/explain/"]');
@@ -54,12 +62,13 @@ test.describe('Laws', () => {
       await sectionLinks.first().click();
 
       // Should navigate to explanation page
-      await expect(page).toHaveURL(/\/explain\/.+\/.+/);
+      await expect(page).toHaveURL(/\/explain\/.+\/.+/, { timeout: 15000 });
     }
   });
 
   test('law detail has breadcrumb navigation', async ({ page }) => {
-    await page.goto('/laws/constitution-1999');
+    await page.goto('/laws/constitution-1999', { timeout: 30000 });
+    await page.waitForLoadState('networkidle');
 
     // Check for breadcrumb
     const breadcrumb = page.locator('nav[aria-label="breadcrumb"], [data-testid="breadcrumb"]');
@@ -73,9 +82,7 @@ test.describe('Laws', () => {
 
   test('explanation page shows AI explanation', async ({ page }) => {
     // Navigate to an explanation page
-    await page.goto('/explain/constitution-1999/section-33');
-
-    // Check page loaded
+    await page.goto('/explain/constitution-1999/section-33', { timeout: 30000 });
     await page.waitForLoadState('networkidle');
 
     // Check for explanation content or loading state
@@ -93,8 +100,7 @@ test.describe('Laws', () => {
   });
 
   test('explanation page has disclaimer', async ({ page }) => {
-    await page.goto('/explain/constitution-1999/section-33');
-
+    await page.goto('/explain/constitution-1999/section-33', { timeout: 30000 });
     await page.waitForLoadState('networkidle');
 
     // Legal disclaimer should always be present (use first() since there may be multiple)

@@ -1,8 +1,12 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures';
 
 test.describe('Scenarios', () => {
+  // Use longer timeout for database-dependent pages
+  test.setTimeout(60000);
+
   test('scenarios index page loads', async ({ page }) => {
-    await page.goto('/scenarios');
+    await page.goto('/scenarios', { timeout: 30000 });
+    await page.waitForLoadState('networkidle');
 
     // Check page has loaded
     await expect(page).toHaveURL('/scenarios');
@@ -13,7 +17,8 @@ test.describe('Scenarios', () => {
   });
 
   test('displays scenario categories', async ({ page }) => {
-    await page.goto('/scenarios');
+    await page.goto('/scenarios', { timeout: 30000 });
+    await page.waitForLoadState('networkidle');
 
     // Look for category cards or filters
     const categoryLinks = page.getByRole('link');
@@ -24,7 +29,8 @@ test.describe('Scenarios', () => {
   });
 
   test('can filter by category', async ({ page }) => {
-    await page.goto('/scenarios?category=criminal');
+    await page.goto('/scenarios?category=criminal', { timeout: 30000 });
+    await page.waitForLoadState('networkidle');
 
     // Check URL has category param
     await expect(page).toHaveURL(/category=criminal/);
@@ -35,7 +41,8 @@ test.describe('Scenarios', () => {
 
   test('scenario detail page shows related sections', async ({ page }) => {
     // Go to scenarios index first
-    await page.goto('/scenarios');
+    await page.goto('/scenarios', { timeout: 30000 });
+    await page.waitForLoadState('networkidle');
 
     // Find and click a scenario link (if any exist)
     const scenarioLinks = page.locator('a[href^="/scenarios/"]').filter({
@@ -52,7 +59,7 @@ test.describe('Scenarios', () => {
       await page.waitForLoadState('networkidle');
 
       // Should be on scenario detail page
-      await expect(page).toHaveURL(/\/scenarios\/.+/);
+      await expect(page).toHaveURL(/\/scenarios\/.+/, { timeout: 15000 });
 
       // Check for related sections heading or list
       const sectionsHeading = page.getByRole('heading', { name: /related|section/i });
@@ -70,7 +77,8 @@ test.describe('Scenarios', () => {
   test('scenario detail has breadcrumb navigation', async ({ page }) => {
     // Navigate to a scenario detail page via URL
     // Using a known scenario slug from seed data
-    await page.goto('/scenarios/police-arrest');
+    await page.goto('/scenarios/police-arrest-without-warrant', { timeout: 30000 });
+    await page.waitForLoadState('networkidle');
 
     // Check for breadcrumb navigation
     const breadcrumb = page.locator('nav[aria-label="breadcrumb"], [data-testid="breadcrumb"]');
