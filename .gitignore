@@ -51,3 +51,7 @@ next-env.d.ts
 
 # PDF extraction pipeline
 prisma/data/raw/pdfs/*.pdf
+
+# Playwright test artifacts
+playwright-report/
+test-results/
