@@ -52,7 +52,7 @@ describe('Laws API', () => {
     ];
 
     it('returns list of laws', async () => {
-      vi.mocked(prisma.law.findMany).mockResolvedValue(mockLaws);
+      vi.mocked(prisma.law.findMany).mockResolvedValue(mockLaws as never);
 
       const request = new Request('http://localhost:3000/api/v1/laws');
       const response = await getLaws(request);
@@ -66,7 +66,7 @@ describe('Laws API', () => {
     });
 
     it('filters by category', async () => {
-      vi.mocked(prisma.law.findMany).mockResolvedValue([mockLaws[0]]);
+      vi.mocked(prisma.law.findMany).mockResolvedValue([mockLaws[0]] as never);
 
       const request = new Request('http://localhost:3000/api/v1/laws?category=constitution');
       const response = await getLaws(request);
@@ -85,7 +85,7 @@ describe('Laws API', () => {
     });
 
     it('filters by active status', async () => {
-      vi.mocked(prisma.law.findMany).mockResolvedValue(mockLaws);
+      vi.mocked(prisma.law.findMany).mockResolvedValue(mockLaws as never);
 
       const request = new Request('http://localhost:3000/api/v1/laws?active=true');
       const response = await getLaws(request);
@@ -120,7 +120,7 @@ describe('Laws API', () => {
     });
 
     it('transforms response to correct format', async () => {
-      vi.mocked(prisma.law.findMany).mockResolvedValue([mockLaws[0]]);
+      vi.mocked(prisma.law.findMany).mockResolvedValue([mockLaws[0]] as never);
 
       const request = new Request('http://localhost:3000/api/v1/laws');
       const response = await getLaws(request);
@@ -172,7 +172,7 @@ describe('Laws API', () => {
     };
 
     it('returns law with sections', async () => {
-      vi.mocked(prisma.law.findUnique).mockResolvedValue(mockLawWithSections);
+      vi.mocked(prisma.law.findUnique).mockResolvedValue(mockLawWithSections as never);
 
       const request = new Request('http://localhost:3000/api/v1/laws/constitution-1999');
       const response = await getLawBySlug(request, {
@@ -201,7 +201,7 @@ describe('Laws API', () => {
     });
 
     it('transforms sections correctly', async () => {
-      vi.mocked(prisma.law.findUnique).mockResolvedValue(mockLawWithSections);
+      vi.mocked(prisma.law.findUnique).mockResolvedValue(mockLawWithSections as never);
 
       const request = new Request('http://localhost:3000/api/v1/laws/constitution-1999');
       const response = await getLawBySlug(request, {
@@ -222,7 +222,7 @@ describe('Laws API', () => {
     });
 
     it('formats effectiveDate as ISO string', async () => {
-      vi.mocked(prisma.law.findUnique).mockResolvedValue(mockLawWithSections);
+      vi.mocked(prisma.law.findUnique).mockResolvedValue(mockLawWithSections as never);
 
       const request = new Request('http://localhost:3000/api/v1/laws/constitution-1999');
       const response = await getLawBySlug(request, {
@@ -235,7 +235,7 @@ describe('Laws API', () => {
 
     it('handles null effectiveDate', async () => {
       const lawWithoutDate = { ...mockLawWithSections, effectiveDate: null };
-      vi.mocked(prisma.law.findUnique).mockResolvedValue(lawWithoutDate);
+      vi.mocked(prisma.law.findUnique).mockResolvedValue(lawWithoutDate as never);
 
       const request = new Request('http://localhost:3000/api/v1/laws/constitution-1999');
       const response = await getLawBySlug(request, {
@@ -247,7 +247,7 @@ describe('Laws API', () => {
     });
 
     it('uses slug from params for lookup', async () => {
-      vi.mocked(prisma.law.findUnique).mockResolvedValue(mockLawWithSections);
+      vi.mocked(prisma.law.findUnique).mockResolvedValue(mockLawWithSections as never);
 
       const request = new Request('http://localhost:3000/api/v1/laws/my-custom-slug');
       await getLawBySlug(request, {

@@ -87,11 +87,11 @@ describe('Search API', () => {
 
     it('returns search results for valid query', async () => {
       vi.mocked(prisma.section.count).mockResolvedValue(1);
-      vi.mocked(prisma.section.findMany).mockResolvedValue(mockSections);
+      vi.mocked(prisma.section.findMany).mockResolvedValue(mockSections as never);
       vi.mocked(prisma.scenario.count).mockResolvedValue(1);
-      vi.mocked(prisma.scenario.findMany).mockResolvedValue(mockScenarios);
+      vi.mocked(prisma.scenario.findMany).mockResolvedValue(mockScenarios as never);
       vi.mocked(prisma.law.count).mockResolvedValue(1);
-      vi.mocked(prisma.law.findMany).mockResolvedValue(mockLaws);
+      vi.mocked(prisma.law.findMany).mockResolvedValue(mockLaws as never);
 
       const request = new Request('http://localhost:3000/api/v1/search?q=arrest&mode=keyword');
       const response = await GET(request);
@@ -121,7 +121,7 @@ describe('Search API', () => {
 
     it('filters by type=section', async () => {
       vi.mocked(prisma.section.count).mockResolvedValue(1);
-      vi.mocked(prisma.section.findMany).mockResolvedValue(mockSections);
+      vi.mocked(prisma.section.findMany).mockResolvedValue(mockSections as never);
 
       const request = new Request(
         'http://localhost:3000/api/v1/search?q=right&type=section&mode=keyword'
@@ -136,7 +136,7 @@ describe('Search API', () => {
 
     it('filters by type=scenario', async () => {
       vi.mocked(prisma.scenario.count).mockResolvedValue(1);
-      vi.mocked(prisma.scenario.findMany).mockResolvedValue(mockScenarios);
+      vi.mocked(prisma.scenario.findMany).mockResolvedValue(mockScenarios as never);
 
       const request = new Request(
         'http://localhost:3000/api/v1/search?q=police&type=scenario&mode=keyword'
@@ -150,7 +150,7 @@ describe('Search API', () => {
 
     it('filters by type=law', async () => {
       vi.mocked(prisma.law.count).mockResolvedValue(1);
-      vi.mocked(prisma.law.findMany).mockResolvedValue(mockLaws);
+      vi.mocked(prisma.law.findMany).mockResolvedValue(mockLaws as never);
 
       const request = new Request(
         'http://localhost:3000/api/v1/search?q=constitution&type=law&mode=keyword'

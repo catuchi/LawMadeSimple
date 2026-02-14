@@ -93,7 +93,7 @@ describe('Bookmarks API', () => {
 
     it('returns user bookmarks', async () => {
       vi.mocked(prisma.bookmark.count).mockResolvedValue(2);
-      vi.mocked(prisma.bookmark.findMany).mockResolvedValue(mockBookmarks);
+      vi.mocked(prisma.bookmark.findMany).mockResolvedValue(mockBookmarks as never);
       vi.mocked(prisma.section.findUnique).mockResolvedValue(mockSectionContent as never);
       vi.mocked(prisma.scenario.findUnique).mockResolvedValue(mockScenarioContent as never);
 
@@ -120,7 +120,7 @@ describe('Bookmarks API', () => {
 
     it('filters by content type', async () => {
       vi.mocked(prisma.bookmark.count).mockResolvedValue(1);
-      vi.mocked(prisma.bookmark.findMany).mockResolvedValue([mockBookmarks[0]]);
+      vi.mocked(prisma.bookmark.findMany).mockResolvedValue([mockBookmarks[0]] as never);
       vi.mocked(prisma.section.findUnique).mockResolvedValue(mockSectionContent as never);
 
       const request = new Request('http://localhost:3000/api/v1/bookmarks?type=section');
@@ -155,7 +155,7 @@ describe('Bookmarks API', () => {
 
     it('includes content details for section bookmarks', async () => {
       vi.mocked(prisma.bookmark.count).mockResolvedValue(1);
-      vi.mocked(prisma.bookmark.findMany).mockResolvedValue([mockBookmarks[0]]);
+      vi.mocked(prisma.bookmark.findMany).mockResolvedValue([mockBookmarks[0]] as never);
       vi.mocked(prisma.section.findUnique).mockResolvedValue(mockSectionContent as never);
 
       const request = new Request('http://localhost:3000/api/v1/bookmarks');
@@ -168,7 +168,7 @@ describe('Bookmarks API', () => {
 
     it('handles missing content gracefully', async () => {
       vi.mocked(prisma.bookmark.count).mockResolvedValue(1);
-      vi.mocked(prisma.bookmark.findMany).mockResolvedValue([mockBookmarks[0]]);
+      vi.mocked(prisma.bookmark.findMany).mockResolvedValue([mockBookmarks[0]] as never);
       vi.mocked(prisma.section.findUnique).mockResolvedValue(null);
 
       const request = new Request('http://localhost:3000/api/v1/bookmarks');
