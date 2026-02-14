@@ -3,6 +3,7 @@ import { Inter, Lora } from 'next/font/google';
 import { AuthProvider } from '@/components/auth/auth-provider';
 import { Toaster } from '@/components/ui/sonner';
 import { SkipLink } from '@/components/ui/skip-link';
+import { CookieConsent } from '@/components/ui/cookie-consent';
 import './globals.css';
 
 const inter = Inter({
@@ -52,6 +53,7 @@ export default function RootLayout({
         <SkipLink />
         <AuthProvider>{children}</AuthProvider>
         <Toaster position="top-right" />
+        <CookieConsent />
       </body>
     </html>
   );

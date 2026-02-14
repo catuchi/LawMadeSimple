@@ -9,8 +9,8 @@ test.describe('Homepage', () => {
     // Check hero heading
     await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
 
-    // Check search input exists
-    const searchInput = page.getByPlaceholder(/search/i);
+    // Check search input exists (placeholder is "What legal situation are you dealing with?")
+    const searchInput = page.locator('input[type="search"]');
     await expect(searchInput).toBeVisible();
   });
 
@@ -39,7 +39,7 @@ test.describe('Homepage', () => {
   });
 
   test('search redirects to search results', async ({ page }) => {
-    const searchInput = page.getByPlaceholder(/search/i);
+    const searchInput = page.locator('input[type="search"]');
     await searchInput.fill('arrest');
     await searchInput.press('Enter');
 
@@ -48,12 +48,22 @@ test.describe('Homepage', () => {
   });
 
   test('has accessible navigation', async ({ page }) => {
-    // Check for navigation
-    const nav = page.getByRole('navigation');
-    await expect(nav).toBeVisible();
+    // On desktop, check for navigation bar
+    // On mobile, navigation is in a hamburger menu
+    const viewport = await page.viewportSize();
 
-    // Check for main links
-    await expect(page.getByRole('link', { name: /laws/i })).toBeVisible();
-    await expect(page.getByRole('link', { name: /scenarios/i })).toBeVisible();
+    if (viewport && viewport.width >= 768) {
+      // Desktop: Check for visible navigation
+      const nav = page.getByRole('navigation', { name: 'Main navigation' });
+      await expect(nav).toBeVisible();
+
+      // Check for main links within the nav (nav uses "Browse" instead of "Laws")
+      await expect(nav.getByRole('link', { name: 'Browse', exact: true })).toBeVisible();
+      await expect(nav.getByRole('link', { name: 'Scenarios' })).toBeVisible();
+    } else {
+      // Mobile: Check for hamburger menu button
+      const menuButton = page.getByRole('button', { name: /open navigation menu/i });
+      await expect(menuButton).toBeVisible();
+    }
   });
 });

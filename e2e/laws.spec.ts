@@ -97,8 +97,10 @@ test.describe('Laws', () => {
 
     await page.waitForLoadState('networkidle');
 
-    // Legal disclaimer should always be present
-    const disclaimer = page.getByText(/not legal advice|educational purposes|consult.*lawyer/i);
+    // Legal disclaimer should always be present (use first() since there may be multiple)
+    const disclaimer = page
+      .getByText(/not legal advice|educational purposes|consult.*lawyer/i)
+      .first();
     await expect(disclaimer).toBeVisible();
   });
 });

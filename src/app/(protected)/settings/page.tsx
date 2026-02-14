@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { Download } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
 import { createClient } from '@/lib/supabase/client';
 import { UpdateEmailForm } from '@/components/auth/update-email-form';
@@ -29,6 +30,31 @@ export default function SettingsPage() {
   const [linkingProvider, setLinkingProvider] = useState<string | null>(null);
   const [unlinkingId, setUnlinkingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [isExporting, setIsExporting] = useState(false);
+
+  // Handle data export
+  const handleExportData = async () => {
+    setIsExporting(true);
+    try {
+      const response = await fetch('/api/v1/user/export');
+      if (!response.ok) {
+        throw new Error('Export failed');
+      }
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `lawmadesimple-data-export-${new Date().toISOString().split('T')[0]}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch {
+      setError('Failed to export data. Please try again.');
+    } finally {
+      setIsExporting(false);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -243,6 +269,35 @@ export default function SettingsPage() {
         >
           Sign Out
         </button>
+      </section>
+
+      {/* Data & Privacy */}
+      <section className="border-border mb-8 border-t pt-8">
+        <h2 className="text-foreground mb-4 text-lg font-semibold">Data & Privacy</h2>
+        <p className="text-foreground-muted mb-4 text-sm">
+          Download a copy of your data or delete your account. For more information, see our{' '}
+          <a href="/privacy" className="text-primary hover:underline">
+            Privacy Policy
+          </a>
+          .
+        </p>
+        <div className="border-border rounded-lg border bg-white p-4">
+          <div className="mb-4">
+            <h3 className="text-foreground font-medium">Export Your Data</h3>
+            <p className="text-foreground-muted mt-1 text-sm">
+              Download all your personal data including your profile, bookmarks, feedback, and usage
+              history in JSON format.
+            </p>
+          </div>
+          <button
+            onClick={handleExportData}
+            disabled={isExporting}
+            className="bg-primary hover:bg-primary-600 flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium text-white transition-colors disabled:opacity-50"
+          >
+            <Download className="h-4 w-4" />
+            {isExporting ? 'Exporting...' : 'Download My Data'}
+          </button>
+        </div>
       </section>
 
       {/* Delete Account */}

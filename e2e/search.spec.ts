@@ -7,9 +7,13 @@ test.describe('Search', () => {
     // Wait for results to load
     await page.waitForLoadState('networkidle');
 
-    // Check search results are displayed or empty state
-    const results = page.locator('[data-testid="search-result"]');
-    const emptyState = page.getByText(/no results/i);
+    // Check main content is visible (results or empty state)
+    const mainContent = page.locator('main');
+    await expect(mainContent).toBeVisible();
+
+    // Check for either results (LawCard components) or empty state message
+    const results = page.locator('a[href*="/explain/"], a[href*="/scenarios/"], a[href*="/laws/"]');
+    const emptyState = page.getByText(/no results|couldn't find/i);
 
     // Either results or empty state should be visible
     const hasResults = (await results.count()) > 0;
@@ -21,7 +25,8 @@ test.describe('Search', () => {
   test('search input is pre-filled with query', async ({ page }) => {
     await page.goto('/search?q=police');
 
-    const searchInput = page.getByRole('textbox', { name: /search/i });
+    // Search input uses type="search" with combobox role (use first() for mobile with multiple inputs)
+    const searchInput = page.locator('input[type="search"]').first();
     await expect(searchInput).toHaveValue('police');
   });
 
@@ -57,8 +62,9 @@ test.describe('Search', () => {
     await page.goto('/search');
 
     // Should show prompt or empty state
-    const emptyState = page.getByText(/enter a search|no query/i);
-    const searchInput = page.getByRole('textbox', { name: /search/i });
+    const emptyState = page.getByText(/search nigerian laws|describe your/i);
+    // Use first() since there may be both header and main search inputs
+    const searchInput = page.locator('input[type="search"]').first();
 
     // Either empty state message or just the search input
     const hasEmptyState = await emptyState.isVisible().catch(() => false);
@@ -70,7 +76,10 @@ test.describe('Search', () => {
   test('can perform new search from results page', async ({ page }) => {
     await page.goto('/search?q=arrest');
 
-    const searchInput = page.getByRole('textbox', { name: /search/i });
+    // Wait for page to load
+    await page.waitForLoadState('networkidle');
+
+    const searchInput = page.locator('input[type="search"]');
     await searchInput.clear();
     await searchInput.fill('eviction');
     await searchInput.press('Enter');

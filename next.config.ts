@@ -1,6 +1,23 @@
 import type { NextConfig } from 'next';
 import { withSentryConfig } from '@sentry/nextjs';
 
+// Content Security Policy
+// Start in report-only mode, then switch to enforcing after verifying no violations
+const cspHeader = `
+  default-src 'self';
+  script-src 'self' 'unsafe-eval' 'unsafe-inline' https://vercel.live https://*.vercel-scripts.com;
+  style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+  img-src 'self' data: https: blob:;
+  font-src 'self' https://fonts.gstatic.com;
+  connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.openai.com https://*.sentry.io https://*.ingest.sentry.io https://*.vercel-insights.com https://vercel.live;
+  frame-ancestors 'none';
+  form-action 'self';
+  base-uri 'self';
+  upgrade-insecure-requests;
+`
+  .replace(/\n/g, ' ')
+  .trim();
+
 const nextConfig: NextConfig = {
   async headers() {
     return [
@@ -26,6 +43,12 @@ const nextConfig: NextConfig = {
           {
             key: 'Permissions-Policy',
             value: 'camera=(), microphone=(), geolocation=()',
+          },
+          // CSP in report-only mode first to test without breaking the app
+          // After verifying no violations, change to 'Content-Security-Policy'
+          {
+            key: 'Content-Security-Policy-Report-Only',
+            value: cspHeader,
           },
         ],
       },
