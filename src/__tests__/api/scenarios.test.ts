@@ -56,7 +56,7 @@ describe('Scenarios API', () => {
 
     it('returns paginated list of scenarios', async () => {
       vi.mocked(prisma.scenario.count).mockResolvedValue(2);
-      vi.mocked(prisma.scenario.findMany).mockResolvedValue(mockScenarios);
+      vi.mocked(prisma.scenario.findMany).mockResolvedValue(mockScenarios as never);
 
       const request = new Request('http://localhost:3000/api/v1/scenarios');
       const response = await getScenarios(request);
@@ -71,7 +71,7 @@ describe('Scenarios API', () => {
 
     it('filters by category', async () => {
       vi.mocked(prisma.scenario.count).mockResolvedValue(1);
-      vi.mocked(prisma.scenario.findMany).mockResolvedValue([mockScenarios[0]]);
+      vi.mocked(prisma.scenario.findMany).mockResolvedValue([mockScenarios[0]] as never);
 
       const request = new Request('http://localhost:3000/api/v1/scenarios?category=criminal');
       const response = await getScenarios(request);
@@ -84,7 +84,7 @@ describe('Scenarios API', () => {
 
     it('filters by featured status', async () => {
       vi.mocked(prisma.scenario.count).mockResolvedValue(1);
-      vi.mocked(prisma.scenario.findMany).mockResolvedValue([mockScenarios[0]]);
+      vi.mocked(prisma.scenario.findMany).mockResolvedValue([mockScenarios[0]] as never);
 
       const request = new Request('http://localhost:3000/api/v1/scenarios?featured=true');
       const response = await getScenarios(request);
@@ -119,7 +119,7 @@ describe('Scenarios API', () => {
 
     it('extracts unique related law slugs', async () => {
       vi.mocked(prisma.scenario.count).mockResolvedValue(1);
-      vi.mocked(prisma.scenario.findMany).mockResolvedValue([mockScenarios[0]]);
+      vi.mocked(prisma.scenario.findMany).mockResolvedValue([mockScenarios[0]] as never);
 
       const request = new Request('http://localhost:3000/api/v1/scenarios');
       const response = await getScenarios(request);
@@ -192,8 +192,8 @@ describe('Scenarios API', () => {
     };
 
     it('returns scenario with related sections', async () => {
-      vi.mocked(prisma.scenario.findUnique).mockResolvedValue(mockScenarioDetail);
-      vi.mocked(prisma.scenario.update).mockResolvedValue(mockScenarioDetail);
+      vi.mocked(prisma.scenario.findUnique).mockResolvedValue(mockScenarioDetail as never);
+      vi.mocked(prisma.scenario.update).mockResolvedValue(mockScenarioDetail as never);
 
       const request = new Request('http://localhost:3000/api/v1/scenarios/police-arrest');
       const response = await getScenarioBySlug(request, {
@@ -222,8 +222,8 @@ describe('Scenarios API', () => {
     });
 
     it('transforms related sections correctly', async () => {
-      vi.mocked(prisma.scenario.findUnique).mockResolvedValue(mockScenarioDetail);
-      vi.mocked(prisma.scenario.update).mockResolvedValue(mockScenarioDetail);
+      vi.mocked(prisma.scenario.findUnique).mockResolvedValue(mockScenarioDetail as never);
+      vi.mocked(prisma.scenario.update).mockResolvedValue(mockScenarioDetail as never);
 
       const request = new Request('http://localhost:3000/api/v1/scenarios/police-arrest');
       const response = await getScenarioBySlug(request, {
@@ -242,8 +242,8 @@ describe('Scenarios API', () => {
     });
 
     it('increments view count on access', async () => {
-      vi.mocked(prisma.scenario.findUnique).mockResolvedValue(mockScenarioDetail);
-      vi.mocked(prisma.scenario.update).mockResolvedValue(mockScenarioDetail);
+      vi.mocked(prisma.scenario.findUnique).mockResolvedValue(mockScenarioDetail as never);
+      vi.mocked(prisma.scenario.update).mockResolvedValue(mockScenarioDetail as never);
 
       const request = new Request('http://localhost:3000/api/v1/scenarios/police-arrest');
       await getScenarioBySlug(request, {
@@ -260,8 +260,8 @@ describe('Scenarios API', () => {
     });
 
     it('uses slug from params for lookup', async () => {
-      vi.mocked(prisma.scenario.findUnique).mockResolvedValue(mockScenarioDetail);
-      vi.mocked(prisma.scenario.update).mockResolvedValue(mockScenarioDetail);
+      vi.mocked(prisma.scenario.findUnique).mockResolvedValue(mockScenarioDetail as never);
+      vi.mocked(prisma.scenario.update).mockResolvedValue(mockScenarioDetail as never);
 
       const request = new Request('http://localhost:3000/api/v1/scenarios/my-custom-slug');
       await getScenarioBySlug(request, {
